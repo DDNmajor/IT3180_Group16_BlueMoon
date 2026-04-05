@@ -21,7 +21,7 @@ Xây dựng phần mềm quản lý thu phí cho Ban quản trị chung cư Blue
 gồm các chức năng: quản lý hộ khẩu/nhân khẩu, tạo khoản thu, 
 ghi nhận thanh toán và thống kê báo cáo.
 
-**Nền tảng:** JavaFX + MySQL  
+**Nền tảng:** JavaFX + MySQL + CSS 
 **Phương pháp:** Agile/Scrum (3 Sprint)
 
 ## 🚀 Hướng dẫn cài đặt
