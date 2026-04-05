@@ -9,9 +9,9 @@ Phần mềm quản lý thu phí chung cư BlueMoon - Môn Nhập môn CNPM IT31
 
 | Họ tên | MSSV | Vai trò | GitHub |
 |--------|------|---------|--------|
-| Trần Khánh Linh | ... | Scrum Master | @... |
+| Trần Khánh Linh | ... | Scrum Master | @linhch123-phe |
 | Lê Quang Huy | ... | Product Owner | @DDNmajor |
-| Trần Thị Nhật Linh | ... | Developer | @... |
+| Trần Thị Nhật Linh | ... | Developer | @nhat-linh05 |
 | Đoàn Văn Thắng | ... | Developer | @... |
 | Đặng Hải Đăng | ... | Developer | @danghaidang04 |
 
