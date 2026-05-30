@@ -82,11 +82,14 @@ src/main/resources/
 └── static/         # CSS, JS, images (frontend tự thêm)
 ```
 
-## Tài khoản mặc định (dev)
+## Tài khoản Admin
 
-| Tài khoản | Mật khẩu | Vai trò |
-|-----------|----------|---------|
-| `admin` | `admin123` | Admin |
-| `staff01` | `staff123` | Staff |
+Tài khoản admin được tạo tự động khi app khởi động lần đầu. Cấu hình trong `application.properties`:
 
-> Password tự động được hash BCrypt khi app khởi động lần đầu.
+```properties
+app.admin.username=admin
+app.admin.password=<mật_khẩu_của_bạn>
+app.admin.fullname=Quản trị viên
+```
+
+> Mật khẩu được hash BCrypt trước khi lưu vào DB. Không commit `application.properties`.

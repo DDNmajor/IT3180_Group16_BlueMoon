@@ -102,7 +102,7 @@ CREATE TABLE thanh_toan (
 );
 
 -- ============================================================
--- Dữ liệu mẫu — tài khoản admin mặc định
+-- Tài khoản admin được tạo tự động khi app khởi động lần đầu
+-- thông qua DataInitializer, với mật khẩu từ application.properties
+-- (app.admin.password). KHÔNG lưu mật khẩu plaintext ở đây.
 -- ============================================================
-INSERT INTO nguoi_dung (ten_dang_nhap, mat_khau, ho_ten, vai_tro)
-VALUES ('admin', 'admin123', 'Quản trị viên', 'admin');

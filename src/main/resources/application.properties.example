@@ -16,5 +16,12 @@ spring.jpa.hibernate.ddl-auto=validate
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 
+# ── Tài khoản Admin mặc định ─────────────────────────────────
+# Được tạo tự động khi app khởi động lần đầu (nếu chưa có user nào trong DB)
+# Đổi thành mật khẩu mạnh trước khi deploy
+app.admin.username=admin
+app.admin.password=your_admin_password
+app.admin.fullname=Quản trị viên
+
 # ── Server ───────────────────────────────────────────────────
 server.port=8080
