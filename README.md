@@ -55,5 +55,38 @@ Xây dựng phần mềm quản lý thu phí cho Ban quản trị chung cư Blue
 |--------|----------|-----------|
 | Sprint 0 | Khởi động, lập kế hoạch, thiết lập repo, tạo schema DB | ✅ Hoàn thành |
 | Sprint 1 | Đăng nhập, phân quyền, quản lý khoản thu | 🔄 In Progress |
-| Sprint 2 | Thu phí, quản lý hộ gia đình, nhân khẩu | Not Started |
+| Sprint 2 | Thu phí, quản lý hộ gia đình, nhân khẩu | 🔄 In Progress |
 | Sprint 3 | Thống kê, báo cáo, kiểm thử tích hợp | Not Started |
+
+## Cấu trúc source code
+
+```
+src/main/java/com/bluemoon/
+├── controller/     # Spring MVC Controllers (7 controllers)
+├── service/        # Business logic + CustomUserDetailsService
+├── dao/            # Spring Data JPA Repositories (6 repositories)
+├── model/          # JPA Entities (6 entities + VaiTro enum)
+└── util/           # SecurityConfig, DataInitializer
+
+src/main/resources/
+├── templates/      # Thymeleaf HTML (16 trang, Bootstrap 5)
+│   ├── fragments/  # Base layout (navbar, sidebar, alerts)
+│   ├── auth/       # Trang đăng nhập
+│   ├── dashboard.html
+│   ├── nguoi-dung/
+│   ├── loai-khoan-thu/
+│   ├── khoan-thu/
+│   ├── ho-gia-dinh/
+│   ├── nhan-khau/
+│   └── thanh-toan/
+└── static/         # CSS, JS, images (frontend tự thêm)
+```
+
+## Tài khoản mặc định (dev)
+
+| Tài khoản | Mật khẩu | Vai trò |
+|-----------|----------|---------|
+| `admin` | `admin123` | Admin |
+| `staff01` | `staff123` | Staff |
+
+> Password tự động được hash BCrypt khi app khởi động lần đầu.
