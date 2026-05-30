@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Thanh toán')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/layout :: sidebar}"></div>
+
+        <main class="col-md-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h4 class="mb-0" th:if="${hoGiaDinh == null and khoanThu == null}">Lịch sử thanh toán</h4>
+                    <h4 class="mb-0" th:unless="${hoGiaDinh == null}">
+                        Thanh toán — Căn hộ <span th:text="${hoGiaDinh.soCanHo}"></span>
+                    </h4>
+                    <h4 class="mb-0" th:unless="${khoanThu == null}">
+                        Thanh toán — <span th:text="${khoanThu.tenKhoanThu}"></span>
+                    </h4>
+                </div>
+                <a th:href="@{/thanh-toan/them}" class="btn btn-success btn-sm">
+                    <i class="bi bi-plus-lg me-1"></i>Ghi nhận thanh toán
+                </a>
+            </div>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <table class="table table-hover table-bordered mb-0">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Căn hộ</th>
+                            <th>Khoản thu</th>
+                            <th class="text-end">Số tiền đã nộp</th>
+                            <th>Ngày nộp</th>
+                            <th>Người thu</th>
+                            <th>Ghi chú</th>
+                            <th class="text-center">Thao tác</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${#lists.isEmpty(danhSach)}">
+                            <td colspan="8" class="text-center text-muted py-3">Chưa có thanh toán nào.</td>
+                        </tr>
+                        <tr th:each="tt, stat : ${danhSach}">
+                            <td th:text="${stat.count}"></td>
+                            <td th:text="${tt.hoGiaDinh.soCanHo}"></td>
+                            <td th:text="${tt.khoanThu.tenKhoanThu}"></td>
+                            <td class="text-end fw-semibold text-success"
+                                th:text="${#numbers.formatDecimal(tt.soTienDaNop, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                            </td>
+                            <td th:text="${#temporals.format(tt.ngayNop, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td th:text="${tt.nguoiThu?.hoTen} ?: '--'"></td>
+                            <td th:text="${tt.ghiChu} ?: '--'"></td>
+                            <td class="text-center">
+                                <form th:action="@{/thanh-toan/xoa/{id}(id=${tt.id})}" method="post" class="d-inline"
+                                      onsubmit="return confirm('Xác nhận xóa bản ghi thanh toán này?')">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

@@ -10,9 +10,10 @@ spring.datasource.password=your_password
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 # ── JPA / Hibernate ──────────────────────────────────────────
-spring.jpa.hibernate.ddl-auto=update
+# validate: Hibernate chỉ kiểm tra entity khớp schema, KHÔNG tự sửa DB
+# Mọi thay đổi schema phải qua file SQL trong database/
+spring.jpa.hibernate.ddl-auto=validate
 spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 spring.jpa.properties.hibernate.format_sql=true
 
 # ── Server ───────────────────────────────────────────────────

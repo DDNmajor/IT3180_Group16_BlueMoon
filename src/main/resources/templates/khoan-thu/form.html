@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Khoản thu')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/layout :: sidebar}"></div>
+
+        <main class="col-md-10 p-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <a th:href="@{/khoan-thu}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h4 class="mb-0" th:text="${khoanThu.id == null} ? 'Thêm khoản thu' : 'Sửa khoản thu'"></h4>
+            </div>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <div class="card shadow-sm" style="max-width: 600px;">
+                <div class="card-body">
+                    <form th:action="${khoanThu.id == null} ? @{/khoan-thu/them} : @{/khoan-thu/sua/{id}(id=${khoanThu.id})}"
+                          th:object="${khoanThu}" method="post">
+
+                        <div class="mb-3">
+                            <label class="form-label">Tên khoản thu <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{tenKhoanThu}" class="form-control" required/>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Loại khoản thu <span class="text-danger">*</span></label>
+                            <select name="loaiKhoanThu.id" class="form-select" required>
+                                <option value="">-- Chọn loại --</option>
+                                <option th:each="loai : ${danhSachLoai}"
+                                        th:value="${loai.id}"
+                                        th:text="${loai.tenLoai}"
+                                        th:selected="${khoanThu.loaiKhoanThu?.id == loai.id}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Số tiền <span class="text-danger">*</span></label>
+                                <input type="number" th:field="*{soTien}" class="form-control" min="0" step="1000" required/>
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Đơn vị</label>
+                                <input type="text" th:field="*{donVi}" class="form-control" placeholder="VD: VNĐ, VNĐ/m²"/>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Kỳ thu <span class="text-danger">*</span></label>
+                                <input type="date" th:field="*{kyThu}" class="form-control" required/>
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Hạn nộp</label>
+                                <input type="date" th:field="*{hanNop}" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Ghi chú</label>
+                            <textarea th:field="*{ghiChu}" class="form-control" rows="2"></textarea>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-1"></i>Lưu
+                            </button>
+                            <a th:href="@{/khoan-thu}" class="btn btn-outline-secondary">Hủy</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Chi tiết hộ gia đình')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/layout :: sidebar}"></div>
+
+        <main class="col-md-10 p-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <a th:href="@{/ho-gia-dinh}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h4 class="mb-0">Chi tiết hộ gia đình</h4>
+                <a th:href="@{/ho-gia-dinh/sua/{id}(id=${hoGiaDinh.id})}" class="btn btn-warning btn-sm ms-auto">
+                    <i class="bi bi-pencil me-1"></i>Sửa
+                </a>
+            </div>
+
+            <!-- Thông tin hộ -->
+            <div class="card shadow-sm mb-4" style="max-width: 540px;">
+                <div class="card-header fw-semibold">Thông tin căn hộ</div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-5">Số căn hộ</dt>
+                        <dd class="col-7" th:text="${hoGiaDinh.soCanHo}"></dd>
+                        <dt class="col-5">Chủ hộ</dt>
+                        <dd class="col-7" th:text="${hoGiaDinh.chuHo}"></dd>
+                        <dt class="col-5">Diện tích</dt>
+                        <dd class="col-7" th:text="${hoGiaDinh.dienTich} + ' m²'"></dd>
+                        <dt class="col-5">Số điện thoại</dt>
+                        <dd class="col-7" th:text="${hoGiaDinh.soDienThoai} ?: '--'"></dd>
+                        <dt class="col-5">Ghi chú</dt>
+                        <dd class="col-7" th:text="${hoGiaDinh.ghiChu} ?: '--'"></dd>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Danh sách nhân khẩu -->
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="mb-0">Nhân khẩu</h5>
+                <a th:href="@{/nhan-khau/them(idHo=${hoGiaDinh.id})}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus-lg me-1"></i>Thêm nhân khẩu
+                </a>
+            </div>
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-0">
+                    <table class="table table-bordered mb-0">
+                        <thead class="table-secondary">
+                        <tr>
+                            <th>#</th>
+                            <th>Họ tên</th>
+                            <th>Ngày sinh</th>
+                            <th>Giới tính</th>
+                            <th>CCCD</th>
+                            <th>Quan hệ chủ hộ</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${#lists.isEmpty(hoGiaDinh.nhanKhaus)}">
+                            <td colspan="6" class="text-center text-muted py-2">Chưa có nhân khẩu.</td>
+                        </tr>
+                        <tr th:each="nk, stat : ${hoGiaDinh.nhanKhaus}">
+                            <td th:text="${stat.count}"></td>
+                            <td th:text="${nk.hoTen}"></td>
+                            <td th:text="${nk.ngaySinh != null} ? ${#temporals.format(nk.ngaySinh, 'dd/MM/yyyy')} : '--'"></td>
+                            <td th:text="${nk.gioiTinh}"></td>
+                            <td th:text="${nk.cccd} ?: '--'"></td>
+                            <td th:text="${nk.quanHeChuHo}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Lịch sử thanh toán -->
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="mb-0">Lịch sử thanh toán</h5>
+                <a th:href="@{/thanh-toan/them(idHo=${hoGiaDinh.id})}" class="btn btn-success btn-sm">
+                    <i class="bi bi-plus-lg me-1"></i>Ghi nhận thanh toán
+                </a>
+            </div>
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <table class="table table-bordered mb-0">
+                        <thead class="table-secondary">
+                        <tr>
+                            <th>#</th>
+                            <th>Khoản thu</th>
+                            <th class="text-end">Số tiền đã nộp</th>
+                            <th>Ngày nộp</th>
+                            <th>Người thu</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-2">
+                                <a th:href="@{/thanh-toan(idHo=${hoGiaDinh.id})}">Xem lịch sử thanh toán</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
