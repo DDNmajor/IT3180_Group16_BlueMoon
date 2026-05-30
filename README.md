@@ -1,11 +1,9 @@
-# IT3180_Group6_BlueMoon
-Phần mềm quản lý thu phí chung cư BlueMoon - Môn Nhập môn CNPM IT3180
-# 🏢 BlueMoon Fee Management System
+# BlueMoon Fee Management System
 
 > Phần mềm quản lý thu phí chung cư BlueMoon — Môn IT3180 Nhập môn CNPM  
-> Đại học Bách Khoa Hà Nội — Nhóm [số nhóm]
+> Đại học Bách Khoa Hà Nội — Nhóm 16
 
-## 👥 Thành viên nhóm
+## Thành viên nhóm
 
 | Họ tên | MSSV | Vai trò | GitHub |
 |--------|------|---------|--------|
@@ -15,31 +13,43 @@ Phần mềm quản lý thu phí chung cư BlueMoon - Môn Nhập môn CNPM IT31
 | Đoàn Văn Thắng | ... | Developer | @vanthang10tin |
 | Đặng Hải Đăng | ... | Developer | @danghaidang04 |
 
-## 📌 Mô tả dự án
+## Mô tả dự án
 
-Xây dựng phần mềm quản lý thu phí cho Ban quản trị chung cư BlueMoon, 
-gồm các chức năng: quản lý hộ khẩu/nhân khẩu, tạo khoản thu, 
-ghi nhận thanh toán và thống kê báo cáo.
+Xây dựng phần mềm quản lý thu phí cho Ban quản trị chung cư BlueMoon, gồm các chức năng: quản lý hộ khẩu/nhân khẩu, tạo khoản thu, ghi nhận thanh toán và thống kê báo cáo.
 
-**Nền tảng:** JavaFX + MySQL + CSS 
+**Nền tảng:** Spring Boot + Thymeleaf + Spring Data JPA + MySQL  
 **Phương pháp:** Agile/Scrum (3 Sprint)
 
-## 🚀 Hướng dẫn cài đặt
+## Hướng dẫn cài đặt
 
-1. Clone repo: `git clone <url>`
-2. Cài đặt: JDK 17+, JavaFX SDK, MySQL 8+
-3. Import `database/bluemoon_schema.sql` vào MySQL
-4. Mở project bằng NetBeans / IntelliJ
-5. Chạy `Main.java`
+1. Cài đặt: JDK 17+, MySQL 8+
+2. Clone repo: `git clone <url>`
+3. Import schema vào MySQL:
+   ```sql
+   source database/bluemoon_schema.sql
+   ```
+4. Cấu hình kết nối database trong `src/main/resources/application.properties`:
+   ```properties
+   spring.datasource.url=jdbc:mysql://localhost:3306/bluemoon
+   spring.datasource.username=<username>
+   spring.datasource.password=<password>
+   ```
+5. Chạy ứng dụng:
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+6. Truy cập tại `http://localhost:8080`
 
-## 🌿 Branching Strategy
+## Branching Strategy
 
-- `main` — Nhánh chính, chỉ merge khi hoàn thành Sprint
-- `develop` — Nhánh phát triển chung
-- `feature/[tên-chức-năng]` — Mỗi tính năng một nhánh riêng
-- `hotfix/[mô-tả]` — Sửa lỗi khẩn
+| Nhánh | Mục đích |
+|-------|---------|
+| `main` | Nhánh chính, chỉ merge khi hoàn thành Sprint |
+| `develop` | Nhánh phát triển chung |
+| `feature/[tên-chức-năng]` | Mỗi tính năng một nhánh riêng |
+| `hotfix/[mô-tả]` | Sửa lỗi khẩn |
 
-## 📅 Kế hoạch Sprint
+## Kế hoạch Sprint
 
 | Sprint | Nội dung | Trạng thái |
 |--------|----------|-----------|
