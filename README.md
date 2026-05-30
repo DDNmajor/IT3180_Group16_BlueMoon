@@ -53,7 +53,7 @@ Xây dựng phần mềm quản lý thu phí cho Ban quản trị chung cư Blue
 
 | Sprint | Nội dung | Trạng thái |
 |--------|----------|-----------|
-| Sprint 0 | Khởi động, lập kế hoạch, thiết lập repo | In Progress |
-| Sprint 1 | Đăng nhập, phân quyền, quản lý khoản thu | Not Started |
+| Sprint 0 | Khởi động, lập kế hoạch, thiết lập repo, tạo schema DB | ✅ Hoàn thành |
+| Sprint 1 | Đăng nhập, phân quyền, quản lý khoản thu | 🔄 In Progress |
 | Sprint 2 | Thu phí, quản lý hộ gia đình, nhân khẩu | Not Started |
 | Sprint 3 | Thống kê, báo cáo, kiểm thử tích hợp | Not Started |
