@@ -5,6 +5,7 @@ target/
 *.war
 
 # ── Database config (chứa thông tin nhạy cảm) ──────────────
+src/main/resources/application.properties
 src/main/resources/database.properties
 
 # ── IDE ────────────────────────────────────────────────────
