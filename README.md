@@ -20,25 +20,80 @@ Xây dựng phần mềm quản lý thu phí cho Ban quản trị chung cư Blue
 **Nền tảng:** Spring Boot + Thymeleaf + Spring Data JPA + MySQL  
 **Phương pháp:** Agile/Scrum (3 Sprint)
 
+---
+
 ## Hướng dẫn cài đặt
 
-1. Cài đặt: JDK 17+, MySQL 8+
-2. Clone repo: `git clone <url>`
-3. Import schema vào MySQL:
-   ```sql
-   source database/bluemoon_schema.sql
-   ```
-4. Cấu hình kết nối database trong `src/main/resources/application.properties`:
-   ```properties
-   spring.datasource.url=jdbc:mysql://localhost:3306/bluemoon
-   spring.datasource.username=<username>
-   spring.datasource.password=<password>
-   ```
-5. Chạy ứng dụng:
-   ```bash
-   ./mvnw spring-boot:run
-   ```
-6. Truy cập tại `http://localhost:8080`
+### Yêu cầu cài đặt trước
+- [JDK 17+](https://adoptium.net/)
+- [MySQL 8+](https://dev.mysql.com/downloads/mysql/)
+- [IntelliJ IDEA](https://www.jetbrains.com/idea/) (hoặc IDE tùy chọn)
+- [Git](https://git-scm.com/)
+
+### Bước 1 — Clone repository
+
+```bash
+git clone https://github.com/<org>/BlueMoon.git
+cd BlueMoon
+git checkout develop
+```
+
+### Bước 2 — Tạo database trong MySQL
+
+Mở MySQL Workbench (hoặc terminal MySQL), chạy:
+
+```sql
+source <đường_dẫn_đến_repo>/database/bluemoon_schema.sql;
+```
+
+Sau đó import dữ liệu mẫu (nếu có file `database/data_sample.sql`):
+
+```sql
+source <đường_dẫn_đến_repo>/database/data_sample.sql;
+```
+
+### Bước 3 — Tạo file cấu hình
+
+Copy file mẫu và điền thông tin của bạn:
+
+```
+src/main/resources/application.properties.example
+          ↓  copy thành
+src/main/resources/application.properties
+```
+
+Mở `application.properties` và chỉnh 3 chỗ sau:
+
+```properties
+# Mật khẩu MySQL trên máy bạn
+spring.datasource.password=<mysql_password_của_bạn>
+
+# Tài khoản admin sẽ được tạo tự động khi app khởi động lần đầu
+app.admin.password=<đặt_mật_khẩu_admin_tùy_ý>
+```
+
+> `application.properties` đã được thêm vào `.gitignore` — **không commit file này lên git**.
+
+### Bước 4 — Chạy ứng dụng
+
+**Cách 1 — Terminal:**
+```bash
+./mvnw spring-boot:run          # macOS/Linux
+mvnw.cmd spring-boot:run        # Windows
+```
+
+**Cách 2 — IntelliJ IDEA:**  
+Mở project → tìm `BlueMoonApplication.java` → nhấn nút Run (▶)
+
+### Bước 5 — Truy cập
+
+Mở trình duyệt: **http://localhost:8080**
+
+Đăng nhập bằng tài khoản admin vừa cấu hình ở Bước 3.
+
+> **Lần đầu chạy:** App tự động tạo tài khoản admin trong DB với mật khẩu đã được mã hóa BCrypt.
+
+---
 
 ## Branching Strategy
 
@@ -49,6 +104,10 @@ Xây dựng phần mềm quản lý thu phí cho Ban quản trị chung cư Blue
 | `feature/[tên-chức-năng]` | Mỗi tính năng một nhánh riêng |
 | `hotfix/[mô-tả]` | Sửa lỗi khẩn |
 
+**Quy trình:** Tạo `feature/*` từ `develop` → làm xong → tạo Pull Request vào `develop`.
+
+---
+
 ## Kế hoạch Sprint
 
 | Sprint | Nội dung | Trạng thái |
@@ -57,6 +116,8 @@ Xây dựng phần mềm quản lý thu phí cho Ban quản trị chung cư Blue
 | Sprint 1 | Đăng nhập, phân quyền, quản lý khoản thu | 🔄 In Progress |
 | Sprint 2 | Thu phí, quản lý hộ gia đình, nhân khẩu | 🔄 In Progress |
 | Sprint 3 | Thống kê, báo cáo, kiểm thử tích hợp | Not Started |
+
+---
 
 ## Cấu trúc source code
 
@@ -82,14 +143,23 @@ src/main/resources/
 └── static/         # CSS, JS, images (frontend tự thêm)
 ```
 
-## Tài khoản Admin
+---
 
-Tài khoản admin được tạo tự động khi app khởi động lần đầu. Cấu hình trong `application.properties`:
+## Phân công công việc còn lại
 
-```properties
-app.admin.username=admin
-app.admin.password=<mật_khẩu_của_bạn>
-app.admin.fullname=Quản trị viên
-```
+Skeleton toàn bộ layer (Model → DAO → Service → Controller → Template → Security) đã hoàn thành.  
+Công việc còn lại là **hoàn thiện từng feature**: UI/UX, validation, business logic, và test.
 
-> Mật khẩu được hash BCrypt trước khi lưu vào DB. Không commit `application.properties`.
+| Người | Feature phụ trách | Công việc cụ thể | Branch |
+|-------|------------------|-----------------|--------|
+| **Trần Khánh Linh** (SM) | Layout + Authentication | Hoàn thiện UI login page, active state sidebar, trang lỗi 403/404, test đăng nhập/phân quyền | `feature/auth-ui` |
+| **Lê Quang Huy** (PO) | Dashboard + Khoản thu | Dashboard: query thống kê thật (số hộ, tổng thu); Khoản thu: validation + UI | `feature/dashboard`, `feature/khoan-thu` |
+| **Trần Thị Nhật Linh** | Người dùng + Loại khoản thu | CRUD hoàn chỉnh: validation form, thông báo lỗi, UI polish cho 2 module | `feature/nguoi-dung`, `feature/loai-khoan-thu` |
+| **Đoàn Văn Thắng** | Hộ gia đình + Nhân khẩu | CRUD hoàn chỉnh, trang detail hộ hiển thị nhân khẩu + lịch sử thanh toán | `feature/ho-gia-dinh`, `feature/nhan-khau` |
+| **Đặng Hải Đăng** | Thanh toán | Ghi nhận thanh toán, lịch sử theo hộ/theo khoản, validation chống thu trùng | `feature/thanh-toan` |
+
+### Định nghĩa "hoàn thiện" cho mỗi feature
+- [ ] Form có validation (trường bắt buộc, định dạng đúng)
+- [ ] Hiển thị thông báo lỗi rõ ràng trên UI
+- [ ] Không crash khi nhập sai dữ liệu
+- [ ] Giao diện nhất quán với base layout
