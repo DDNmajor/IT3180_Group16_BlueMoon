@@ -152,11 +152,11 @@ Công việc còn lại là **hoàn thiện từng feature**: UI/UX, validation,
 
 | Người | Feature phụ trách | Công việc cụ thể | Branch |
 |-------|------------------|-----------------|--------|
-| **1** | Layout + Authentication | Hoàn thiện UI login page, active state sidebar, trang lỗi 403/404, test đăng nhập/phân quyền | `feature/auth-ui` |
-| **2** | Dashboard + Khoản thu | Dashboard: query thống kê thật (số hộ, tổng thu); Khoản thu: validation + UI | `feature/dashboard`, `feature/khoan-thu` |
-| **3** | Người dùng + Loại khoản thu | CRUD hoàn chỉnh: validation form, thông báo lỗi, UI polish cho 2 module | `feature/nguoi-dung`, `feature/loai-khoan-thu` |
-| **4** | Hộ gia đình + Nhân khẩu | CRUD hoàn chỉnh, trang detail hộ hiển thị nhân khẩu + lịch sử thanh toán | `feature/ho-gia-dinh`, `feature/nhan-khau` |
-| **5** | Thanh toán | Ghi nhận thanh toán, lịch sử theo hộ/theo khoản, validation chống thu trùng | `feature/thanh-toan` |
+| **Đoàn Văn Thắng** | Layout + Authentication | Hoàn thiện UI login page, active state sidebar, trang lỗi 403/404, test đăng nhập/phân quyền | `feature/auth-ui` |
+| **Đặng Hải Đăng** | Dashboard + Khoản thu | Dashboard: query thống kê thật (số hộ, tổng thu); Khoản thu: validation + UI | `feature/dashboard`, `feature/khoan-thu` |
+| **Trần Khánh Linh** | Người dùng + Loại khoản thu | CRUD hoàn chỉnh: validation form, thông báo lỗi, UI polish cho 2 module | `feature/nguoi-dung`, `feature/loai-khoan-thu` |
+| **Trần Thị Nhật Linh** | Hộ gia đình + Nhân khẩu | CRUD hoàn chỉnh, trang detail hộ hiển thị nhân khẩu + lịch sử thanh toán | `feature/ho-gia-dinh`, `feature/nhan-khau` |
+| **Lê Quang Huy** | Thanh toán | Ghi nhận thanh toán, lịch sử theo hộ/theo khoản, validation chống thu trùng | `feature/thanh-toan` |
 
 ### Định nghĩa "hoàn thiện" cho mỗi feature
 - [ ] Form có validation (trường bắt buộc, định dạng đúng)
