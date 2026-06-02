@@ -10,14 +10,27 @@
         <div th:replace="~{fragments/layout :: sidebar}"></div>
 
         <main class="col-md-10 p-4">
+
+            <!-- Tiêu đề -->
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
-                    <h4 class="mb-0" th:if="${hoGiaDinh == null and khoanThu == null}">Lịch sử thanh toán</h4>
-                    <h4 class="mb-0" th:unless="${hoGiaDinh == null}">
-                        Thanh toán — Căn hộ <span th:text="${hoGiaDinh.soCanHo}"></span>
+                    <h4 class="mb-0" th:if="${hoGiaDinhFilter == null and khoanThuFilter == null and timKiem == null}">
+                        Lịch sử thanh toán
                     </h4>
-                    <h4 class="mb-0" th:unless="${khoanThu == null}">
-                        Thanh toán — <span th:text="${khoanThu.tenKhoanThu}"></span>
+                    <h4 class="mb-0" th:if="${hoGiaDinhFilter != null}">
+                        <i class="bi bi-house me-1 text-primary"></i>
+                        Thanh toán — Căn hộ
+                        <span class="text-primary" th:text="${hoGiaDinhFilter.soCanHo}"></span>
+                        <small class="text-muted fw-normal ms-1"
+                               th:text="'(' + ${hoGiaDinhFilter.chuHo} + ')'"></small>
+                    </h4>
+                    <h4 class="mb-0" th:if="${khoanThuFilter != null}">
+                        <i class="bi bi-receipt me-1 text-primary"></i>
+                        Thanh toán — <span class="text-primary" th:text="${khoanThuFilter.tenKhoanThu}"></span>
+                    </h4>
+                    <h4 class="mb-0" th:if="${timKiem != null}">
+                        <i class="bi bi-search me-1"></i>
+                        Kết quả tìm kiếm: "<span th:text="${timKiem}"></span>"
                     </h4>
                 </div>
                 <a th:href="@{/thanh-toan/them}" class="btn btn-success btn-sm">
@@ -27,48 +40,247 @@
 
             <div th:replace="~{fragments/layout :: alerts}"></div>
 
+            <!-- Thanh tìm kiếm & lọc -->
+            <div class="row g-2 mb-3">
+                <!-- Tìm theo căn hộ / chủ hộ (text) -->
+                <div class="col-md-4">
+                    <form method="get" th:action="@{/thanh-toan}" class="input-group input-group-sm">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" name="timKiem" th:value="${timKiem}"
+                               class="form-control" placeholder="Tìm theo căn hộ hoặc chủ hộ..."/>
+                        <button type="submit" class="btn btn-outline-secondary">Tìm</button>
+                    </form>
+                </div>
+                <!-- Lọc theo hộ gia đình -->
+                <div class="col-md-3">
+                    <form method="get" th:action="@{/thanh-toan}">
+                        <select name="idHo" class="form-select form-select-sm"
+                                onchange="this.form.submit()">
+                            <option value="">Tất cả căn hộ</option>
+                            <option th:each="hgd : ${danhSachHo}"
+                                    th:value="${hgd.id}"
+                                    th:text="${hgd.soCanHo} + ' — ' + ${hgd.chuHo}"
+                                    th:selected="${hoGiaDinhFilter != null and hoGiaDinhFilter.id == hgd.id}">
+                            </option>
+                        </select>
+                    </form>
+                </div>
+                <!-- Lọc theo khoản thu -->
+                <div class="col-md-3">
+                    <form method="get" th:action="@{/thanh-toan}">
+                        <select name="idKhoan" class="form-select form-select-sm"
+                                onchange="this.form.submit()">
+                            <option value="">Tất cả khoản thu</option>
+                            <option th:each="kt : ${danhSachKhoan}"
+                                    th:value="${kt.id}"
+                                    th:text="${kt.tenKhoanThu}"
+                                    th:selected="${khoanThuFilter != null and khoanThuFilter.id == kt.id}">
+                            </option>
+                        </select>
+                    </form>
+                </div>
+                <!-- Xóa bộ lọc -->
+                <div class="col-md-2" th:if="${hoGiaDinhFilter != null or khoanThuFilter != null or timKiem != null}">
+                    <a th:href="@{/thanh-toan}" class="btn btn-outline-danger btn-sm w-100">
+                        <i class="bi bi-x-circle me-1"></i>Xóa lọc
+                    </a>
+                </div>
+            </div>
+
+            <!-- Bảng danh sách -->
             <div class="card shadow-sm">
                 <div class="card-body p-0">
-                    <table class="table table-hover table-bordered mb-0">
+                    <table class="table table-hover table-bordered mb-0 align-middle">
                         <thead class="table-dark">
-                        <tr>
-                            <th>#</th>
-                            <th>Căn hộ</th>
-                            <th>Khoản thu</th>
-                            <th class="text-end">Số tiền đã nộp</th>
-                            <th>Ngày nộp</th>
-                            <th>Người thu</th>
-                            <th>Ghi chú</th>
-                            <th class="text-center">Thao tác</th>
-                        </tr>
+                            <tr>
+                                <th style="width:40px">#</th>
+                                <th>Căn hộ</th>
+                                <th>Khoản thu</th>
+                                <th class="text-end">Số tiền</th>
+                                <th>Ngày nộp</th>
+                                <th>Phương thức</th>
+                                <th>Người thu</th>
+                                <th>Trạng thái</th>
+                                <th>Ghi chú</th>
+                                <th class="text-center" style="width:130px">Thao tác</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr th:if="${#lists.isEmpty(danhSach)}">
-                            <td colspan="8" class="text-center text-muted py-3">Chưa có thanh toán nào.</td>
-                        </tr>
-                        <tr th:each="tt, stat : ${danhSach}">
-                            <td th:text="${stat.count}"></td>
-                            <td th:text="${tt.hoGiaDinh.soCanHo}"></td>
-                            <td th:text="${tt.khoanThu.tenKhoanThu}"></td>
-                            <td class="text-end fw-semibold text-success"
-                                th:text="${#numbers.formatDecimal(tt.soTienDaNop, 0, 'COMMA', 0, 'POINT')} + ' đ'">
-                            </td>
-                            <td th:text="${#temporals.format(tt.ngayNop, 'dd/MM/yyyy HH:mm')}"></td>
-                            <td th:text="${tt.nguoiThu?.hoTen} ?: '--'"></td>
-                            <td th:text="${tt.ghiChu} ?: '--'"></td>
-                            <td class="text-center">
-                                <form th:action="@{/thanh-toan/xoa/{id}(id=${tt.id})}" method="post" class="d-inline"
-                                      onsubmit="return confirm('Xác nhận xóa bản ghi thanh toán này?')">
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
+                            <tr th:if="${#lists.isEmpty(danhSach)}">
+                                <td colspan="10" class="text-center text-muted py-4">
+                                    <i class="bi bi-inbox me-1"></i>Chưa có giao dịch nào.
+                                </td>
+                            </tr>
+                            <tr th:each="tt, stat : ${danhSach}">
+                                <td class="text-muted small" th:text="${stat.count}"></td>
+                                <!-- Căn hộ -->
+                                <td>
+                                    <a th:href="@{/thanh-toan(idHo=${tt.hoGiaDinh.id})}"
+                                       class="text-decoration-none fw-semibold"
+                                       th:text="${tt.hoGiaDinh.soCanHo}"></a>
+                                    <div class="text-muted small" th:text="${tt.hoGiaDinh.chuHo}"></div>
+                                </td>
+                                <!-- Khoản thu -->
+                                <td>
+                                    <a th:href="@{/thanh-toan(idKhoan=${tt.khoanThu.id})}"
+                                       class="text-decoration-none"
+                                       th:text="${tt.khoanThu.tenKhoanThu}"></a>
+                                    <div class="text-muted small"
+                                         th:text="${#temporals.format(tt.khoanThu.kyThu, 'MM/yyyy')}"></div>
+                                </td>
+                                <!-- Số tiền -->
+                                <td class="text-end fw-semibold text-success"
+                                    th:text="${#numbers.formatDecimal(tt.soTienDaNop, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                </td>
+                                <!-- Ngày nộp -->
+                                <td th:text="${tt.ngayNop != null ? #temporals.format(tt.ngayNop, 'dd/MM/yyyy') : '--'}"></td>
+                                <!-- Phương thức -->
+                                <td>
+                                    <span th:if="${tt.phuongThuc != null}">
+                                        <i th:class="${tt.phuongThuc.name() == 'TIEN_MAT'
+                                                       ? 'bi bi-cash me-1'
+                                                       : 'bi bi-bank me-1'}"></i>
+                                        <span th:text="${tt.phuongThuc.tenHienThi}"></span>
+                                    </span>
+                                    <span th:if="${tt.phuongThuc == null}" class="text-muted">--</span>
+                                </td>
+                                <!-- Người thu -->
+                                <td class="text-muted small"
+                                    th:text="${tt.nguoiThu?.hoTen} ?: '--'"></td>
+                                <!-- Trạng thái -->
+                                <td>
+                                    <span th:if="${tt.trangThai != null}"
+                                          th:class="${tt.trangThai.name() == 'DA_DONG'
+                                                      ? 'badge bg-success'
+                                                      : (tt.trangThai.name() == 'CON_NO'
+                                                         ? 'badge bg-warning text-dark'
+                                                         : 'badge bg-info text-dark')}"
+                                          th:text="${tt.trangThai.tenHienThi}">
+                                    </span>
+                                    <span th:if="${tt.trangThai == null}" class="text-muted">--</span>
+                                </td>
+                                <!-- Ghi chú -->
+                                <td class="text-muted small"
+                                    th:text="${tt.ghiChu} ?: '--'"></td>
+                                <!-- Thao tác -->
+                                <td class="text-center">
+                                    <div class="d-flex flex-column gap-1 align-items-center">
+
+                                        <!-- Nộp thêm — chỉ hiện khi CON_NO -->
+                                        <button th:if="${tt.trangThai?.name() == 'CON_NO'}"
+                                                type="button"
+                                                class="btn btn-warning btn-sm w-100"
+                                                th:data-bs-target="'#modalNopThem-' + ${tt.id}"
+                                                data-bs-toggle="modal"
+                                                title="Cộng thêm tiền vào lần nộp này">
+                                            <i class="bi bi-plus-circle me-1"></i>Nộp thêm
+                                        </button>
+
+                                        <!-- Hoàn tiền — chỉ hiện khi DONG_DU -->
+                                        <form th:if="${tt.trangThai?.name() == 'DONG_DU'}"
+                                              th:action="@{/thanh-toan/hoan-tien/{id}(id=${tt.id})}"
+                                              method="post"
+                                              onsubmit="return confirm('Xác nhận đã hoàn trả tiền thừa cho hộ này?')">
+                                            <input type="hidden" name="idHo"
+                                                   th:value="${tt.hoGiaDinh.id}"/>
+                                            <button type="submit"
+                                                    class="btn btn-outline-info btn-sm w-100"
+                                                    title="Báo đã hoàn trả tiền thừa, chuyển sang Đã đóng">
+                                                <i class="bi bi-arrow-return-left me-1"></i>Hoàn tiền
+                                            </button>
+                                        </form>
+
+                                        <!-- Xóa -->
+                                        <form th:action="@{/thanh-toan/xoa/{id}(id=${tt.id})}"
+                                              method="post"
+                                              onsubmit="return confirm('Xác nhận xóa bản ghi thanh toán này?')">
+                                            <button type="submit" class="btn btn-danger btn-sm w-100"
+                                                    title="Xóa">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+
+                                    </div>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
+                <div class="card-footer text-muted small"
+                     th:if="${!#lists.isEmpty(danhSach)}">
+                    Tổng: <strong th:text="${danhSach.size()}"></strong> giao dịch
+                </div>
             </div>
+
+            <!-- ══ Modals Nộp thêm (một modal cho mỗi row CON_NO) ══ -->
+            <div th:each="tt : ${danhSach}" th:if="${tt.trangThai?.name() == 'CON_NO'}">
+                <div class="modal fade" th:id="'modalNopThem-' + ${tt.id}"
+                     tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header bg-warning bg-opacity-25">
+                                <h5 class="modal-title">
+                                    <i class="bi bi-plus-circle me-2"></i>Nộp thêm tiền
+                                </h5>
+                                <button type="button" class="btn-close"
+                                        data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Thông tin giao dịch -->
+                                <div class="mb-3 p-2 bg-light rounded small">
+                                    <div><strong>Căn hộ:</strong>
+                                        <span th:text="${tt.hoGiaDinh.soCanHo} + ' — ' + ${tt.hoGiaDinh.chuHo}"></span>
+                                    </div>
+                                    <div><strong>Khoản thu:</strong>
+                                        <span th:text="${tt.khoanThu.tenKhoanThu}"></span>
+                                    </div>
+                                    <div class="mt-1 d-flex gap-3">
+                                        <span>Yêu cầu:
+                                            <strong th:text="${#numbers.formatDecimal(tt.khoanThu.soTien, 0, 'COMMA', 0, 'POINT')} + ' đ'"></strong>
+                                        </span>
+                                        <span>Đã nộp:
+                                            <strong class="text-success"
+                                                    th:text="${#numbers.formatDecimal(tt.soTienDaNop, 0, 'COMMA', 0, 'POINT')} + ' đ'"></strong>
+                                        </span>
+                                        <span>Còn thiếu:
+                                            <strong class="text-danger"
+                                                    th:text="${#numbers.formatDecimal(tt.khoanThu.soTien.subtract(tt.soTienDaNop), 0, 'COMMA', 0, 'POINT')} + ' đ'"></strong>
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- Form nộp thêm -->
+                                <form th:action="@{/thanh-toan/nop-them/{id}(id=${tt.id})}"
+                                      method="post" th:id="'formNopThem-' + ${tt.id}">
+                                    <input type="hidden" name="idHo" th:value="${tt.hoGiaDinh.id}"/>
+                                    <label class="form-label fw-medium">
+                                        Số tiền nộp thêm <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" name="soTienThem"
+                                               class="form-control" min="1"
+                                               th:placeholder="'Gợi ý: ' + ${#numbers.formatDecimal(tt.khoanThu.soTien.subtract(tt.soTienDaNop), 0, 'COMMA', 0, 'POINT')} + ' đ'"
+                                               required/>
+                                        <span class="input-group-text">đ</span>
+                                    </div>
+                                    <div class="form-text text-muted">
+                                        Số tiền sẽ được cộng trực tiếp vào lần nộp hiện tại.
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-secondary"
+                                        data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit"
+                                        th:form="'formNopThem-' + ${tt.id}"
+                                        class="btn btn-warning">
+                                    <i class="bi bi-plus-circle me-1"></i>Xác nhận nộp thêm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 </div>

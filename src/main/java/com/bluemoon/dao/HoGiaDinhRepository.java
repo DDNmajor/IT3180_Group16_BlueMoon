@@ -11,5 +11,6 @@ import java.util.Optional;
 public interface HoGiaDinhRepository extends JpaRepository<HoGiaDinh, Integer> {
     Optional<HoGiaDinh> findBySoCanHo(String soCanHo);
     List<HoGiaDinh> findByChuHoContainingIgnoreCase(String chuHo);
+    List<HoGiaDinh> findBySoCanHoContainingIgnoreCaseOrChuHoContainingIgnoreCase(String soCanHo, String chuHo);
     boolean existsBySoCanHo(String soCanHo);
 }

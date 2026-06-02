@@ -33,6 +33,10 @@ public class HoGiaDinhService {
         return hoGiaDinhRepository.findByChuHoContainingIgnoreCase(keyword);
     }
 
+    public List<HoGiaDinh> searchByCanHoOrChuHo(String keyword) {
+        return hoGiaDinhRepository.findBySoCanHoContainingIgnoreCaseOrChuHoContainingIgnoreCase(keyword, keyword);
+    }
+
     public boolean existsBySoCanHo(String soCanHo) {
         return hoGiaDinhRepository.existsBySoCanHo(soCanHo);
     }
