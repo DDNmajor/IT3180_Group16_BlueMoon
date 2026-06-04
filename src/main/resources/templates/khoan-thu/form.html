@@ -31,9 +31,9 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Loại khoản thu <span class="text-danger">*</span></label>
-                            <input list="danhSachLoaiKhoanThu" name="tenLoaiKhoanThu" class="form-control" 
+                            <input list="danhSachLoaiKhoanThu" id="tenLoaiKhoanThu" name="tenLoaiKhoanThu" class="form-control" 
                                    th:classappend="${#fields.hasErrors('loaiKhoanThu')} ? 'is-invalid' : ''" 
-                                   th:value="${khoanThu.loaiKhoanThu?.tenLoai}" 
+                                   th:value="${tenLoaiKhoanThu != null ? tenLoaiKhoanThu : (khoanThu.loaiKhoanThu?.tenLoai)}" 
                                    placeholder="Gõ để tìm kiếm loại khoản thu..." required autocomplete="off"/>
                             <datalist id="danhSachLoaiKhoanThu">
                                 <option th:each="loai : ${danhSachLoai}" th:value="${loai.tenLoai}"></option>
@@ -54,13 +54,15 @@
                         <div class="row mb-3">
                             <div class="col">
                                 <label class="form-label">Kỳ thu <span class="text-danger">*</span></label>
-                                <input type="date" th:field="*{kyThu}" class="form-control" th:classappend="${#fields.hasErrors('kyThu')} ? 'is-invalid' : ''" required/>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('kyThu')}" th:errors="*{kyThu}"></div>
+                                <input type="date" id="kyThu" th:field="*{kyThu}" class="form-control" th:classappend="${#fields.hasErrors('kyThu')} ? 'is-invalid' : ''" required/>
+                                <div class="invalid-feedback" id="kyThuFeedback" th:if="${#fields.hasErrors('kyThu')}" th:errors="*{kyThu}"></div>
+                                <div class="invalid-feedback js-feedback" style="display: none;"></div>
                             </div>
                             <div class="col">
                                 <label class="form-label">Hạn nộp</label>
-                                <input type="date" th:field="*{hanNop}" class="form-control" th:classappend="${#fields.hasErrors('hanNop')} ? 'is-invalid' : ''"/>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('hanNop')}" th:errors="*{hanNop}"></div>
+                                <input type="date" id="hanNop" th:field="*{hanNop}" class="form-control" th:classappend="${#fields.hasErrors('hanNop')} ? 'is-invalid' : ''"/>
+                                <div class="invalid-feedback" id="hanNopFeedback" th:if="${#fields.hasErrors('hanNop')}" th:errors="*{hanNop}"></div>
+                                <div class="invalid-feedback js-feedback" style="display: none;"></div>
                             </div>
                         </div>
                         <div class="mb-4">
@@ -82,5 +84,57 @@
 </div>
 
 <div th:replace="~{fragments/layout :: scripts}"></div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const kyThuInput = document.getElementById('kyThu');
+        const hanNopInput = document.getElementById('hanNop');
+
+        function validateDates() {
+            let isValid = true;
+            
+            // Xóa lỗi cũ JS
+            kyThuInput.classList.remove('is-invalid');
+            hanNopInput.classList.remove('is-invalid');
+            kyThuInput.parentElement.querySelector('.js-feedback').style.display = 'none';
+            hanNopInput.parentElement.querySelector('.js-feedback').style.display = 'none';
+            
+            // Xóa lỗi server báo trả về (nếu có)
+            if(document.getElementById('kyThuFeedback')) document.getElementById('kyThuFeedback').style.display = 'none';
+            if(document.getElementById('hanNopFeedback')) document.getElementById('hanNopFeedback').style.display = 'none';
+
+            if (kyThuInput.value) {
+                const kyThuYear = parseInt(kyThuInput.value.split('-')[0]);
+                if (kyThuYear < 2000 || kyThuYear > 2100) {
+                    kyThuInput.classList.add('is-invalid');
+                    const fb = kyThuInput.parentElement.querySelector('.js-feedback');
+                    fb.textContent = 'Năm kỳ thu phải từ 2000 đến 2100';
+                    fb.style.display = 'block';
+                    isValid = false;
+                }
+            }
+
+            if (hanNopInput.value) {
+                const hanNopYear = parseInt(hanNopInput.value.split('-')[0]);
+                if (hanNopYear < 2000 || hanNopYear > 2100) {
+                    hanNopInput.classList.add('is-invalid');
+                    const fb = hanNopInput.parentElement.querySelector('.js-feedback');
+                    fb.textContent = 'Năm hạn nộp phải từ 2000 đến 2100';
+                    fb.style.display = 'block';
+                    isValid = false;
+                } else if (kyThuInput.value && hanNopInput.value < kyThuInput.value) {
+                    hanNopInput.classList.add('is-invalid');
+                    const fb = hanNopInput.parentElement.querySelector('.js-feedback');
+                    fb.textContent = 'Hạn nộp phải sau hoặc bằng kỳ thu';
+                    fb.style.display = 'block';
+                    isValid = false;
+                }
+            }
+            return isValid;
+        }
+
+        kyThuInput.addEventListener('change', validateDates);
+        hanNopInput.addEventListener('change', validateDates);
+    });
+</script>
 </body>
 </html>

@@ -39,6 +39,7 @@ public class KhoanThuController {
         validateKhoanThu(khoanThu, tenLoaiKhoanThu, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("danhSachLoai", loaiKhoanThuService.findAll());
+            model.addAttribute("tenLoaiKhoanThu", tenLoaiKhoanThu);
             return "khoan-thu/form";
         }
         khoanThuService.save(khoanThu);
@@ -60,6 +61,7 @@ public class KhoanThuController {
         validateKhoanThu(khoanThu, tenLoaiKhoanThu, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("danhSachLoai", loaiKhoanThuService.findAll());
+            model.addAttribute("tenLoaiKhoanThu", tenLoaiKhoanThu);
             return "khoan-thu/form";
         }
         khoanThu.setId(id);

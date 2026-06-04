@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface LoaiKhoanThuRepository extends JpaRepository<LoaiKhoanThu, Integer> {
     List<LoaiKhoanThu> findByBatBuoc(boolean batBuoc);
     boolean existsByTenLoai(String tenLoai);
-    Optional<LoaiKhoanThu> findByTenLoai(String tenLoai);
+    Optional<LoaiKhoanThu> findByTenLoaiIgnoreCase(String tenLoai);
 }

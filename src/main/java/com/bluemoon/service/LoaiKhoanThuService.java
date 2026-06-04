@@ -33,7 +33,7 @@ public class LoaiKhoanThuService {
     }
 
     public Optional<LoaiKhoanThu> findByTenLoai(String tenLoai) {
-        return loaiKhoanThuRepository.findByTenLoai(tenLoai);
+        return loaiKhoanThuRepository.findByTenLoaiIgnoreCase(tenLoai);
     }
 
     @Transactional
