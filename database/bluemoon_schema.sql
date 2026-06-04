@@ -22,12 +22,13 @@ DROP TABLE IF EXISTS nguoi_dung;
 -- nguoi_dung — Tài khoản người dùng hệ thống
 -- ============================================================
 CREATE TABLE nguoi_dung (
-    id           INT AUTO_INCREMENT PRIMARY KEY,
+    id            INT AUTO_INCREMENT PRIMARY KEY,
     ten_dang_nhap VARCHAR(50)  NOT NULL UNIQUE,
-    mat_khau     VARCHAR(255) NOT NULL,
-    ho_ten       VARCHAR(100) NOT NULL,
-    vai_tro      ENUM('admin', 'staff') NOT NULL DEFAULT 'staff',
-    ngay_tao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    mat_khau      VARCHAR(255) NOT NULL,
+    ho_ten        VARCHAR(100) NOT NULL,
+    vai_tro       ENUM('admin', 'staff') NOT NULL DEFAULT 'staff',
+    active        BOOLEAN NOT NULL DEFAULT TRUE,
+    ngay_tao      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ============================================================
@@ -63,10 +64,10 @@ CREATE TABLE nhan_khau (
 -- loai_khoan_thu — Loại khoản thu (phí dịch vụ, phí quản lý,...)
 -- ============================================================
 CREATE TABLE loai_khoan_thu (
-    id        INT AUTO_INCREMENT PRIMARY KEY,
-    ten_loai  VARCHAR(100) NOT NULL,
-    mo_ta     TEXT,
-    bat_buoc  BOOLEAN NOT NULL DEFAULT TRUE
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    ten_loai     VARCHAR(100) NOT NULL,
+    loai_ap_dung ENUM('BAT_BUOC_DINH_KY','BAT_BUOC_DOT_XUAT','TU_NGUYEN') NOT NULL DEFAULT 'BAT_BUOC_DINH_KY',
+    mo_ta        TEXT
 );
 
 -- ============================================================
@@ -74,7 +75,8 @@ CREATE TABLE loai_khoan_thu (
 -- ============================================================
 CREATE TABLE khoan_thu (
     id            INT AUTO_INCREMENT PRIMARY KEY,
-    ten_khoan_thu VARCHAR(200)    NOT NULL,
+    ma_khoan_thu  VARCHAR(50)    UNIQUE,
+    ten_khoan_thu VARCHAR(200)   NOT NULL,
     id_loai       INT            NOT NULL,
     so_tien       DECIMAL(15,2)  NOT NULL,
     don_vi        VARCHAR(50),

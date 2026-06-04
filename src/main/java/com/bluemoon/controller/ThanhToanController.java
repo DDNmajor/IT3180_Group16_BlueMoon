@@ -11,7 +11,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -24,12 +26,13 @@ public class ThanhToanController {
     private final KhoanThuService    khoanThuService;
     private final NguoiDungService   nguoiDungService;
 
-    // ── UC006A / UC006B — Lịch sử thanh toán ─────────────────────
+    // ── UC006A / UC007 — Lịch sử + lọc theo trạng thái ──────────
 
     @GetMapping
     public String list(@RequestParam(required = false) Integer idHo,
                        @RequestParam(required = false) Integer idKhoan,
                        @RequestParam(required = false) String  timKiem,
+                       @RequestParam(required = false) String  trangThai,
                        Model model) {
 
         List<ThanhToan> danhSach;
@@ -50,10 +53,72 @@ public class ThanhToanController {
             danhSach = thanhToanService.findAll();
         }
 
-        model.addAttribute("danhSach",     danhSach);
-        model.addAttribute("danhSachHo",   hoGiaDinhService.findAll());
-        model.addAttribute("danhSachKhoan", khoanThuService.findAll());
+        if (trangThai != null && !trangThai.isBlank()) {
+            TrangThaiThanhToan ts = TrangThaiThanhToan.valueOf(trangThai);
+            danhSach = danhSach.stream()
+                    .filter(t -> t.getTrangThai() == ts)
+                    .collect(Collectors.toList());
+        }
+
+        model.addAttribute("danhSach",        danhSach);
+        model.addAttribute("danhSachHo",      hoGiaDinhService.findAll());
+        model.addAttribute("danhSachKhoan",   khoanThuService.findAll());
+        model.addAttribute("trangThaiFilter", trangThai);
+        model.addAttribute("trangThaiValues", TrangThaiThanhToan.values());
         return "thanh-toan/list";
+    }
+
+    // ── UC008 — Theo dõi trạng thái thu phí từng căn hộ ──────────
+
+    @GetMapping("/theo-doi")
+    public String theoDoi(@RequestParam(required = false) String  thang,
+                          @RequestParam(required = false) Integer idKhoanThu,
+                          Model model) {
+
+        YearMonth ym = (thang != null && !thang.isBlank())
+                ? YearMonth.parse(thang)
+                : YearMonth.now();
+
+        List<KhoanThu> khoanThuTrongKy = khoanThuService.findByKyThu(
+                ym.atDay(1), ym.atEndOfMonth());
+
+        model.addAttribute("khoanThuTrongKy",  khoanThuTrongKy);
+        model.addAttribute("thangFilter",      ym.toString());
+        model.addAttribute("idKhoanThuFilter", idKhoanThu);
+
+        if (!khoanThuTrongKy.isEmpty()) {
+            KhoanThu selected = (idKhoanThu != null)
+                    ? khoanThuService.findById(idKhoanThu)
+                    : khoanThuTrongKy.get(0);
+
+            List<ThanhToan> payments = thanhToanService.findByKhoanThu(selected.getId());
+
+            Map<Integer, ThanhToan> paymentMap = payments.stream()
+                    .collect(Collectors.toMap(
+                            tt -> tt.getHoGiaDinh().getId(),
+                            tt -> tt,
+                            (a, b) -> a));
+
+            boolean isTuNguyen = selected.getLoaiKhoanThu() != null
+                    && selected.getLoaiKhoanThu().getLoaiApDung() == LoaiApDung.TU_NGUYEN;
+
+            long soDaDong = payments.stream()
+                    .filter(tt -> tt.getTrangThai() == TrangThaiThanhToan.DA_DONG
+                               || tt.getTrangThai() == TrangThaiThanhToan.DONG_DU)
+                    .count();
+            long soConNo = payments.stream()
+                    .filter(tt -> tt.getTrangThai() == TrangThaiThanhToan.CON_NO)
+                    .count();
+
+            model.addAttribute("selectedKhoanThu", selected);
+            model.addAttribute("tatCaHo",    hoGiaDinhService.findAll());
+            model.addAttribute("paymentMap", paymentMap);
+            model.addAttribute("isTuNguyen", isTuNguyen);
+            model.addAttribute("soDaDong",   soDaDong);
+            model.addAttribute("soConNo",    soConNo);
+        }
+
+        return "thanh-toan/theo-doi";
     }
 
     // ── UC006 — Form ghi nhận thanh toán (GET) ───────────────────
@@ -68,22 +133,18 @@ public class ThanhToanController {
         thanhToan.setNgayNop(LocalDate.now());
         thanhToan.setPhuongThuc(PhuongThucThanhToan.TIEN_MAT);
 
-        // ── Tìm kiếm hộ gia đình (UC006 bước 2–3) ───────────────
         if (timKiemHo != null && !timKiemHo.isBlank()) {
             List<HoGiaDinh> ketQua = hoGiaDinhService.searchByCanHoOrChuHo(timKiemHo);
             model.addAttribute("timKiemHo",     timKiemHo);
             model.addAttribute("ketQuaTimKiem", ketQua);
-            // Tự động chọn nếu kết quả duy nhất
             if (ketQua.size() == 1) {
                 idHo = ketQua.get(0).getId();
             }
         }
 
-        // ── Pre-select hộ, lọc khoản thu còn khả dụng ───────────
         if (idHo != null) {
             thanhToan.setHoGiaDinh(hoGiaDinhService.findById(idHo));
 
-            // Loại bỏ khoản thu mà hộ đã DA_DONG hoặc DONG_DU
             List<Integer> daDongIds = thanhToanService.findByHoGiaDinh(idHo).stream()
                     .filter(tt -> tt.getTrangThai() == TrangThaiThanhToan.DA_DONG
                                || tt.getTrangThai() == TrangThaiThanhToan.DONG_DU)
@@ -118,38 +179,31 @@ public class ThanhToanController {
         Integer idHo    = thanhToan.getHoGiaDinh() != null ? thanhToan.getHoGiaDinh().getId() : null;
         Integer idKhoan = thanhToan.getKhoanThu()  != null ? thanhToan.getKhoanThu().getId()  : null;
 
-        // UC006-A: Hộ không tồn tại
         if (idHo == null) {
             ra.addFlashAttribute("errorMsg", "Vui lòng chọn hộ gia đình.");
             return "redirect:/thanh-toan/them";
         }
-        // UC006-B: Khoản thu không tồn tại
         if (idKhoan == null) {
             ra.addFlashAttribute("errorMsg", "Vui lòng chọn khoản thu.");
             return "redirect:/thanh-toan/them?idHo=" + idHo;
         }
-        // UC006-C: Số tiền không hợp lệ
         if (thanhToan.getSoTienDaNop() == null
                 || thanhToan.getSoTienDaNop().compareTo(BigDecimal.ZERO) <= 0) {
             ra.addFlashAttribute("errorMsg", "Số tiền phải lớn hơn 0.");
             return "redirect:/thanh-toan/them?idHo=" + idHo + "&idKhoan=" + idKhoan;
         }
-        // Ngày thanh toán không được lớn hơn ngày hiện tại
         if (thanhToan.getNgayNop() != null && thanhToan.getNgayNop().isAfter(LocalDate.now())) {
             ra.addFlashAttribute("errorMsg", "Ngày thanh toán không được lớn hơn ngày hiện tại.");
             return "redirect:/thanh-toan/them?idHo=" + idHo + "&idKhoan=" + idKhoan;
         }
-        // UC006-D: Khoản thu đã được thanh toán (DA_DONG)
         if (thanhToanService.daDongHoanTat(idHo, idKhoan)) {
             ra.addFlashAttribute("errorMsg", "Hộ gia đình này đã hoàn thành thanh toán khoản thu đã chọn.");
             return "redirect:/thanh-toan/them?idHo=" + idHo;
         }
 
-        // Resolve full objects (ModelAttribute chỉ bind id)
         thanhToan.setHoGiaDinh(hoGiaDinhService.findById(idHo));
         thanhToan.setKhoanThu(khoanThuService.findById(idKhoan));
 
-        // Gán người thu = người đang đăng nhập
         try {
             thanhToan.setNguoiThu(nguoiDungService.findByTenDangNhap(auth.getName()));
         } catch (Exception ignored) {}

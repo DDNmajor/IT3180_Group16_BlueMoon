@@ -7,7 +7,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div th:replace="~{fragments/layout :: sidebar}"></div>
+        <div th:replace="~{fragments/layout :: sidebar('khoan-thu')}"></div>
 
         <main class="col-md-10 p-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -19,33 +19,79 @@
 
             <div th:replace="~{fragments/layout :: alerts}"></div>
 
+            <!-- Bộ lọc -->
+            <form method="get" th:action="@{/khoan-thu}" class="row g-2 mb-3 align-items-end">
+                <div class="col-auto">
+                    <label class="form-label mb-1 small">Tháng</label>
+                    <input type="month" name="thang" class="form-control form-control-sm"
+                           th:value="${thangFilter}"/>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label mb-1 small">Loại khoản thu</label>
+                    <select name="idLoai" class="form-select form-select-sm" style="min-width: 160px;">
+                        <option value="">-- Tất cả --</option>
+                        <option th:each="loai : ${danhSachLoai}"
+                                th:value="${loai.id}"
+                                th:text="${loai.tenLoai}"
+                                th:selected="${loai.id == idLoaiFilter}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label mb-1 small">Trạng thái</label>
+                    <select name="trangThai" class="form-select form-select-sm">
+                        <option value="">-- Tất cả --</option>
+                        <option value="con-han"  th:selected="${trangThaiFilter == 'con-han'}">Còn hạn</option>
+                        <option value="qua-han"  th:selected="${trangThaiFilter == 'qua-han'}">Quá hạn</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bi bi-funnel me-1"></i>Lọc
+                    </button>
+                    <a th:href="@{/khoan-thu}" class="btn btn-outline-secondary btn-sm">Xóa lọc</a>
+                </div>
+            </form>
+
             <div class="card shadow-sm">
                 <div class="card-body p-0">
                     <table class="table table-hover table-bordered mb-0">
                         <thead class="table-dark">
                         <tr>
                             <th>#</th>
+                            <th>Mã</th>
                             <th>Tên khoản thu</th>
                             <th>Loại</th>
                             <th class="text-end">Số tiền</th>
                             <th>Đơn vị</th>
                             <th>Kỳ thu</th>
                             <th>Hạn nộp</th>
+                            <th class="text-center">Trạng thái</th>
                             <th class="text-center">Thao tác</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:if="${#lists.isEmpty(danhSach)}">
-                            <td colspan="8" class="text-center text-muted py-3">Chưa có khoản thu nào.</td>
+                            <td colspan="10" class="text-center text-muted py-3">Không có dữ liệu.</td>
                         </tr>
-                        <tr th:each="kt, stat : ${danhSach}">
+                        <tr th:each="kt, stat : ${danhSach}"
+                            th:with="today=${T(java.time.LocalDate).now()},
+                                     isQuaHan=${kt.hanNop != null && kt.hanNop.isBefore(today)}">
                             <td th:text="${stat.count}"></td>
+                            <td><code th:text="${kt.maKhoanThu}"></code></td>
                             <td th:text="${kt.tenKhoanThu}"></td>
-                            <td th:text="${kt.loaiKhoanThu?.tenLoai}"></td>
+                            <td>
+                                <span th:if="${kt.loaiKhoanThu != null}" th:text="${kt.loaiKhoanThu.tenLoai}"></span>
+                            </td>
                             <td class="text-end" th:text="${#numbers.formatDecimal(kt.soTien, 0, 'COMMA', 0, 'POINT')}"></td>
                             <td th:text="${kt.donVi}"></td>
                             <td th:text="${#temporals.format(kt.kyThu, 'MM/yyyy')}"></td>
                             <td th:text="${kt.hanNop != null} ? ${#temporals.format(kt.hanNop, 'dd/MM/yyyy')} : '--'"></td>
+                            <td class="text-center">
+                                <span th:if="${kt.hanNop == null}" class="badge bg-secondary">Không có hạn</span>
+                                <span th:if="${isQuaHan}" class="badge bg-danger">Quá hạn</span>
+                                <span th:if="${kt.hanNop != null && !isQuaHan}" class="badge bg-success">Còn hạn</span>
+                            </td>
                             <td class="text-center">
                                 <a th:href="@{/khoan-thu/sua/{id}(id=${kt.id})}" class="btn btn-warning btn-sm">
                                     <i class="bi bi-pencil"></i>

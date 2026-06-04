@@ -7,7 +7,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div th:replace="~{fragments/layout :: sidebar}"></div>
+        <div th:replace="~{fragments/layout :: sidebar('loai-khoan-thu')}"></div>
 
         <main class="col-md-10 p-4">
             <div class="d-flex align-items-center gap-2 mb-3">
@@ -32,9 +32,15 @@
                             <label class="form-label">Mô tả</label>
                             <textarea th:field="*{moTa}" class="form-control" rows="3"></textarea>
                         </div>
-                        <div class="mb-4 form-check">
-                            <input type="checkbox" th:field="*{batBuoc}" class="form-check-input" id="batBuoc"/>
-                            <label class="form-check-label" for="batBuoc">Khoản thu bắt buộc</label>
+                        <div class="mb-4">
+                            <label class="form-label">Loại áp dụng <span class="text-danger">*</span></label>
+                            <select th:field="*{loaiApDung}" class="form-select" required>
+                                <option value="">-- Chọn loại --</option>
+                                <option th:each="lad : ${T(com.bluemoon.model.LoaiApDung).values()}"
+                                        th:value="${lad}"
+                                        th:text="${lad.tenHienThi}">
+                                </option>
+                            </select>
                         </div>
 
                         <div class="d-flex gap-2">

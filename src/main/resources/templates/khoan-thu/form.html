@@ -7,7 +7,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div th:replace="~{fragments/layout :: sidebar}"></div>
+        <div th:replace="~{fragments/layout :: sidebar('khoan-thu')}"></div>
 
         <main class="col-md-10 p-4">
             <div class="d-flex align-items-center gap-2 mb-3">
@@ -24,6 +24,13 @@
                     <form th:action="${khoanThu.id == null} ? @{/khoan-thu/them} : @{/khoan-thu/sua/{id}(id=${khoanThu.id})}"
                           th:object="${khoanThu}" method="post">
 
+                        <div class="mb-3">
+                            <label class="form-label">Mã khoản thu <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{maKhoanThu}" class="form-control"
+                                   th:classappend="${#fields.hasErrors('maKhoanThu')} ? 'is-invalid' : ''"
+                                   placeholder="VD: KT-2026-001" required/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('maKhoanThu')}" th:errors="*{maKhoanThu}"></div>
+                        </div>
                         <div class="mb-3">
                             <label class="form-label">Tên khoản thu <span class="text-danger">*</span></label>
                             <input type="text" th:field="*{tenKhoanThu}" class="form-control" th:classappend="${#fields.hasErrors('tenKhoanThu')} ? 'is-invalid' : ''" required/>

@@ -38,7 +38,8 @@
 </nav>
 
 <!-- ── SIDEBAR (Đã thêm biến activePage) ─────────────────────── -->
-<div th:fragment="sidebar(activePage)" class="col-md-2 sidebar pt-3">
+<div th:fragment="sidebar(activePage)" class="col-md-2 sidebar pt-3"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <nav class="nav flex-column px-2 gap-1">
         <span class="nav-section">Tổng quan</span>
         <a class="nav-link" th:classappend="${activePage == 'dashboard'} ? 'active' : ''" th:href="@{/dashboard}">
@@ -46,7 +47,8 @@
         </a>
 
         <span class="nav-section">Sprint 1</span>
-        <a class="nav-link" th:classappend="${activePage == 'nguoi-dung'} ? 'active' : ''" th:href="@{/nguoi-dung}">
+        <a class="nav-link" sec:authorize="hasRole('admin')"
+           th:classappend="${activePage == 'nguoi-dung'} ? 'active' : ''" th:href="@{/nguoi-dung}">
             <i class="bi bi-people me-2"></i>Người dùng
         </a>
         <a class="nav-link" th:classappend="${activePage == 'loai-khoan-thu'} ? 'active' : ''" th:href="@{/loai-khoan-thu}">

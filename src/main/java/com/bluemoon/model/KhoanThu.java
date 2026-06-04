@@ -1,11 +1,7 @@
 package com.bluemoon.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -24,6 +20,11 @@ public class KhoanThu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(name = "ma_khoan_thu", unique = true)
+    @NotBlank(message = "Mã khoản thu không được để trống")
+    @Size(max = 50, message = "Mã khoản thu không được dài quá 50 ký tự")
+    private String maKhoanThu;
 
     @Column(name = "ten_khoan_thu")
     @NotBlank(message = "Tên khoản thu không được để trống")

@@ -29,6 +29,9 @@ public class NguoiDung {
     @Column(name = "vai_tro")
     private VaiTro vaiTro;
 
+    @Column(name = "active")
+    private Boolean active = true;
+
     @Column(name = "ngay_tao")
     private LocalDateTime ngayTao;
 }

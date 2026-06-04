@@ -1,20 +1,30 @@
 package com.bluemoon.service;
 
+import com.bluemoon.dao.HoGiaDinhRepository;
 import com.bluemoon.dao.KhoanThuRepository;
-import com.bluemoon.model.KhoanThu;
+import com.bluemoon.dao.ThanhToanRepository;
+import com.bluemoon.model.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class KhoanThuService {
 
-    private final KhoanThuRepository khoanThuRepository;
+    private final KhoanThuRepository     khoanThuRepository;
+    private final ThanhToanRepository    thanhToanRepository;
+    private final HoGiaDinhRepository    hoGiaDinhRepository;
 
     public List<KhoanThu> findAll() {
         return khoanThuRepository.findAll();
@@ -37,16 +47,101 @@ public class KhoanThuService {
         return khoanThuRepository.findByHanNopBefore(LocalDate.now());
     }
 
+    public List<KhoanThu> findWithFilter(Integer idLoai, String trangThai, YearMonth thang) {
+        LocalDate from = thang.atDay(1);
+        LocalDate to   = thang.atEndOfMonth();
+
+        List<KhoanThu> list = (idLoai != null)
+                ? khoanThuRepository.findByLoaiKhoanThuIdAndKyThuBetween(idLoai, from, to)
+                : khoanThuRepository.findByKyThuBetween(from, to);
+
+        if ("qua-han".equals(trangThai)) {
+            LocalDate today = LocalDate.now();
+            list = list.stream()
+                    .filter(kt -> kt.getHanNop() != null && kt.getHanNop().isBefore(today))
+                    .collect(Collectors.toList());
+        } else if ("con-han".equals(trangThai)) {
+            LocalDate today = LocalDate.now();
+            list = list.stream()
+                    .filter(kt -> kt.getHanNop() == null || !kt.getHanNop().isBefore(today))
+                    .collect(Collectors.toList());
+        }
+        return list;
+    }
+
     @Transactional
     public KhoanThu save(KhoanThu khoanThu) {
-        if (khoanThu.getId() == null) {
+        validateMaKhoanThu(khoanThu);
+
+        boolean isNew = (khoanThu.getId() == null);
+        if (isNew) {
             khoanThu.setNgayTao(LocalDateTime.now());
         }
-        return khoanThuRepository.save(khoanThu);
+
+        KhoanThu saved = khoanThuRepository.save(khoanThu);
+
+        if (isNew) {
+            log.info("[AUDIT] Tạo khoản thu: ma={}, ten={}, loai={}, soTien={}, user={}",
+                    saved.getMaKhoanThu(), saved.getTenKhoanThu(),
+                    saved.getLoaiKhoanThu() != null ? saved.getLoaiKhoanThu().getTenLoai() : "?",
+                    saved.getSoTien(), currentUser());
+
+            autoApplyNeuBatBuoc(saved);
+        } else {
+            log.info("[AUDIT] Sửa khoản thu: id={}, ma={}, ten={}, user={}",
+                    saved.getId(), saved.getMaKhoanThu(), saved.getTenKhoanThu(), currentUser());
+        }
+
+        return saved;
     }
 
     @Transactional
     public void delete(Integer id) {
+        if (thanhToanRepository.existsByKhoanThuId(id)) {
+            KhoanThu kt = findById(id);
+            throw new IllegalStateException(
+                    "Không thể xóa khoản thu \"" + kt.getTenKhoanThu()
+                    + "\" vì đã có giao dịch thanh toán liên quan.");
+        }
+        KhoanThu kt = findById(id);
         khoanThuRepository.deleteById(id);
+        log.info("[AUDIT] Xóa khoản thu: id={}, ma={}, ten={}, user={}",
+                id, kt.getMaKhoanThu(), kt.getTenKhoanThu(), currentUser());
+    }
+
+    private void validateMaKhoanThu(KhoanThu khoanThu) {
+        khoanThuRepository.findByMaKhoanThu(khoanThu.getMaKhoanThu())
+                .ifPresent(existing -> {
+                    if (!existing.getId().equals(khoanThu.getId())) {
+                        throw new IllegalArgumentException(
+                                "Mã khoản thu \"" + khoanThu.getMaKhoanThu() + "\" đã tồn tại.");
+                    }
+                });
+    }
+
+    private void autoApplyNeuBatBuoc(KhoanThu khoanThu) {
+        LoaiKhoanThu loai = khoanThu.getLoaiKhoanThu();
+        if (loai == null || loai.getLoaiApDung() == null || !loai.getLoaiApDung().isBatBuoc()) {
+            return;
+        }
+
+        List<HoGiaDinh> tatCaHo = hoGiaDinhRepository.findAll();
+        for (HoGiaDinh ho : tatCaHo) {
+            ThanhToan tt = new ThanhToan();
+            tt.setHoGiaDinh(ho);
+            tt.setKhoanThu(khoanThu);
+            tt.setSoTienDaNop(BigDecimal.ZERO);
+            tt.setNgayNop(khoanThu.getKyThu());
+            tt.setTrangThai(TrangThaiThanhToan.CON_NO);
+            thanhToanRepository.save(tt);
+        }
+
+        log.info("[AUDIT] Auto-apply khoản thu bắt buộc: id={}, ma={}, soHo={}, user={}",
+                khoanThu.getId(), khoanThu.getMaKhoanThu(), tatCaHo.size(), currentUser());
+    }
+
+    private String currentUser() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        return (auth != null) ? auth.getName() : "system";
     }
 }

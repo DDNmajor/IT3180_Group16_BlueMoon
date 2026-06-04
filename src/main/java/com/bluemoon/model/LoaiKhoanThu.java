@@ -23,8 +23,9 @@ public class LoaiKhoanThu {
     @Column(name = "mo_ta")
     private String moTa;
 
-    @Column(name = "bat_buoc")
-    private Boolean batBuoc;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "loai_ap_dung")
+    private LoaiApDung loaiApDung;
 
     @OneToMany(mappedBy = "loaiKhoanThu")
     private List<KhoanThu> khoanThus;

@@ -7,7 +7,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div th:replace="~{fragments/layout :: sidebar}"></div>
+        <div th:replace="~{fragments/layout :: sidebar('loai-khoan-thu')}"></div>
 
         <main class="col-md-10 p-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -40,8 +40,11 @@
                             <td th:text="${lkt.tenLoai}"></td>
                             <td th:text="${lkt.moTa}"></td>
                             <td class="text-center">
-                                <span th:if="${lkt.batBuoc}" class="badge bg-danger">Bắt buộc</span>
-                                <span th:unless="${lkt.batBuoc}" class="badge bg-secondary">Tùy chọn</span>
+                                <span th:if="${lkt.loaiApDung != null}"
+                                      th:text="${lkt.loaiApDung.tenHienThi}"
+                                      th:class="${lkt.loaiApDung.batBuoc} ? 'badge bg-danger' : 'badge bg-secondary'">
+                                </span>
+                                <span th:if="${lkt.loaiApDung == null}" class="badge bg-secondary">Chưa phân loại</span>
                             </td>
                             <td class="text-center">
                                 <a th:href="@{/loai-khoan-thu/sua/{id}(id=${lkt.id})}" class="btn btn-warning btn-sm">
