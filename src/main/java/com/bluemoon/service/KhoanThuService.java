@@ -1,6 +1,7 @@
 package com.bluemoon.service;
 
 import com.bluemoon.dao.KhoanThuRepository;
+import com.bluemoon.dao.LoaiKhoanThuRepository;
 import com.bluemoon.model.KhoanThu;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.List;
 public class KhoanThuService {
 
     private final KhoanThuRepository khoanThuRepository;
+    private final LoaiKhoanThuRepository loaiKhoanThuRepository;
 
     public List<KhoanThu> findAll() {
         return khoanThuRepository.findAll();
@@ -39,14 +41,28 @@ public class KhoanThuService {
 
     @Transactional
     public KhoanThu save(KhoanThu khoanThu) {
+        Integer idLoai = khoanThu.getLoaiKhoanThu() == null ? null : khoanThu.getLoaiKhoanThu().getId();
+
+        if (idLoai == null) {
+            throw new IllegalArgumentException("Vui lòng chọn loại khoản thu");
+        }
+
+        khoanThu.setLoaiKhoanThu(loaiKhoanThuRepository.findById(idLoai)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy loại khoản thu id=" + idLoai)));
+
         if (khoanThu.getId() == null) {
             khoanThu.setNgayTao(LocalDateTime.now());
+        } else {
+            KhoanThu current = findById(khoanThu.getId());
+            khoanThu.setNgayTao(current.getNgayTao());
         }
+
         return khoanThuRepository.save(khoanThu);
     }
 
     @Transactional
     public void delete(Integer id) {
-        khoanThuRepository.deleteById(id);
+        KhoanThu khoanThu = findById(id);
+        khoanThuRepository.delete(khoanThu);
     }
 }

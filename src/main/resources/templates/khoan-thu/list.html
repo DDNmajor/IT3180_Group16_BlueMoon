@@ -45,8 +45,7 @@
                             <td class="text-end" th:text="${#numbers.formatDecimal(kt.soTien, 0, 'COMMA', 0, 'POINT')}"></td>
                             <td th:text="${kt.donVi}"></td>
                             <td th:text="${#temporals.format(kt.kyThu, 'MM/yyyy')}"></td>
-                            <td th:text="${kt.hanNop != null} ? ${#temporals.format(kt.hanNop, 'dd/MM/yyyy')} : '--'"></td>
-                            <td class="text-center">
+                            <td th:text="${kt.hanNop != null ? #temporals.format(kt.hanNop, 'dd/MM/yyyy') : '--'}"></td>                            <td class="text-center">
                                 <a th:href="@{/khoan-thu/sua/{id}(id=${kt.id})}" class="btn btn-warning btn-sm">
                                     <i class="bi bi-pencil"></i>
                                 </a>
