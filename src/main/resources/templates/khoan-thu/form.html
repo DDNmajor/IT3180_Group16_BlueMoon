@@ -26,11 +26,12 @@
 
                         <div class="mb-3">
                             <label class="form-label">Tên khoản thu <span class="text-danger">*</span></label>
-                            <input type="text" th:field="*{tenKhoanThu}" class="form-control" required/>
+                            <input type="text" th:field="*{tenKhoanThu}" class="form-control" th:classappend="${#fields.hasErrors('tenKhoanThu')} ? 'is-invalid' : ''" required/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('tenKhoanThu')}" th:errors="*{tenKhoanThu}"></div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Loại khoản thu <span class="text-danger">*</span></label>
-                            <select name="loaiKhoanThu.id" class="form-select" required>
+                            <select name="loaiKhoanThu.id" class="form-select" th:classappend="${#fields.hasErrors('loaiKhoanThu')} ? 'is-invalid' : ''" required>
                                 <option value="">-- Chọn loại --</option>
                                 <option th:each="loai : ${danhSachLoai}"
                                         th:value="${loai.id}"
@@ -38,11 +39,13 @@
                                         th:selected="${khoanThu.loaiKhoanThu?.id == loai.id}">
                                 </option>
                             </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('loaiKhoanThu')}" th:errors="*{loaiKhoanThu}"></div>
                         </div>
                         <div class="row mb-3">
                             <div class="col">
                                 <label class="form-label">Số tiền <span class="text-danger">*</span></label>
-                                <input type="number" th:field="*{soTien}" class="form-control" min="0" step="1000" required/>
+                                <input type="number" th:field="*{soTien}" class="form-control" th:classappend="${#fields.hasErrors('soTien')} ? 'is-invalid' : ''" min="0" step="1000" required/>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('soTien')}" th:errors="*{soTien}"></div>
                             </div>
                             <div class="col">
                                 <label class="form-label">Đơn vị</label>
@@ -52,7 +55,8 @@
                         <div class="row mb-3">
                             <div class="col">
                                 <label class="form-label">Kỳ thu <span class="text-danger">*</span></label>
-                                <input type="date" th:field="*{kyThu}" class="form-control" required/>
+                                <input type="date" th:field="*{kyThu}" class="form-control" th:classappend="${#fields.hasErrors('kyThu')} ? 'is-invalid' : ''" required/>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('kyThu')}" th:errors="*{kyThu}"></div>
                             </div>
                             <div class="col">
                                 <label class="form-label">Hạn nộp</label>

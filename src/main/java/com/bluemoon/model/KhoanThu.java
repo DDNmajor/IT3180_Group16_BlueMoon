@@ -1,6 +1,9 @@
 package com.bluemoon.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -21,19 +24,24 @@ public class KhoanThu {
     private Integer id;
 
     @Column(name = "ten_khoan_thu")
+    @NotBlank(message = "Tên khoản thu không được để trống")
     private String tenKhoanThu;
 
     @ManyToOne
     @JoinColumn(name = "id_loai")
+    @NotNull(message = "Vui lòng chọn loại khoản thu")
     private LoaiKhoanThu loaiKhoanThu;
 
     @Column(name = "so_tien")
+    @NotNull(message = "Số tiền không được để trống")
+    @Min(value = 0, message = "Số tiền không được nhỏ hơn 0")
     private BigDecimal soTien;
 
     @Column(name = "don_vi")
     private String donVi;
 
     @Column(name = "ky_thu")
+    @NotNull(message = "Kỳ thu không được để trống")
     private LocalDate kyThu;
 
     @Column(name = "han_nop")

@@ -6,8 +6,10 @@ import com.bluemoon.service.LoaiKhoanThuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/khoan-thu")
@@ -31,7 +33,11 @@ public class KhoanThuController {
     }
 
     @PostMapping("/them")
-    public String them(@ModelAttribute KhoanThu khoanThu, RedirectAttributes ra) {
+    public String them(@Valid @ModelAttribute KhoanThu khoanThu, BindingResult bindingResult, Model model, RedirectAttributes ra) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("danhSachLoai", loaiKhoanThuService.findAll());
+            return "khoan-thu/form";
+        }
         khoanThuService.save(khoanThu);
         ra.addFlashAttribute("successMsg", "Thêm khoản thu thành công.");
         return "redirect:/khoan-thu";
@@ -45,7 +51,11 @@ public class KhoanThuController {
     }
 
     @PostMapping("/sua/{id}")
-    public String sua(@PathVariable Integer id, @ModelAttribute KhoanThu khoanThu, RedirectAttributes ra) {
+    public String sua(@PathVariable Integer id, @Valid @ModelAttribute KhoanThu khoanThu, BindingResult bindingResult, Model model, RedirectAttributes ra) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("danhSachLoai", loaiKhoanThuService.findAll());
+            return "khoan-thu/form";
+        }
         khoanThu.setId(id);
         khoanThuService.save(khoanThu);
         ra.addFlashAttribute("successMsg", "Cập nhật khoản thu thành công.");
