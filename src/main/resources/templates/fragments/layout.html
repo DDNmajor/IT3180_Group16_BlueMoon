@@ -37,33 +37,33 @@
     </div>
 </nav>
 
-<!-- ── SIDEBAR ───────────────────────────────────────────────── -->
-<div th:fragment="sidebar" class="col-md-2 sidebar pt-3">
+<!-- ── SIDEBAR (Đã thêm biến activePage) ─────────────────────── -->
+<div th:fragment="sidebar(activePage)" class="col-md-2 sidebar pt-3">
     <nav class="nav flex-column px-2 gap-1">
         <span class="nav-section">Tổng quan</span>
-        <a class="nav-link" th:href="@{/dashboard}">
+        <a class="nav-link" th:classappend="${activePage == 'dashboard'} ? 'active' : ''" th:href="@{/dashboard}">
             <i class="bi bi-speedometer2 me-2"></i>Dashboard
         </a>
 
         <span class="nav-section">Sprint 1</span>
-        <a class="nav-link" th:href="@{/nguoi-dung}">
+        <a class="nav-link" th:classappend="${activePage == 'nguoi-dung'} ? 'active' : ''" th:href="@{/nguoi-dung}">
             <i class="bi bi-people me-2"></i>Người dùng
         </a>
-        <a class="nav-link" th:href="@{/loai-khoan-thu}">
+        <a class="nav-link" th:classappend="${activePage == 'loai-khoan-thu'} ? 'active' : ''" th:href="@{/loai-khoan-thu}">
             <i class="bi bi-tags me-2"></i>Loại khoản thu
         </a>
-        <a class="nav-link" th:href="@{/khoan-thu}">
+        <a class="nav-link" th:classappend="${activePage == 'khoan-thu'} ? 'active' : ''" th:href="@{/khoan-thu}">
             <i class="bi bi-receipt me-2"></i>Khoản thu
         </a>
 
         <span class="nav-section">Sprint 2</span>
-        <a class="nav-link" th:href="@{/ho-gia-dinh}">
+        <a class="nav-link" th:classappend="${activePage == 'ho-gia-dinh'} ? 'active' : ''" th:href="@{/ho-gia-dinh}">
             <i class="bi bi-house me-2"></i>Hộ gia đình
         </a>
-        <a class="nav-link" th:href="@{/nhan-khau}">
+        <a class="nav-link" th:classappend="${activePage == 'nhan-khau'} ? 'active' : ''" th:href="@{/nhan-khau}">
             <i class="bi bi-person me-2"></i>Nhân khẩu
         </a>
-        <a class="nav-link" th:href="@{/thanh-toan}">
+        <a class="nav-link" th:classappend="${activePage == 'thanh-toan'} ? 'active' : ''" th:href="@{/thanh-toan}">
             <i class="bi bi-cash-coin me-2"></i>Thanh toán
         </a>
     </nav>
