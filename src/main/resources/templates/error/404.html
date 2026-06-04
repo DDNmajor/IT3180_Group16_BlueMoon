@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Không tìm thấy trang')}"></head>
+<body>
+
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div th:replace="~{fragments/layout :: sidebar('error')}"></div>
+
+            <main class="col-md-10 ms-sm-auto px-md-4 pt-5 text-center">
+                <div class="py-5" style="max-width: 600px; margin: 0 auto;">
+                    <i class="bi bi-exclamation-circle text-warning" style="font-size: 5rem;"></i>
+                    <h1 class="display-5 fw-bold mt-3 text-dark">404</h1>
+                    <h3 class="fw-bold mt-2 text-dark">Không Tìm Thấy Trang</h3>
+                    <p class="lead text-muted mt-3">Đường dẫn bạn đang truy cập không tồn tại, đã bị xóa hoặc di chuyển cấu trúc.</p>
+                    <div class="mt-4">
+                        <a th:href="@{/dashboard}" class="btn btn-primary px-4 py-2">
+                            <i class="bi bi-house-door me-2"></i>Quay lại Trang chủ
+                        </a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
