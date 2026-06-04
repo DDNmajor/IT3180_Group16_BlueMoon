@@ -33,7 +33,10 @@ public class KhoanThuController {
     }
 
     @PostMapping("/them")
-    public String them(@Valid @ModelAttribute KhoanThu khoanThu, BindingResult bindingResult, Model model, RedirectAttributes ra) {
+    public String them(@Valid @ModelAttribute KhoanThu khoanThu, BindingResult bindingResult, 
+                       @RequestParam(value = "tenLoaiKhoanThu", required = false) String tenLoaiKhoanThu,
+                       Model model, RedirectAttributes ra) {
+        validateKhoanThu(khoanThu, tenLoaiKhoanThu, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("danhSachLoai", loaiKhoanThuService.findAll());
             return "khoan-thu/form";
@@ -51,7 +54,10 @@ public class KhoanThuController {
     }
 
     @PostMapping("/sua/{id}")
-    public String sua(@PathVariable Integer id, @Valid @ModelAttribute KhoanThu khoanThu, BindingResult bindingResult, Model model, RedirectAttributes ra) {
+    public String sua(@PathVariable Integer id, @Valid @ModelAttribute KhoanThu khoanThu, BindingResult bindingResult, 
+                      @RequestParam(value = "tenLoaiKhoanThu", required = false) String tenLoaiKhoanThu,
+                      Model model, RedirectAttributes ra) {
+        validateKhoanThu(khoanThu, tenLoaiKhoanThu, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("danhSachLoai", loaiKhoanThuService.findAll());
             return "khoan-thu/form";
@@ -67,5 +73,35 @@ public class KhoanThuController {
         khoanThuService.delete(id);
         ra.addFlashAttribute("successMsg", "Xóa khoản thu thành công.");
         return "redirect:/khoan-thu";
+    }
+
+    private void validateKhoanThu(KhoanThu khoanThu, String tenLoaiKhoanThu, BindingResult bindingResult) {
+        if (tenLoaiKhoanThu == null || tenLoaiKhoanThu.trim().isEmpty()) {
+            bindingResult.rejectValue("loaiKhoanThu", "error.khoanThu", "Vui lòng nhập loại khoản thu");
+        } else {
+            java.util.Optional<com.bluemoon.model.LoaiKhoanThu> loaiOpt = loaiKhoanThuService.findByTenLoai(tenLoaiKhoanThu.trim());
+            if (loaiOpt.isPresent()) {
+                khoanThu.setLoaiKhoanThu(loaiOpt.get());
+            } else {
+                bindingResult.rejectValue("loaiKhoanThu", "error.khoanThu", "Loại khoản thu không tồn tại");
+            }
+        }
+
+        if (khoanThu.getKyThu() != null) {
+            int kyThuYear = khoanThu.getKyThu().getYear();
+            if (kyThuYear < 2000 || kyThuYear > 2100) {
+                bindingResult.rejectValue("kyThu", "error.khoanThu", "Năm kỳ thu phải từ 2000 đến 2100");
+            }
+        }
+
+        if (khoanThu.getHanNop() != null) {
+            int hanNopYear = khoanThu.getHanNop().getYear();
+            if (hanNopYear < 2000 || hanNopYear > 2100) {
+                bindingResult.rejectValue("hanNop", "error.khoanThu", "Năm hạn nộp phải từ 2000 đến 2100");
+            }
+            if (khoanThu.getKyThu() != null && khoanThu.getHanNop().isBefore(khoanThu.getKyThu())) {
+                bindingResult.rejectValue("hanNop", "error.khoanThu", "Hạn nộp phải sau hoặc bằng kỳ thu");
+            }
+        }
     }
 }
