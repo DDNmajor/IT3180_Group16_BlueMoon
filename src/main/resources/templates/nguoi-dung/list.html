@@ -28,24 +28,36 @@
                             <th>Tên đăng nhập</th>
                             <th>Họ tên</th>
                             <th>Vai trò</th>
+                            <th class="text-center">Trạng thái</th>
                             <th>Ngày tạo</th>
                             <th class="text-center">Thao tác</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:if="${#lists.isEmpty(danhSach)}">
-                            <td colspan="6" class="text-center text-muted py-3">Chưa có người dùng nào.</td>
+                            <td colspan="7" class="text-center text-muted py-3">Chưa có người dùng nào.</td>
                         </tr>
                         <tr th:each="nd, stat : ${danhSach}">
                             <td th:text="${stat.count}"></td>
-                            <td th:text="${nd.tenDangNhap}"></td>
+                            <td>
+                                <span th:text="${nd.tenDangNhap}"></span>
+                                <span th:if="${nd.doiMatKhauLanDau}"
+                                      class="badge bg-warning text-dark ms-1"
+                                      title="Cần đổi mật khẩu lần đầu">
+                                    <i class="bi bi-key"></i>
+                                </span>
+                            </td>
                             <td th:text="${nd.hoTen}"></td>
                             <td>
                                 <span th:text="${nd.vaiTro}"
                                       th:classappend="${nd.vaiTro.name() == 'admin'} ? 'badge bg-danger' : 'badge bg-secondary'">
                                 </span>
                             </td>
-                            <td th:text="${#temporals.format(nd.ngayTao, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td class="text-center">
+                                <span th:if="${nd.active}" class="badge bg-success">Hoạt động</span>
+                                <span th:unless="${nd.active}" class="badge bg-secondary">Vô hiệu</span>
+                            </td>
+                            <td th:text="${nd.ngayTao != null ? #temporals.format(nd.ngayTao, 'dd/MM/yyyy HH:mm') : '—'}"></td>
                             <td class="text-center">
                                 <a th:href="@{/nguoi-dung/sua/{id}(id=${nd.id})}" class="btn btn-warning btn-sm">
                                     <i class="bi bi-pencil"></i>

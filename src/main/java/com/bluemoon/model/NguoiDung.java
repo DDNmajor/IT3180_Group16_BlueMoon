@@ -25,7 +25,7 @@ public class NguoiDung {
     @Column(name = "ten_dang_nhap", nullable = false, unique = true)
     private String tenDangNhap;
 
-    @NotBlank(message = "Mật khẩu không được để trống")
+    // Không @NotBlank — khi sửa, bỏ trống nghĩa là giữ mật khẩu cũ
     @Size(min = 6, max = 100, message = "Mật khẩu phải từ 6 đến 100 ký tự")
     @Column(name = "mat_khau", nullable = false)
     private String matKhau;
@@ -42,6 +42,9 @@ public class NguoiDung {
 
     @Column(name = "active")
     private Boolean active = true;
+
+    @Column(name = "doi_mat_khau_lan_dau")
+    private Boolean doiMatKhauLanDau = false;
 
     @Column(name = "ngay_tao")
     private LocalDateTime ngayTao;
