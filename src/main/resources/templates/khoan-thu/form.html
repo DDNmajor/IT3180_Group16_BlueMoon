@@ -31,13 +31,14 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Loại khoản thu <span class="text-danger">*</span></label>
-                            <input list="danhSachLoaiKhoanThu" id="tenLoaiKhoanThu" name="tenLoaiKhoanThu" class="form-control" 
-                                   th:classappend="${#fields.hasErrors('loaiKhoanThu')} ? 'is-invalid' : ''" 
-                                   th:value="${tenLoaiKhoanThu != null ? tenLoaiKhoanThu : (khoanThu.loaiKhoanThu?.tenLoai)}" 
-                                   placeholder="Gõ để tìm kiếm loại khoản thu..." required autocomplete="off"/>
-                            <datalist id="danhSachLoaiKhoanThu">
-                                <option th:each="loai : ${danhSachLoai}" th:value="${loai.tenLoai}"></option>
-                            </datalist>
+                            <select name="loaiKhoanThu.id" class="form-select" th:classappend="${#fields.hasErrors('loaiKhoanThu')} ? 'is-invalid' : ''" required>
+                                <option value="">-- Chọn loại --</option>
+                                <option th:each="loai : ${danhSachLoai}"
+                                        th:value="${loai.id}"
+                                        th:text="${loai.tenLoai}"
+                                        th:selected="${khoanThu.loaiKhoanThu?.id == loai.id}">
+                                </option>
+                            </select>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('loaiKhoanThu')}" th:errors="*{loaiKhoanThu}"></div>
                         </div>
                         <div class="row mb-3">

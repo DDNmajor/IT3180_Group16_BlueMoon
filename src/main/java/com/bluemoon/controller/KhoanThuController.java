@@ -33,13 +33,10 @@ public class KhoanThuController {
     }
 
     @PostMapping("/them")
-    public String them(@Valid @ModelAttribute KhoanThu khoanThu, BindingResult bindingResult, 
-                       @RequestParam(value = "tenLoaiKhoanThu", required = false) String tenLoaiKhoanThu,
-                       Model model, RedirectAttributes ra) {
-        validateKhoanThu(khoanThu, tenLoaiKhoanThu, bindingResult);
+    public String them(@Valid @ModelAttribute KhoanThu khoanThu, BindingResult bindingResult, Model model, RedirectAttributes ra) {
+        validateDates(khoanThu, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("danhSachLoai", loaiKhoanThuService.findAll());
-            model.addAttribute("tenLoaiKhoanThu", tenLoaiKhoanThu);
             return "khoan-thu/form";
         }
         khoanThuService.save(khoanThu);
@@ -55,13 +52,10 @@ public class KhoanThuController {
     }
 
     @PostMapping("/sua/{id}")
-    public String sua(@PathVariable Integer id, @Valid @ModelAttribute KhoanThu khoanThu, BindingResult bindingResult, 
-                      @RequestParam(value = "tenLoaiKhoanThu", required = false) String tenLoaiKhoanThu,
-                      Model model, RedirectAttributes ra) {
-        validateKhoanThu(khoanThu, tenLoaiKhoanThu, bindingResult);
+    public String sua(@PathVariable Integer id, @Valid @ModelAttribute KhoanThu khoanThu, BindingResult bindingResult, Model model, RedirectAttributes ra) {
+        validateDates(khoanThu, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("danhSachLoai", loaiKhoanThuService.findAll());
-            model.addAttribute("tenLoaiKhoanThu", tenLoaiKhoanThu);
             return "khoan-thu/form";
         }
         khoanThu.setId(id);
@@ -77,18 +71,7 @@ public class KhoanThuController {
         return "redirect:/khoan-thu";
     }
 
-    private void validateKhoanThu(KhoanThu khoanThu, String tenLoaiKhoanThu, BindingResult bindingResult) {
-        if (tenLoaiKhoanThu == null || tenLoaiKhoanThu.trim().isEmpty()) {
-            bindingResult.rejectValue("loaiKhoanThu", "error.khoanThu", "Vui lòng nhập loại khoản thu");
-        } else {
-            java.util.Optional<com.bluemoon.model.LoaiKhoanThu> loaiOpt = loaiKhoanThuService.findByTenLoai(tenLoaiKhoanThu.trim());
-            if (loaiOpt.isPresent()) {
-                khoanThu.setLoaiKhoanThu(loaiOpt.get());
-            } else {
-                bindingResult.rejectValue("loaiKhoanThu", "error.khoanThu", "Loại khoản thu không tồn tại");
-            }
-        }
-
+    private void validateDates(KhoanThu khoanThu, BindingResult bindingResult) {
         if (khoanThu.getKyThu() != null) {
             int kyThuYear = khoanThu.getKyThu().getYear();
             if (kyThuYear < 2000 || kyThuYear > 2100) {
