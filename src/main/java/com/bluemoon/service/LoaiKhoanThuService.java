@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +30,10 @@ public class LoaiKhoanThuService {
 
     public boolean existsByTenLoai(String tenLoai) {
         return loaiKhoanThuRepository.existsByTenLoai(tenLoai);
+    }
+
+    public Optional<LoaiKhoanThu> findByTenLoai(String tenLoai) {
+        return loaiKhoanThuRepository.findByTenLoai(tenLoai);
     }
 
     @Transactional
