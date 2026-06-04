@@ -2,6 +2,7 @@ package com.bluemoon.service;
 
 import com.bluemoon.dao.HoGiaDinhRepository;
 import com.bluemoon.dao.KhoanThuRepository;
+import com.bluemoon.dao.LoaiKhoanThuRepository;
 import com.bluemoon.dao.ThanhToanRepository;
 import com.bluemoon.model.*;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class KhoanThuService {
     private final KhoanThuRepository     khoanThuRepository;
     private final ThanhToanRepository    thanhToanRepository;
     private final HoGiaDinhRepository    hoGiaDinhRepository;
+    private final LoaiKhoanThuRepository loaiKhoanThuRepository;
 
     public List<KhoanThu> findAll() {
         return khoanThuRepository.findAll();
@@ -71,11 +73,20 @@ public class KhoanThuService {
 
     @Transactional
     public KhoanThu save(KhoanThu khoanThu) {
+        Integer idLoai = khoanThu.getLoaiKhoanThu() == null ? null : khoanThu.getLoaiKhoanThu().getId();
+        if (idLoai != null) {
+            khoanThu.setLoaiKhoanThu(loaiKhoanThuRepository.findById(idLoai)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy loại khoản thu id=" + idLoai)));
+        }
+
         validateMaKhoanThu(khoanThu);
 
         boolean isNew = (khoanThu.getId() == null);
         if (isNew) {
             khoanThu.setNgayTao(LocalDateTime.now());
+        } else {
+            KhoanThu current = findById(khoanThu.getId());
+            khoanThu.setNgayTao(current.getNgayTao());
         }
 
         KhoanThu saved = khoanThuRepository.save(khoanThu);
@@ -85,7 +96,6 @@ public class KhoanThuService {
                     saved.getMaKhoanThu(), saved.getTenKhoanThu(),
                     saved.getLoaiKhoanThu() != null ? saved.getLoaiKhoanThu().getTenLoai() : "?",
                     saved.getSoTien(), currentUser());
-
             autoApplyNeuBatBuoc(saved);
         } else {
             log.info("[AUDIT] Sửa khoản thu: id={}, ma={}, ten={}, user={}",

@@ -48,10 +48,10 @@ public class KhoanThuController {
     }
 
     @PostMapping("/them")
-    public String them(@Valid @ModelAttribute KhoanThu khoanThu,
+    public String them(@Valid @ModelAttribute("khoanThu") KhoanThu khoanThu,
                        BindingResult bindingResult,
                        Model model, RedirectAttributes ra) {
-        validateDates(khoanThu, bindingResult);
+        validateKhoanThu(khoanThu, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("danhSachLoai", loaiKhoanThuService.findAll());
             return "khoan-thu/form";
@@ -76,15 +76,15 @@ public class KhoanThuController {
 
     @PostMapping("/sua/{id}")
     public String sua(@PathVariable Integer id,
-                      @Valid @ModelAttribute KhoanThu khoanThu,
+                      @Valid @ModelAttribute("khoanThu") KhoanThu khoanThu,
                       BindingResult bindingResult,
                       Model model, RedirectAttributes ra) {
-        validateDates(khoanThu, bindingResult);
+        khoanThu.setId(id);
+        validateKhoanThu(khoanThu, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("danhSachLoai", loaiKhoanThuService.findAll());
             return "khoan-thu/form";
         }
-        khoanThu.setId(id);
         try {
             khoanThuService.save(khoanThu);
             ra.addFlashAttribute("successMsg", "Cập nhật khoản thu thành công.");
@@ -107,19 +107,22 @@ public class KhoanThuController {
         return "redirect:/khoan-thu";
     }
 
-    private void validateDates(KhoanThu khoanThu, BindingResult bindingResult) {
+    private void validateKhoanThu(KhoanThu khoanThu, BindingResult bindingResult) {
+        if (khoanThu.getLoaiKhoanThu() == null || khoanThu.getLoaiKhoanThu().getId() == null) {
+            bindingResult.rejectValue("loaiKhoanThu", "loaiKhoanThu.required", "Vui lòng chọn loại khoản thu");
+        }
         if (khoanThu.getKyThu() != null) {
             int year = khoanThu.getKyThu().getYear();
             if (year < 2000 || year > 2100) {
-                bindingResult.rejectValue("kyThu", "error.khoanThu", "Năm kỳ thu phải từ 2000 đến 2100");
+                bindingResult.rejectValue("kyThu", "kyThu.invalid", "Năm kỳ thu phải từ 2000 đến 2100");
             }
         }
         if (khoanThu.getHanNop() != null) {
             int year = khoanThu.getHanNop().getYear();
             if (year < 2000 || year > 2100) {
-                bindingResult.rejectValue("hanNop", "error.khoanThu", "Năm hạn nộp phải từ 2000 đến 2100");
+                bindingResult.rejectValue("hanNop", "hanNop.invalid", "Năm hạn nộp phải từ 2000 đến 2100");
             } else if (khoanThu.getKyThu() != null && khoanThu.getHanNop().isBefore(khoanThu.getKyThu())) {
-                bindingResult.rejectValue("hanNop", "error.khoanThu", "Hạn nộp phải sau hoặc bằng kỳ thu");
+                bindingResult.rejectValue("hanNop", "hanNop.invalid", "Hạn nộp phải sau hoặc bằng kỳ thu");
             }
         }
     }

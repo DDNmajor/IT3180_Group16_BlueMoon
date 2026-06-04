@@ -21,32 +21,33 @@ public class KhoanThu {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "ma_khoan_thu", unique = true)
     @NotBlank(message = "Mã khoản thu không được để trống")
     @Size(max = 50, message = "Mã khoản thu không được dài quá 50 ký tự")
+    @Column(name = "ma_khoan_thu", unique = true)
     private String maKhoanThu;
 
-    @Column(name = "ten_khoan_thu")
     @NotBlank(message = "Tên khoản thu không được để trống")
     @Size(max = 200, message = "Tên khoản thu không được dài quá 200 ký tự")
+    @Column(name = "ten_khoan_thu", nullable = false, length = 200)
     private String tenKhoanThu;
 
-    @ManyToOne
-    @JoinColumn(name = "id_loai")
     @NotNull(message = "Vui lòng chọn loại khoản thu")
+    @ManyToOne
+    @JoinColumn(name = "id_loai", nullable = false)
     private LoaiKhoanThu loaiKhoanThu;
 
-    @Column(name = "so_tien")
     @NotNull(message = "Số tiền không được để trống")
     @Min(value = 0, message = "Số tiền không được nhỏ hơn 0")
     @Max(value = 100000000000L, message = "Số tiền quá lớn (tối đa 100 tỷ)")
+    @Column(name = "so_tien", nullable = false, precision = 15, scale = 2)
     private BigDecimal soTien;
 
-    @Column(name = "don_vi")
+    @Size(max = 50, message = "Đơn vị không được vượt quá 50 ký tự")
+    @Column(name = "don_vi", length = 50)
     private String donVi;
 
-    @Column(name = "ky_thu")
     @NotNull(message = "Kỳ thu không được để trống")
+    @Column(name = "ky_thu", nullable = false)
     private LocalDate kyThu;
 
     @Column(name = "han_nop")
@@ -55,9 +56,16 @@ public class KhoanThu {
     @Column(name = "ghi_chu")
     private String ghiChu;
 
-    @Column(name = "ngay_tao")
+    @Column(name = "ngay_tao", updatable = false)
     private LocalDateTime ngayTao;
 
     @OneToMany(mappedBy = "khoanThu")
     private List<ThanhToan> thanhToans;
+
+    @PrePersist
+    public void prePersist() {
+        if (ngayTao == null) {
+            ngayTao = LocalDateTime.now();
+        }
+    }
 }

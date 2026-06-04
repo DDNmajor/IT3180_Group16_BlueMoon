@@ -22,7 +22,7 @@
             <div class="card shadow-sm" style="max-width: 600px;">
                 <div class="card-body">
                     <form th:action="${khoanThu.id == null} ? @{/khoan-thu/them} : @{/khoan-thu/sua/{id}(id=${khoanThu.id})}"
-                          th:object="${khoanThu}" method="post">
+                          th:object="${khoanThu}" method="post" novalidate>
 
                         <div class="mb-3">
                             <label class="form-label">Mã khoản thu <span class="text-danger">*</span></label>
@@ -36,6 +36,7 @@
                             <input type="text" th:field="*{tenKhoanThu}" class="form-control" th:classappend="${#fields.hasErrors('tenKhoanThu')} ? 'is-invalid' : ''" required/>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('tenKhoanThu')}" th:errors="*{tenKhoanThu}"></div>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">Loại khoản thu <span class="text-danger">*</span></label>
                             <select name="loaiKhoanThu.id" class="form-select" th:classappend="${#fields.hasErrors('loaiKhoanThu')} ? 'is-invalid' : ''" required>
@@ -43,22 +44,29 @@
                                 <option th:each="loai : ${danhSachLoai}"
                                         th:value="${loai.id}"
                                         th:text="${loai.tenLoai}"
-                                        th:selected="${khoanThu.loaiKhoanThu?.id == loai.id}">
+                                        th:selected="${khoanThu.loaiKhoanThu != null and khoanThu.loaiKhoanThu.id == loai.id}">
                                 </option>
                             </select>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('loaiKhoanThu')}" th:errors="*{loaiKhoanThu}"></div>
                         </div>
+
                         <div class="row mb-3">
                             <div class="col">
                                 <label class="form-label">Số tiền <span class="text-danger">*</span></label>
                                 <input type="number" th:field="*{soTien}" class="form-control" th:classappend="${#fields.hasErrors('soTien')} ? 'is-invalid' : ''" min="0" step="1000" required/>
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('soTien')}" th:errors="*{soTien}"></div>
                             </div>
+
                             <div class="col">
                                 <label class="form-label">Đơn vị</label>
                                 <input type="text" th:field="*{donVi}" class="form-control" placeholder="VD: VNĐ, VNĐ/m²"/>
+                                <div class="text-danger small mt-1"
+                                     th:if="${#fields.hasErrors('donVi')}"
+                                     th:errors="*{donVi}">
+                                </div>
                             </div>
                         </div>
+
                         <div class="row mb-3">
                             <div class="col">
                                 <label class="form-label">Kỳ thu <span class="text-danger">*</span></label>
@@ -66,6 +74,7 @@
                                 <div class="invalid-feedback" id="kyThuFeedback" th:if="${#fields.hasErrors('kyThu')}" th:errors="*{kyThu}"></div>
                                 <div class="invalid-feedback js-feedback" style="display: none;"></div>
                             </div>
+
                             <div class="col">
                                 <label class="form-label">Hạn nộp</label>
                                 <input type="date" id="hanNop" th:field="*{hanNop}" class="form-control" th:classappend="${#fields.hasErrors('hanNop')} ? 'is-invalid' : ''"/>
@@ -73,6 +82,7 @@
                                 <div class="invalid-feedback js-feedback" style="display: none;"></div>
                             </div>
                         </div>
+
                         <div class="mb-4">
                             <label class="form-label">Ghi chú</label>
                             <textarea th:field="*{ghiChu}" class="form-control" rows="2"></textarea>

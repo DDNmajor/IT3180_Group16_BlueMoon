@@ -1,7 +1,11 @@
 package com.bluemoon.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -16,15 +20,22 @@ public class NguoiDung {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotBlank(message = "Tên đăng nhập không được để trống")
+    @Size(max = 50, message = "Tên đăng nhập không được vượt quá 50 ký tự")
     @Column(name = "ten_dang_nhap", nullable = false, unique = true)
     private String tenDangNhap;
 
+    @NotBlank(message = "Mật khẩu không được để trống")
+    @Size(min = 6, max = 100, message = "Mật khẩu phải từ 6 đến 100 ký tự")
     @Column(name = "mat_khau", nullable = false)
     private String matKhau;
 
+    @NotBlank(message = "Họ tên không được để trống")
+    @Size(max = 100, message = "Họ tên không được vượt quá 100 ký tự")
     @Column(name = "ho_ten", nullable = false)
     private String hoTen;
 
+    @NotNull(message = "Vui lòng chọn vai trò")
     @Enumerated(EnumType.STRING)
     @Column(name = "vai_tro")
     private VaiTro vaiTro;
