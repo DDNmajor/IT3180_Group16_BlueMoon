@@ -87,10 +87,12 @@ public class ThanhToanService {
     @Transactional
     public ThanhToan baoDaHoanTien(Integer id) {
         ThanhToan tt = findById(id);
+        BigDecimal soTienYeuCau = tt.getKhoanThu().getSoTien();
+        tt.setSoTienDaNop(soTienYeuCau);
         tt.setTrangThai(TrangThaiThanhToan.DA_DONG);
         ThanhToan saved = thanhToanRepository.save(tt);
-        log.info("[AUDIT] Báo đã hoàn tiền: id={}, canHo={}",
-                id, tt.getHoGiaDinh() != null ? tt.getHoGiaDinh().getSoCanHo() : "?");
+        log.info("[AUDIT] Báo đã hoàn tiền: id={}, canHo={}, soTienSauHoan={}",
+                id, tt.getHoGiaDinh() != null ? tt.getHoGiaDinh().getSoCanHo() : "?", soTienYeuCau);
         return saved;
     }
 
