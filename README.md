@@ -214,15 +214,9 @@ Không thể tự đổi vai trò hoặc xoá tài khoản đang đăng nhập.
 
 ## Phân công Sprint 3
 
-> **Nguyên tắc merge `fragments/layout.html`:** File này bị đụng bởi nhiều người — SM (Trần Khánh Linh) là người duy nhất commit thay đổi layout.html. Các member khác giao HTML snippet qua PR comment, không tự sửa file.
->
-> **pom.xml (Apache POI):** Người D thêm dependency trước, Người E rebase sau khi D merge.
->
-> **`ThanhToanRepository.java`:** Người B merge query trước, Người D rebase lên branch của B trước khi merge vào develop.
-
 ---
 
-### 👤 Người A — Trần Thị Nhật Linh · UC014: Đổi mật khẩu
+### 👤 Người A · UC014: Đổi mật khẩu
 
 **File chạm đến:**
 
@@ -245,7 +239,7 @@ Không thể tự đổi vai trò hoặc xoá tài khoản đang đăng nhập.
 
 ---
 
-### 👤 Người B — Đoàn Văn Thắng · UC011: Tra cứu nợ phí
+### 👤 Người B · UC011: Tra cứu nợ phí
 
 **File chạm đến:**
 
@@ -270,7 +264,7 @@ Không thể tự đổi vai trò hoặc xoá tài khoản đang đăng nhập.
 
 ---
 
-### 👤 Người C — Đặng Hải Đăng · UC016: Quản lý phí gửi xe
+### 👤 Người C · UC016: Quản lý phí gửi xe
 
 **File chạm đến (toàn bộ file mới):**
 
@@ -298,7 +292,7 @@ Không thể tự đổi vai trò hoặc xoá tài khoản đang đăng nhập.
 
 ---
 
-### 👤 Người D — Lê Quang Huy · UC012 + UC013: Thống kê & Xuất báo cáo
+### 👤 Người D · UC012 + UC013: Thống kê & Xuất báo cáo
 
 **File chạm đến:**
 
@@ -330,7 +324,7 @@ UC013 — Xuất báo cáo:
 
 ---
 
-### 👤 Người E — Trần Khánh Linh · UC017: Import Excel + Kiểm thử + Refactor
+### 👤 Người E · UC017: Import Excel + Kiểm thử + Refactor
 
 **File chạm đến:**
 
