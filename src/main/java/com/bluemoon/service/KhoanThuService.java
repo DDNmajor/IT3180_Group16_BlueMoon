@@ -50,12 +50,18 @@ public class KhoanThuService {
     }
 
     public List<KhoanThu> findWithFilter(Integer idLoai, String trangThai, YearMonth thang) {
-        LocalDate from = thang.atDay(1);
-        LocalDate to   = thang.atEndOfMonth();
-
-        List<KhoanThu> list = (idLoai != null)
-                ? khoanThuRepository.findByLoaiKhoanThuIdAndKyThuBetween(idLoai, from, to)
-                : khoanThuRepository.findByKyThuBetween(from, to);
+        List<KhoanThu> list;
+        if (thang != null) {
+            LocalDate from = thang.atDay(1);
+            LocalDate to   = thang.atEndOfMonth();
+            list = (idLoai != null)
+                    ? khoanThuRepository.findByLoaiKhoanThuIdAndKyThuBetween(idLoai, from, to)
+                    : khoanThuRepository.findByKyThuBetween(from, to);
+        } else {
+            list = (idLoai != null)
+                    ? khoanThuRepository.findByLoaiKhoanThuId(idLoai)
+                    : khoanThuRepository.findAll();
+        }
 
         if ("qua-han".equals(trangThai)) {
             LocalDate today = LocalDate.now();

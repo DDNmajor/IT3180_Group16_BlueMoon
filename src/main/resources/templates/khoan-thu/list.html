@@ -23,8 +23,16 @@
             <form method="get" th:action="@{/khoan-thu}" class="row g-2 mb-3 align-items-end">
                 <div class="col-auto">
                     <label class="form-label mb-1 small">Tháng</label>
-                    <input type="month" name="thang" class="form-control form-control-sm"
-                           th:value="${thangFilter}"/>
+                    <div class="d-flex gap-1">
+                        <input type="month" name="thang" class="form-control form-control-sm"
+                               th:value="${thangFilter}"/>
+                        <a th:href="@{/khoan-thu(idLoai=${idLoaiFilter}, trangThai=${trangThaiFilter})}"
+                           class="btn btn-sm text-nowrap"
+                           th:classappend="${thangFilter == null} ? 'btn-secondary' : 'btn-outline-secondary'"
+                           title="Hiển thị tất cả tháng">
+                            <i class="bi bi-calendar3"></i> Tất cả
+                        </a>
+                    </div>
                 </div>
                 <div class="col-auto">
                     <label class="form-label mb-1 small">Loại khoản thu</label>

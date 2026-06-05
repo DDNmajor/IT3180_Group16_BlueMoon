@@ -70,7 +70,10 @@
                         <div class="row mb-3">
                             <div class="col">
                                 <label class="form-label">Kỳ thu <span class="text-danger">*</span></label>
-                                <input type="date" id="kyThu" th:field="*{kyThu}" class="form-control" th:classappend="${#fields.hasErrors('kyThu')} ? 'is-invalid' : ''" required/>
+                                <input type="month" id="kyThu" name="kyThu" class="form-control"
+                                       th:value="${khoanThu.kyThu != null ? #temporals.format(khoanThu.kyThu, 'yyyy-MM') : ''}"
+                                       th:classappend="${#fields.hasErrors('kyThu')} ? 'is-invalid' : ''"
+                                       required/>
                                 <div class="invalid-feedback" id="kyThuFeedback" th:if="${#fields.hasErrors('kyThu')}" th:errors="*{kyThu}"></div>
                                 <div class="invalid-feedback js-feedback" style="display: none;"></div>
                             </div>
@@ -139,10 +142,11 @@
                     fb.textContent = 'Năm hạn nộp phải từ 2000 đến 2100';
                     fb.style.display = 'block';
                     isValid = false;
-                } else if (kyThuInput.value && hanNopInput.value < kyThuInput.value) {
+                } else if (kyThuInput.value && hanNopInput.value.substring(0, 7) < kyThuInput.value) {
+                    // kyThu là yyyy-MM, hanNop là yyyy-MM-dd → so sánh phần tháng
                     hanNopInput.classList.add('is-invalid');
                     const fb = hanNopInput.parentElement.querySelector('.js-feedback');
-                    fb.textContent = 'Hạn nộp phải sau hoặc bằng kỳ thu';
+                    fb.textContent = 'Hạn nộp phải trong hoặc sau tháng kỳ thu';
                     fb.style.display = 'block';
                     isValid = false;
                 }

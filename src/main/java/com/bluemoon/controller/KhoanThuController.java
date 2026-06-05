@@ -8,9 +8,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.beans.PropertyEditorSupport;
+import java.time.LocalDate;
 import java.time.YearMonth;
 
 @Controller
@@ -21,6 +24,23 @@ public class KhoanThuController {
     private final KhoanThuService     khoanThuService;
     private final LoaiKhoanThuService loaiKhoanThuService;
 
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        // Cho phép form gửi kyThu dạng "yyyy-MM" (type=month), chuyển thành ngày đầu tháng
+        binder.registerCustomEditor(LocalDate.class, "kyThu", new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                if (text == null || text.isBlank()) {
+                    setValue(null);
+                } else if (text.length() == 7) {
+                    setValue(YearMonth.parse(text).atDay(1));
+                } else {
+                    setValue(LocalDate.parse(text));
+                }
+            }
+        });
+    }
+
     @GetMapping
     public String list(
             @RequestParam(required = false) Integer idLoai,
@@ -28,15 +48,13 @@ public class KhoanThuController {
             @RequestParam(required = false) String  thang,
             Model model) {
 
-        YearMonth ym = (thang != null && !thang.isBlank())
-                ? YearMonth.parse(thang)
-                : YearMonth.now();
+        YearMonth ym = (thang != null && !thang.isBlank()) ? YearMonth.parse(thang) : null;
 
-        model.addAttribute("danhSach",       khoanThuService.findWithFilter(idLoai, trangThai, ym));
-        model.addAttribute("danhSachLoai",   loaiKhoanThuService.findAll());
-        model.addAttribute("idLoaiFilter",   idLoai);
+        model.addAttribute("danhSach",        khoanThuService.findWithFilter(idLoai, trangThai, ym));
+        model.addAttribute("danhSachLoai",    loaiKhoanThuService.findAll());
+        model.addAttribute("idLoaiFilter",    idLoai);
         model.addAttribute("trangThaiFilter", trangThai);
-        model.addAttribute("thangFilter",    ym.toString());
+        model.addAttribute("thangFilter",     ym != null ? ym.toString() : null);
         return "khoan-thu/list";
     }
 
