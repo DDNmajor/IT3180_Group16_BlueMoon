@@ -214,12 +214,6 @@ Không thể tự đổi vai trò hoặc xoá tài khoản đang đăng nhập.
 
 ## Phân công Sprint 3
 
-> **Nguyên tắc merge `fragments/layout.html`:** File này bị đụng bởi nhiều người — SM (Trần Khánh Linh) là người duy nhất commit thay đổi layout.html. Các member khác giao HTML snippet qua PR comment, không tự sửa file.
->
-> **pom.xml (Apache POI):** Người D thêm dependency trước, Người E rebase sau khi D merge.
->
-> **`ThanhToanRepository.java`:** Người B merge query trước, Người D rebase lên branch của B trước khi merge vào develop.
-
 ---
 
 ### 👤 Người A — Trần Thị Nhật Linh · UC014: Đổi mật khẩu
