@@ -25,8 +25,8 @@ public class NguoiDung {
     @Column(name = "ten_dang_nhap", nullable = false, unique = true)
     private String tenDangNhap;
 
-    // Không @NotBlank — khi sửa, bỏ trống nghĩa là giữ mật khẩu cũ
-    @Size(min = 6, max = 100, message = "Mật khẩu phải từ 6 đến 100 ký tự")
+    // Không @NotBlank, không @Size(min) — khi sửa, bỏ trống = giữ mật khẩu cũ; độ dài check trong controller
+    @Size(max = 100, message = "Mật khẩu không được vượt quá 100 ký tự")
     @Column(name = "mat_khau", nullable = false)
     private String matKhau;
 
