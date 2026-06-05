@@ -18,6 +18,8 @@ public interface ThanhToanRepository extends JpaRepository<ThanhToan, Integer> {
     List<ThanhToan> findByHoGiaDinhIdOrderByNgayNopDesc(Integer idHoGiaDinh);
     List<ThanhToan> findByKhoanThuIdOrderByNgayNopDesc(Integer idKhoanThu);
     boolean existsByKhoanThuId(Integer idKhoanThu);
+    boolean existsByKhoanThuIdAndSoTienDaNopGreaterThan(Integer idKhoanThu, java.math.BigDecimal soTien);
+    void deleteByKhoanThuId(Integer idKhoanThu);
     boolean existsByHoGiaDinhIdAndKhoanThuIdAndTrangThaiIn(Integer idHoGiaDinh, Integer idKhoanThu, Collection<TrangThaiThanhToan> trangThais);
     boolean existsByHoGiaDinhIdAndTrangThaiIn(Integer idHoGiaDinh, Collection<TrangThaiThanhToan> trangThais);
 }

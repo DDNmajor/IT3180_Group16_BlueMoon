@@ -107,13 +107,14 @@ public class KhoanThuService {
 
     @Transactional
     public void delete(Integer id) {
-        if (thanhToanRepository.existsByKhoanThuId(id)) {
-            KhoanThu kt = findById(id);
+        KhoanThu kt = findById(id);
+        if (thanhToanRepository.existsByKhoanThuIdAndSoTienDaNopGreaterThan(id, BigDecimal.ZERO)) {
             throw new IllegalStateException(
                     "Không thể xóa khoản thu \"" + kt.getTenKhoanThu()
-                    + "\" vì đã có giao dịch thanh toán liên quan.");
+                    + "\" vì đã có hộ gia đình nộp tiền.");
         }
-        KhoanThu kt = findById(id);
+        // Xóa các bản ghi auto-tạo (soTienDaNop = 0) trước khi xóa khoản thu
+        thanhToanRepository.deleteByKhoanThuId(id);
         khoanThuRepository.deleteById(id);
         log.info("[AUDIT] Xóa khoản thu: id={}, ma={}, ten={}, user={}",
                 id, kt.getMaKhoanThu(), kt.getTenKhoanThu(), currentUser());
