@@ -6,26 +6,30 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title th:text="${title} + ' | BlueMoon'">BlueMoon</title>
+
+    <!-- Bootstrap -->
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
-    <style>
-        body { background-color: #f8f9fa; }
-        .sidebar { min-height: calc(100vh - 56px); background-color: #212529; }
-        .sidebar .nav-link { color: #adb5bd; }
-        .sidebar .nav-link:hover, .sidebar .nav-link.active { color: #ffffff; background-color: #343a40; border-radius: 6px; }
-        .sidebar .nav-section { color: #6c757d; font-size: 0.75rem; text-transform: uppercase; padding: 0.5rem 1rem; margin-top: 0.5rem; }
-    </style>
+    <!-- Google Fonts: Playfair Display + Nunito -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="true"/>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Nunito:wght@300;400;500;600&display=swap"/>
+    <!-- Moona Theme -->
+    <link rel="stylesheet" th:href="@{/css/moona-theme.css}"/>
 </head>
 
 <!-- ── NAVBAR ────────────────────────────────────────────────── -->
-<nav th:fragment="navbar" class="navbar navbar-dark bg-primary px-3">
-    <a class="navbar-brand fw-bold" href="/dashboard">
+<nav th:fragment="navbar"
+     class="navbar navbar-dark moon-navbar px-3">
+    <a class="navbar-brand" href="/dashboard">
         <i class="bi bi-moon-stars-fill me-2"></i>BlueMoon
     </a>
     <div class="d-flex align-items-center gap-3">
-        <span class="text-white small">
+        <span class="nav-user-name">
             <i class="bi bi-person-circle me-1"></i>
             <span th:text="${#authentication?.name}">Người dùng</span>
         </span>
@@ -37,7 +41,7 @@
     </div>
 </nav>
 
-<!-- ── SIDEBAR (Đã thêm biến activePage) ─────────────────────── -->
+<!-- ── SIDEBAR ────────────────────────────────────────────────── -->
 <div th:fragment="sidebar(activePage)" class="col-md-2 sidebar pt-3"
      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <nav class="nav flex-column px-2 gap-1">
@@ -57,6 +61,15 @@
         <a class="nav-link" th:classappend="${activePage == 'khoan-thu'} ? 'active' : ''" th:href="@{/khoan-thu}">
             <i class="bi bi-receipt me-2"></i>Khoản thu
         </a>
+        <a class="nav-link" th:classappend="${activePage == 'mau-khoan-thu'} ? 'active' : ''" th:href="@{/mau-khoan-thu}">
+            <i class="bi bi-arrow-repeat me-2"></i>Mẫu thu định kỳ
+        </a>
+
+        <span class="nav-section">Hệ thống</span>
+        <a class="nav-link" sec:authorize="hasRole('admin')"
+           th:classappend="${activePage == 'audit-log'} ? 'active' : ''" th:href="@{/audit-log}">
+            <i class="bi bi-journal-text me-2"></i>Nhật ký hoạt động
+        </a>
 
         <span class="nav-section">Sprint 2</span>
         <a class="nav-link" th:classappend="${activePage == 'ho-gia-dinh'} ? 'active' : ''" th:href="@{/ho-gia-dinh}">
@@ -71,7 +84,7 @@
     </nav>
 </div>
 
-<!-- ── FLASH MESSAGES ────────────────────────────────────────── -->
+<!-- ── FLASH MESSAGES ─────────────────────────────────────────── -->
 <div th:fragment="alerts">
     <div th:if="${successMsg}" class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="bi bi-check-circle me-2"></i>
@@ -85,7 +98,7 @@
     </div>
 </div>
 
-<!-- ── SCRIPTS ───────────────────────────────────────────────── -->
+<!-- ── SCRIPTS ────────────────────────────────────────────────── -->
 <div th:fragment="scripts">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </div>

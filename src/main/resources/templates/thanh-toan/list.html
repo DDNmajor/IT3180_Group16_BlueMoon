@@ -253,9 +253,10 @@
                                     <div><strong>Khoản thu:</strong>
                                         <span th:text="${tt.khoanThu.tenKhoanThu}"></span>
                                     </div>
-                                    <div class="mt-1 d-flex gap-3">
+                                    <div class="mt-1 d-flex gap-3"
+                                         th:with="yeuCau=${tt.soTienYeuCauHieuLuc}">
                                         <span>Yêu cầu:
-                                            <strong th:text="${#numbers.formatDecimal(tt.khoanThu.soTien, 0, 'COMMA', 0, 'POINT')} + ' đ'"></strong>
+                                            <strong th:text="${#numbers.formatDecimal(yeuCau, 0, 'COMMA', 0, 'POINT')} + ' đ'"></strong>
                                         </span>
                                         <span>Đã nộp:
                                             <strong class="text-success"
@@ -263,7 +264,7 @@
                                         </span>
                                         <span>Còn thiếu:
                                             <strong class="text-danger"
-                                                    th:text="${#numbers.formatDecimal(tt.khoanThu.soTien.subtract(tt.soTienDaNop), 0, 'COMMA', 0, 'POINT')} + ' đ'"></strong>
+                                                    th:text="${#numbers.formatDecimal(yeuCau.subtract(tt.soTienDaNop), 0, 'COMMA', 0, 'POINT')} + ' đ'"></strong>
                                         </span>
                                     </div>
                                 </div>
@@ -274,10 +275,11 @@
                                     <label class="form-label fw-medium">
                                         Số tiền nộp thêm <span class="text-danger">*</span>
                                     </label>
-                                    <div class="input-group">
+                                    <div class="input-group"
+                                         th:with="yeuCau2=${tt.soTienYeuCauHieuLuc}">
                                         <input type="number" name="soTienThem"
                                                class="form-control" min="1"
-                                               th:placeholder="'Gợi ý: ' + ${#numbers.formatDecimal(tt.khoanThu.soTien.subtract(tt.soTienDaNop), 0, 'COMMA', 0, 'POINT')} + ' đ'"
+                                               th:placeholder="'Gợi ý: ' + ${#numbers.formatDecimal(yeuCau2.subtract(tt.soTienDaNop), 0, 'COMMA', 0, 'POINT')} + ' đ'"
                                                required/>
                                         <span class="input-group-text">đ</span>
                                     </div>

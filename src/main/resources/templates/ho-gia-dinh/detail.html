@@ -37,6 +37,8 @@
                         <dd class="col-7" th:text="${hoGiaDinh.tangKhuVuc} ?: '--'"></dd>
                         <dt class="col-5">Số điện thoại</dt>
                         <dd class="col-7" th:text="${hoGiaDinh.soDienThoai} ?: '--'"></dd>
+                        <dt class="col-5">Email</dt>
+                        <dd class="col-7" th:text="${hoGiaDinh.email} ?: '--'"></dd>
                         <dt class="col-5">Ghi chú</dt>
                         <dd class="col-7" th:text="${hoGiaDinh.ghiChu} ?: '--'"></dd>
                     </dl>
@@ -118,18 +120,24 @@
                             <th>Nhân khẩu</th>
                             <th>Loại biến động</th>
                             <th>Ngày biến động</th>
+                            <th>Ngày kết thúc</th>
                             <th>Ghi chú</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:if="${#lists.isEmpty(lichSuBienDong)}">
-                            <td colspan="5" class="text-center text-muted py-2">Chưa có biến động nào.</td>
+                            <td colspan="6" class="text-center text-muted py-2">Chưa có biến động nào.</td>
                         </tr>
                         <tr th:each="bd, stat : ${lichSuBienDong}">
                             <td th:text="${stat.count}"></td>
                             <td th:text="${bd.nhanKhau.hoTen}"></td>
                             <td th:text="${bd.loaiBienDong.tenHienThi}"></td>
                             <td th:text="${#temporals.format(bd.ngayBienDong, 'dd/MM/yyyy')}"></td>
+                            <td>
+                                <span th:if="${bd.ngayKetThuc != null}"
+                                      th:text="${#temporals.format(bd.ngayKetThuc, 'dd/MM/yyyy')}"></span>
+                                <span th:if="${bd.ngayKetThuc == null}" class="text-muted">--</span>
+                            </td>
                             <td th:text="${bd.ghiChu} ?: '--'"></td>
                         </tr>
                         </tbody>

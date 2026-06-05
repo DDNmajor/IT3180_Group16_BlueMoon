@@ -15,4 +15,6 @@ public interface KhoanThuRepository extends JpaRepository<KhoanThu, Integer> {
     List<KhoanThu> findByKyThuBetween(LocalDate from, LocalDate to);
     List<KhoanThu> findByLoaiKhoanThuIdAndKyThuBetween(Integer idLoai, LocalDate from, LocalDate to);
     List<KhoanThu> findByHanNopBefore(LocalDate date);
+    boolean existsByMauKhoanThuIdAndKyThu(Integer mauId, LocalDate kyThu);
+    List<KhoanThu> findByMauKhoanThuIdOrderByKyThuDesc(Integer mauId);
 }

@@ -22,4 +22,5 @@ public interface ThanhToanRepository extends JpaRepository<ThanhToan, Integer> {
     void deleteByKhoanThuId(Integer idKhoanThu);
     boolean existsByHoGiaDinhIdAndKhoanThuIdAndTrangThaiIn(Integer idHoGiaDinh, Integer idKhoanThu, Collection<TrangThaiThanhToan> trangThais);
     boolean existsByHoGiaDinhIdAndTrangThaiIn(Integer idHoGiaDinh, Collection<TrangThaiThanhToan> trangThais);
+    boolean existsByHoGiaDinhIdAndKhoanThuId(Integer idHoGiaDinh, Integer idKhoanThu);
 }

@@ -20,6 +20,7 @@ public class NguoiDungService {
 
     private final NguoiDungRepository   nguoiDungRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final AuditLogService       auditLogService;
 
     public List<NguoiDung> findAll() {
         return nguoiDungRepository.findAll();
@@ -60,9 +61,13 @@ public class NguoiDungService {
         }
 
         NguoiDung saved = nguoiDungRepository.save(nguoiDung);
+        String action = isNew ? "Tạo" : "Sửa";
+        String user = currentUser();
         log.info("[AUDIT] {} người dùng: id={}, username={}, vaiTro={}, user={}",
-                isNew ? "Tạo" : "Sửa",
-                saved.getId(), saved.getTenDangNhap(), saved.getVaiTro(), currentUser());
+                action, saved.getId(), saved.getTenDangNhap(), saved.getVaiTro(), user);
+        auditLogService.log(action, "Người dùng",
+                "id=" + saved.getId() + ", username=" + saved.getTenDangNhap()
+                + ", vaiTro=" + saved.getVaiTro(), user);
         return saved;
     }
 
@@ -70,7 +75,9 @@ public class NguoiDungService {
     public void delete(Integer id) {
         NguoiDung nd = findById(id);
         nguoiDungRepository.deleteById(id);
-        log.info("[AUDIT] Xóa người dùng: id={}, username={}, user={}", id, nd.getTenDangNhap(), currentUser());
+        String user = currentUser();
+        log.info("[AUDIT] Xóa người dùng: id={}, username={}, user={}", id, nd.getTenDangNhap(), user);
+        auditLogService.log("Xóa", "Người dùng", "id=" + id + ", username=" + nd.getTenDangNhap(), user);
     }
 
     private String currentUser() {

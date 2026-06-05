@@ -18,6 +18,7 @@ import java.util.Optional;
 public class NhanKhauService {
 
     private final NhanKhauRepository nhanKhauRepository;
+    private final AuditLogService    auditLogService;
 
     public List<NhanKhau> findAll() { return nhanKhauRepository.findAll(); }
 
@@ -50,11 +51,14 @@ public class NhanKhauService {
             if (nhanKhau.getTinhTrang() == null) nhanKhau.setTinhTrang(TinhTrangCuTru.THUONG_TRU);
         }
         NhanKhau saved = nhanKhauRepository.save(nhanKhau);
+        String action = isNew ? "Tạo" : "Sửa";
+        String user = currentUser();
+        String canHo = saved.getHoGiaDinh() != null ? saved.getHoGiaDinh().getSoCanHo() : "?";
         log.info("[AUDIT] {} nhân khẩu: id={}, hoTen={}, cccd={}, ho={}, user={}",
-                isNew ? "Tạo" : "Sửa",
-                saved.getId(), saved.getHoTen(), saved.getCccd(),
-                saved.getHoGiaDinh() != null ? saved.getHoGiaDinh().getSoCanHo() : "?",
-                currentUser());
+                action, saved.getId(), saved.getHoTen(), saved.getCccd(), canHo, user);
+        auditLogService.log(action, "Nhân khẩu",
+                "id=" + saved.getId() + ", hoTen=" + saved.getHoTen()
+                + ", cccd=" + saved.getCccd() + ", canHo=" + canHo, user);
         return saved;
     }
 
@@ -68,7 +72,9 @@ public class NhanKhauService {
     public void delete(Integer id) {
         NhanKhau nk = findById(id);
         nhanKhauRepository.deleteById(id);
-        log.info("[AUDIT] Xóa nhân khẩu: id={}, hoTen={}, user={}", id, nk.getHoTen(), currentUser());
+        String user = currentUser();
+        log.info("[AUDIT] Xóa nhân khẩu: id={}, hoTen={}, user={}", id, nk.getHoTen(), user);
+        auditLogService.log("Xóa", "Nhân khẩu", "id=" + id + ", hoTen=" + nk.getHoTen(), user);
     }
 
     private String currentUser() {

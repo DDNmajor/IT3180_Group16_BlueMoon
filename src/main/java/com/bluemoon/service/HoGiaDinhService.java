@@ -22,6 +22,8 @@ public class HoGiaDinhService {
     private final HoGiaDinhRepository hoGiaDinhRepository;
     private final NhanKhauRepository  nhanKhauRepository;
     private final ThanhToanRepository thanhToanRepository;
+    private final AuditLogService     auditLogService;
+    private final KhoanThuService     khoanThuService;
 
     public List<HoGiaDinh> findAll() {
         return hoGiaDinhRepository.findAll();
@@ -63,9 +65,15 @@ public class HoGiaDinhService {
         boolean isNew = (hoGiaDinh.getId() == null);
         if (isNew) hoGiaDinh.setNgayTao(LocalDateTime.now());
         HoGiaDinh saved = hoGiaDinhRepository.save(hoGiaDinh);
+        String action = isNew ? "Tạo" : "Sửa";
+        String user = currentUser();
         log.info("[AUDIT] {} hộ gia đình: id={}, canHo={}, chuHo={}, user={}",
-                isNew ? "Tạo" : "Sửa",
-                saved.getId(), saved.getSoCanHo(), saved.getChuHo(), currentUser());
+                action, saved.getId(), saved.getSoCanHo(), saved.getChuHo(), user);
+        auditLogService.log(action, "Hộ gia đình",
+                "id=" + saved.getId() + ", canHo=" + saved.getSoCanHo() + ", chuHo=" + saved.getChuHo(), user);
+        if (isNew) {
+            khoanThuService.autoApplyForNewHo(saved);
+        }
         return saved;
     }
 
@@ -90,7 +98,9 @@ public class HoGiaDinhService {
         }
 
         hoGiaDinhRepository.deleteById(id);
-        log.info("[AUDIT] Xóa hộ gia đình: id={}, canHo={}, user={}", id, ho.getSoCanHo(), currentUser());
+        String user = currentUser();
+        log.info("[AUDIT] Xóa hộ gia đình: id={}, canHo={}, user={}", id, ho.getSoCanHo(), user);
+        auditLogService.log("Xóa", "Hộ gia đình", "id=" + id + ", canHo=" + ho.getSoCanHo(), user);
     }
 
     private String currentUser() {

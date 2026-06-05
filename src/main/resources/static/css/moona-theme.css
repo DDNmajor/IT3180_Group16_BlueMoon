@@ -1,0 +1,553 @@
+/* ═══════════════════════════════════════════════════════════════
+   MOONA HOSHINOVA THEME — Dark Cosmic UI
+   BlueMoon Fee Management System
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── CSS VARIABLES ──────────────────────────────────────────── */
+:root {
+  --moon-purple:       #7C5CBF;
+  --moon-purple-light: #A987E0;
+  --moon-purple-dark:  #4A3580;
+  --moon-gold:         #C9952A;
+  --moon-gold-light:   #E8C46A;
+  --moon-bg:           #0E0B1A;
+  --moon-surface:      #1A1530;
+  --moon-card:         #221D3A;
+  --moon-border:       rgba(201,149,42,0.25);
+  --moon-text:         #EDE8F5;
+  --moon-text-muted:   #9B93B8;
+}
+
+/* ─── GLOBAL ─────────────────────────────────────────────────── */
+body {
+  background-color: var(--moon-bg) !important;
+  color: var(--moon-text) !important;
+  font-family: 'Nunito', sans-serif !important;
+}
+
+.container-fluid { background-color: var(--moon-bg); }
+
+a             { color: var(--moon-purple-light); }
+a:hover       { color: var(--moon-gold-light); }
+
+.text-muted   { color: var(--moon-text-muted) !important; }
+.text-primary { color: var(--moon-purple-light) !important; }
+.text-success { color: #5EDDCA !important; }
+.text-danger  { color: #FF8A96 !important; }
+.text-dark    { color: var(--moon-text) !important; }
+.text-white   { color: var(--moon-text) !important; }
+
+hr { border-color: var(--moon-border) !important; opacity: 1; }
+
+/* ─── TYPOGRAPHY ─────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+  color: var(--moon-text) !important;
+}
+
+/* ─── SCROLLBAR ──────────────────────────────────────────────── */
+::-webkit-scrollbar              { width: 6px; height: 6px; }
+::-webkit-scrollbar-track        { background: var(--moon-bg); }
+::-webkit-scrollbar-thumb        { background: rgba(124,92,191,0.4); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover  { background: rgba(201,149,42,0.4); }
+
+/* ─── NAVBAR ─────────────────────────────────────────────────── */
+.moon-navbar {
+  background: linear-gradient(135deg, #150F2B 0%, #1E1640 100%) !important;
+  border-bottom: 1px solid rgba(201,149,42,0.25) !important;
+}
+
+.navbar-brand {
+  font-family: 'Playfair Display', serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px;
+  background: linear-gradient(135deg, var(--moon-gold) 0%, var(--moon-gold-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.moon-navbar .nav-user-name {
+  color: var(--moon-text-muted) !important;
+  font-size: 0.875rem;
+}
+
+.moon-navbar .btn-outline-light {
+  border-color: rgba(201,149,42,0.4) !important;
+  color: var(--moon-gold-light) !important;
+}
+.moon-navbar .btn-outline-light:hover {
+  background: rgba(201,149,42,0.12) !important;
+  border-color: var(--moon-gold) !important;
+  color: var(--moon-gold-light) !important;
+}
+
+/* ─── SIDEBAR ────────────────────────────────────────────────── */
+.sidebar {
+  background-color: #130F25 !important;
+  border-right: 1px solid var(--moon-border);
+  min-height: calc(100vh - 56px);
+}
+
+.sidebar .nav-link {
+  color: var(--moon-text-muted) !important;
+  border-left: 2px solid transparent;
+  border-radius: 0 6px 6px 0;
+  transition: color 0.2s ease, background-color 0.2s ease, border-left-color 0.2s ease;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 500;
+  padding-left: 12px;
+  margin-right: 4px;
+}
+
+.sidebar .nav-link:hover {
+  color: var(--moon-purple-light) !important;
+  background-color: rgba(124,92,191,0.1) !important;
+  border-left-color: rgba(124,92,191,0.4) !important;
+}
+
+.sidebar .nav-link.active {
+  color: var(--moon-gold-light) !important;
+  background-color: rgba(124,92,191,0.2) !important;
+  border-left-color: var(--moon-gold) !important;
+}
+
+.sidebar .nav-section {
+  color: var(--moon-gold) !important;
+  font-family: 'Playfair Display', serif;
+  font-size: 0.64rem;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  margin-top: 0.4rem;
+}
+
+/* ─── CARDS ──────────────────────────────────────────────────── */
+.card {
+  background-color: var(--moon-card) !important;
+  border: 1px solid var(--moon-border) !important;
+  border-top: 2px solid var(--moon-gold) !important;
+  border-radius: 10px !important;
+  color: var(--moon-text);
+}
+
+.card-header {
+  background-color: rgba(124,92,191,0.1) !important;
+  border-bottom: 1px solid var(--moon-border) !important;
+  color: var(--moon-text) !important;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+}
+
+.card-body  { color: var(--moon-text); }
+
+.card-footer {
+  background-color: rgba(124,92,191,0.05) !important;
+  border-top: 1px solid var(--moon-border) !important;
+  color: var(--moon-text-muted) !important;
+}
+
+.shadow-sm { box-shadow: 0 2px 8px rgba(0,0,0,0.45) !important; }
+
+/* Dashboard stat cards */
+.card.bg-primary {
+  background: linear-gradient(135deg, var(--moon-purple-dark) 0%, var(--moon-purple) 100%) !important;
+  border-top-color: var(--moon-purple-light) !important;
+}
+.card.bg-success {
+  background: linear-gradient(135deg, #1A5245 0%, #2A8265 100%) !important;
+  border-top-color: #3aab88 !important;
+}
+.card.bg-warning {
+  background: linear-gradient(135deg, #7A5200 0%, #C9952A 100%) !important;
+  border-top-color: var(--moon-gold-light) !important;
+}
+.card.bg-info {
+  background: linear-gradient(135deg, #1A3D5C 0%, #2A6FA8 100%) !important;
+  border-top-color: #4d9fd4 !important;
+}
+.card.bg-primary .small,
+.card.bg-success .small,
+.card.bg-warning .small,
+.card.bg-info    .small { color: rgba(255,255,255,0.78) !important; }
+
+/* ─── TABLES ─────────────────────────────────────────────────── */
+.table {
+  color: var(--moon-text) !important;
+  --bs-table-color:       var(--moon-text);
+  --bs-table-bg:          transparent;
+  --bs-table-border-color: rgba(201,149,42,0.12);
+  --bs-table-hover-bg:    rgba(124,92,191,0.08);
+}
+
+.table > :not(caption) > * > * {
+  border-bottom-color: rgba(201,149,42,0.12) !important;
+}
+
+.table-bordered { border-color: rgba(201,149,42,0.15) !important; }
+
+/* thead table-dark → gold header */
+.table-dark {
+  --bs-table-bg:           rgba(201,149,42,0.06) !important;
+  --bs-table-border-color: rgba(201,149,42,0.2) !important;
+  --bs-table-color:        var(--moon-gold) !important;
+}
+.table-dark th {
+  font-family:      'Playfair Display', serif !important;
+  text-transform:   uppercase !important;
+  letter-spacing:   0.8px !important;
+  font-size:        0.77rem !important;
+  color:            var(--moon-gold) !important;
+  background-color: rgba(201,149,42,0.06) !important;
+  border-color:     rgba(201,149,42,0.2) !important;
+}
+
+/* thead table-secondary → purple tint */
+.table-secondary {
+  --bs-table-bg:           rgba(124,92,191,0.1) !important;
+  --bs-table-color:        var(--moon-text) !important;
+  --bs-table-border-color: rgba(201,149,42,0.15) !important;
+}
+.table-secondary th {
+  color:            var(--moon-text) !important;
+  background-color: rgba(124,92,191,0.1) !important;
+  border-color:     rgba(201,149,42,0.15) !important;
+}
+
+/* Row hover */
+.table-hover tbody tr:hover > * {
+  background-color: rgba(124,92,191,0.08) !important;
+  color:            var(--moon-text) !important;
+  --bs-table-hover-bg: rgba(124,92,191,0.08);
+}
+
+/* ─── BADGES ─────────────────────────────────────────────────── */
+.badge {
+  font-family:   'Nunito', sans-serif !important;
+  font-weight:   600 !important;
+  font-size:     0.77em !important;
+  padding:       3px 8px !important;
+  border-radius: 6px !important;
+}
+
+/* DA_DONG → teal */
+.badge.bg-success {
+  background-color: rgba(32,178,170,0.18) !important;
+  border: 1px solid rgba(32,178,170,0.35) !important;
+  color: #5EDDCA !important;
+}
+
+/* CON_NO (bg-warning) → red */
+.badge.bg-warning {
+  background-color: rgba(220,53,69,0.15) !important;
+  border: 1px solid rgba(220,53,69,0.3) !important;
+  color: #FF8A96 !important;
+}
+
+/* DONG_DU (bg-info) → gold */
+.badge.bg-info {
+  background-color: rgba(201,149,42,0.15) !important;
+  border: 1px solid rgba(201,149,42,0.3) !important;
+  color: var(--moon-gold-light) !important;
+}
+
+/* Vai trò admin */
+.badge.bg-danger {
+  background-color: rgba(220,53,69,0.18) !important;
+  border: 1px solid rgba(220,53,69,0.35) !important;
+  color: #FF8A96 !important;
+}
+
+/* Vai trò nhanvien */
+.badge.bg-secondary {
+  background-color: rgba(155,147,184,0.15) !important;
+  border: 1px solid rgba(155,147,184,0.3) !important;
+  color: var(--moon-text-muted) !important;
+}
+
+/* ─── BUTTONS ────────────────────────────────────────────────── */
+.btn-primary {
+  background: linear-gradient(135deg, var(--moon-purple-dark), #5A3D9E) !important;
+  border-color: var(--moon-purple-light) !important;
+  color: #fff !important;
+}
+.btn-primary:hover, .btn-primary:focus {
+  background: linear-gradient(135deg, #5A3D9E, var(--moon-purple)) !important;
+  border-color: var(--moon-purple-light) !important;
+}
+
+.btn-outline-primary {
+  border-color: var(--moon-purple) !important;
+  color: var(--moon-purple-light) !important;
+}
+.btn-outline-primary:hover {
+  background-color: rgba(124,92,191,0.15) !important;
+  border-color: var(--moon-purple-light) !important;
+  color: var(--moon-purple-light) !important;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #1A5245, #2A8265) !important;
+  border-color: #3aab88 !important;
+  color: #fff !important;
+}
+.btn-success:hover { background: linear-gradient(135deg, #1f5f50, #339e77) !important; }
+
+.btn-outline-success {
+  border-color: #2A8265 !important;
+  color: #5EDDCA !important;
+}
+.btn-outline-success:hover { background-color: rgba(42,130,101,0.15) !important; color: #5EDDCA !important; }
+
+.btn-warning {
+  background: linear-gradient(135deg, #7A5200, #C9952A) !important;
+  border-color: var(--moon-gold-light) !important;
+  color: #fff !important;
+}
+.btn-warning:hover { background: linear-gradient(135deg, #8a6000, #d9a535) !important; }
+
+.btn-danger {
+  background: linear-gradient(135deg, #6B1111, #BB2222) !important;
+  border-color: #e05555 !important;
+  color: #fff !important;
+}
+.btn-danger:hover { background: linear-gradient(135deg, #7d1515, #cc2e2e) !important; }
+
+.btn-outline-danger {
+  border-color: #BB2222 !important;
+  color: #FF8A96 !important;
+}
+.btn-outline-danger:hover { background-color: rgba(187,34,34,0.15) !important; color: #FF8A96 !important; }
+
+.btn-info {
+  background: linear-gradient(135deg, #1A3D5C, #2A6FA8) !important;
+  border-color: #4d9fd4 !important;
+  color: #fff !important;
+}
+.btn-info:hover { background: linear-gradient(135deg, #1f4a6e, #3280c0) !important; }
+
+.btn-outline-info {
+  border-color: #2A6FA8 !important;
+  color: #6BBCF0 !important;
+}
+.btn-outline-info:hover { background-color: rgba(42,111,168,0.15) !important; color: #6BBCF0 !important; }
+
+.btn-outline-secondary {
+  border-color: rgba(155,147,184,0.4) !important;
+  color: var(--moon-text-muted) !important;
+}
+.btn-outline-secondary:hover {
+  background-color: rgba(155,147,184,0.1) !important;
+  border-color: rgba(155,147,184,0.6) !important;
+  color: var(--moon-text) !important;
+}
+
+.btn-close { filter: invert(1) brightness(0.75); }
+
+/* ─── FORMS ──────────────────────────────────────────────────── */
+.form-control,
+.form-select {
+  background-color: var(--moon-surface) !important;
+  border-color:     rgba(201,149,42,0.22) !important;
+  color:            var(--moon-text) !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--moon-surface) !important;
+  border-color:     var(--moon-purple-light) !important;
+  color:            var(--moon-text) !important;
+  box-shadow:       0 0 0 0.2rem rgba(124,92,191,0.25) !important;
+}
+
+.form-control::placeholder { color: var(--moon-text-muted) !important; opacity: 1; }
+
+input[type="date"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="time"] {
+  color-scheme: dark;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="month"]::-webkit-calendar-picker-indicator {
+  filter: invert(65%) sepia(40%) saturate(600%) hue-rotate(220deg) brightness(115%);
+  opacity: 0.9;
+  cursor: pointer;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover,
+input[type="month"]::-webkit-calendar-picker-indicator:hover {
+  filter: invert(65%) sepia(40%) saturate(900%) hue-rotate(220deg) brightness(130%);
+  opacity: 1;
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid   { border-color: #CC2A2A !important; }
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus { box-shadow: 0 0 0 0.2rem rgba(204,42,42,0.25) !important; }
+
+.invalid-feedback { color: #FF8A96 !important; }
+
+.form-label { color: var(--moon-text) !important; font-weight: 500; }
+.form-text  { color: var(--moon-text-muted) !important; }
+
+.input-group-text {
+  background-color: rgba(201,149,42,0.08) !important;
+  border-color:     rgba(201,149,42,0.22) !important;
+  color:            var(--moon-text-muted) !important;
+}
+
+option {
+  background-color: var(--moon-surface);
+  color:            var(--moon-text);
+}
+
+/* Mũi tên dropdown của <select> → tím */
+.form-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23A987E0' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+}
+
+/* Icon bên trong input-group-text (search, v.v.) → tím */
+.input-group-text i,
+.input-group-text .bi {
+  color: var(--moon-purple-light) !important;
+}
+
+/* ─── ALERTS ─────────────────────────────────────────────────── */
+.alert-success {
+  background-color: rgba(42,130,101,0.14) !important;
+  border-color:     rgba(42,130,101,0.35) !important;
+  color:            #5EDDCA !important;
+}
+.alert-danger {
+  background-color: rgba(204,42,42,0.12) !important;
+  border-color:     rgba(204,42,42,0.35) !important;
+  color:            #FF8A96 !important;
+}
+.alert-warning {
+  background-color: rgba(201,149,42,0.12) !important;
+  border-color:     rgba(201,149,42,0.35) !important;
+  color:            var(--moon-gold-light) !important;
+}
+
+/* ─── MODALS ─────────────────────────────────────────────────── */
+.modal-content {
+  background-color: var(--moon-surface) !important;
+  border: 1px solid var(--moon-border) !important;
+  border-top: 2px solid var(--moon-gold) !important;
+  border-radius: 12px !important;
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--moon-border) !important;
+  color: var(--moon-text) !important;
+}
+
+.modal-header.bg-warning.bg-opacity-25 {
+  background-color: rgba(201,149,42,0.1) !important;
+}
+
+.modal-footer { border-top: 1px solid var(--moon-border) !important; }
+
+.modal-title {
+  font-family: 'Playfair Display', serif;
+  color:        var(--moon-text) !important;
+}
+
+.modal-backdrop {
+  --bs-backdrop-bg:      #0E0B1A;
+  --bs-backdrop-opacity: 0.85;
+}
+
+/* ─── MISC ───────────────────────────────────────────────────── */
+.bg-light {
+  background-color: rgba(124,92,191,0.06) !important;
+  color: var(--moon-text) !important;
+}
+
+.text-decoration-none          { color: var(--moon-purple-light) !important; }
+.text-decoration-none:hover    { color: var(--moon-gold-light) !important; }
+
+/* dl/dt/dd in detail pages */
+dt { color: var(--moon-text-muted); font-weight: 600; }
+dd { color: var(--moon-text); }
+
+/* ─── LOGIN PAGE ─────────────────────────────────────────────── */
+body.login-page {
+  background: radial-gradient(ellipse at 50% 0%, #1E1640 0%, var(--moon-bg) 65%) !important;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  background-color: var(--moon-surface) !important;
+  border: 1px solid var(--moon-border) !important;
+  border-top: 2px solid var(--moon-gold) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.65), 0 0 60px rgba(124,92,191,0.08) !important;
+  width: 420px;
+}
+
+.login-brand {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 1.85rem;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--moon-gold) 0%, var(--moon-gold-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.login-subtitle {
+  color: var(--moon-text-muted) !important;
+  font-size: 0.84rem;
+}
+
+.login-moon-icon {
+  font-size: 2.8rem;
+  background: linear-gradient(135deg, var(--moon-gold) 0%, var(--moon-gold-light) 60%, var(--moon-purple-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 12px rgba(201,149,42,0.4));
+}
+
+/* ─── FOUR-POINTED STAR DECORATOR ───────────────────────────── */
+h4::before,
+h5::before,
+.modal-title::before {
+  content: "✦";
+  color: var(--moon-gold);
+  font-size: 0.6em;
+  margin-right: 0.45em;
+  vertical-align: middle;
+  opacity: 0.85;
+  font-family: sans-serif;
+  font-style: normal;
+}
+
+.sidebar .nav-section::before {
+  content: "✦";
+  color: var(--moon-gold);
+  font-size: 0.75em;
+  margin-right: 0.35em;
+  opacity: 0.6;
+  font-family: sans-serif;
+}
+
+.table-dark th::before {
+  content: "✦";
+  color: var(--moon-gold);
+  font-size: 0.6em;
+  margin-right: 0.35em;
+  vertical-align: middle;
+  opacity: 0.5;
+  font-family: sans-serif;
+}

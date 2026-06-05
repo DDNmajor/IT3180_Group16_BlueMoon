@@ -4,49 +4,66 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Đăng nhập | BlueMoon</title>
+    <!-- Bootstrap -->
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <!-- Google Fonts: Playfair Display + Nunito -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="true"/>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Nunito:wght@300;400;500;600&display=swap"/>
+    <!-- Moona Theme -->
+    <link rel="stylesheet" th:href="@{/css/moona-theme.css}"/>
 </head>
-<body class="bg-light">
+<body class="login-page">
 
-<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
-    <div class="card shadow" style="width: 400px;">
-        <div class="card-body p-4">
-            <div class="text-center mb-4">
-                <i class="bi bi-moon-stars-fill text-primary" style="font-size: 2.5rem;"></i>
-                <h4 class="mt-2 fw-bold">BlueMoon</h4>
-                <p class="text-muted small">Hệ thống quản lý thu phí chung cư</p>
-            </div>
+<div class="card login-card p-0">
+    <div class="card-body p-4 p-sm-5">
 
-            <div id="jsError" class="alert alert-danger py-2 d-none">
-                <i class="bi bi-exclamation-triangle me-1"></i>
-                <span id="jsErrorMsg"></span>
-            </div>
-            <div th:if="${errorMsg}" class="alert alert-danger py-2">
-                <i class="bi bi-exclamation-triangle me-1"></i>
-                <span th:text="${errorMsg}"></span>
-            </div>
-            <div th:if="${logoutMsg}" class="alert alert-success py-2">
-                <i class="bi bi-check-circle me-1"></i>
-                <span th:text="${logoutMsg}"></span>
-            </div>
-
-            <form th:action="@{/login}" method="post" id="loginForm" novalidate>
-                <div class="mb-3">
-                    <label class="form-label">Tên đăng nhập</label>
-                    <input type="text" name="username" id="username" class="form-control" placeholder="Nhập tên đăng nhập" autofocus/>
-                </div>
-                <div class="mb-4">
-                    <label class="form-label">Mật khẩu</label>
-                    <input type="password" name="password" id="password" class="form-control" placeholder="Nhập mật khẩu"/>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập
-                </button>
-            </form>
+        <!-- Brand -->
+        <div class="text-center mb-4">
+            <i class="bi bi-moon-stars-fill login-moon-icon d-block mb-3"></i>
+            <div class="login-brand mb-1">BlueMoon</div>
+            <p class="login-subtitle mb-0">Hệ thống quản lý thu phí chung cư</p>
         </div>
+
+        <!-- Alerts -->
+        <div id="jsError" class="alert alert-danger py-2 d-none">
+            <i class="bi bi-exclamation-triangle me-1"></i>
+            <span id="jsErrorMsg"></span>
+        </div>
+        <div th:if="${errorMsg}" class="alert alert-danger py-2">
+            <i class="bi bi-exclamation-triangle me-1"></i>
+            <span th:text="${errorMsg}"></span>
+        </div>
+        <div th:if="${logoutMsg}" class="alert alert-success py-2">
+            <i class="bi bi-check-circle me-1"></i>
+            <span th:text="${logoutMsg}"></span>
+        </div>
+
+        <!-- Login form -->
+        <form th:action="@{/login}" method="post" id="loginForm" novalidate>
+            <div class="mb-3">
+                <label class="form-label">Tên đăng nhập</label>
+                <input type="text" name="username" id="username"
+                       class="form-control"
+                       placeholder="Nhập tên đăng nhập"
+                       autofocus/>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Mật khẩu</label>
+                <input type="password" name="password" id="password"
+                       class="form-control"
+                       placeholder="Nhập mật khẩu"/>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập
+            </button>
+        </form>
+
     </div>
 </div>
 

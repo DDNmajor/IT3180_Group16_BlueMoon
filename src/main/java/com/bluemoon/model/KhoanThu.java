@@ -42,6 +42,10 @@ public class KhoanThu {
     @Column(name = "so_tien", nullable = false, precision = 15, scale = 2)
     private BigDecimal soTien;
 
+    @DecimalMin(value = "0", message = "Đơn giá/m² không được nhỏ hơn 0")
+    @Column(name = "don_gia_per_m2", precision = 15, scale = 2)
+    private BigDecimal donGiaPerM2;
+
     @Size(max = 50, message = "Đơn vị không được vượt quá 50 ký tự")
     @Column(name = "don_vi", length = 50)
     private String donVi;
@@ -58,6 +62,10 @@ public class KhoanThu {
 
     @Column(name = "ngay_tao", updatable = false)
     private LocalDateTime ngayTao;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_mau")
+    private MauKhoanThu mauKhoanThu;
 
     @OneToMany(mappedBy = "khoanThu")
     private List<ThanhToan> thanhToans;

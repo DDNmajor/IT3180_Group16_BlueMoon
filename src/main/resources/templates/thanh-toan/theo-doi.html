@@ -72,11 +72,22 @@
                                       th:text="${selectedKhoanThu.loaiKhoanThu.tenLoai}"
                                       th:class="${isTuNguyen} ? 'badge bg-secondary' : 'badge bg-danger'">
                                 </span>
-                                <span class="ms-2 text-muted">
+                                <span class="ms-2 text-muted"
+                                      th:if="${selectedKhoanThu.donGiaPerM2 == null}"
+                                      th:with="v=${selectedKhoanThu.soTien != null ? selectedKhoanThu.soTien : 0}">
                                     Số tiền yêu cầu:
                                     <strong class="text-dark"
-                                            th:text="${#numbers.formatDecimal(selectedKhoanThu.soTien, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                            th:text="${#numbers.formatDecimal(v, 0, 'COMMA', 0, 'POINT')} + ' đ'">
                                     </strong>
+                                </span>
+                                <span class="ms-2 text-muted"
+                                      th:if="${selectedKhoanThu.donGiaPerM2 != null}"
+                                      th:with="v=${selectedKhoanThu.donGiaPerM2}">
+                                    Đơn giá:
+                                    <strong class="text-dark"
+                                            th:text="${#numbers.formatDecimal(v, 0, 'COMMA', 0, 'POINT')} + ' đ/m²'">
+                                    </strong>
+                                    <span class="badge bg-info text-dark ms-1">Theo diện tích</span>
                                 </span>
                             </div>
                             <div class="col-auto d-flex gap-3 small">
@@ -108,6 +119,8 @@
                                 <th style="width:40px">#</th>
                                 <th>Căn hộ</th>
                                 <th>Chủ hộ</th>
+                                <th th:if="${selectedKhoanThu.donGiaPerM2 != null}" class="text-end">Diện tích</th>
+                                <th class="text-end">Yêu cầu</th>
                                 <th class="text-end">Đã nộp</th>
                                 <th>Ngày nộp</th>
                                 <th>Phương thức</th>
@@ -117,7 +130,8 @@
                             </thead>
                             <tbody>
                             <tr th:if="${#lists.isEmpty(tatCaHo)}">
-                                <td colspan="8" class="text-center text-muted py-4">
+                                <td th:colspan="${selectedKhoanThu.donGiaPerM2 != null ? 10 : 9}"
+                                    class="text-center text-muted py-4">
                                     Chưa có hộ gia đình nào trong hệ thống.
                                 </td>
                             </tr>
@@ -131,6 +145,18 @@
                                        th:text="${ho.soCanHo}"></a>
                                 </td>
                                 <td th:text="${ho.chuHo}"></td>
+                                <!-- Diện tích (chỉ hiện khi area-based) -->
+                                <td th:if="${selectedKhoanThu.donGiaPerM2 != null}" class="text-end text-muted small">
+                                    <span th:if="${ho.dienTich != null}" th:text="${ho.dienTich} + ' m²'"></span>
+                                    <span th:if="${ho.dienTich == null}" class="text-warning">Chưa có</span>
+                                </td>
+                                <!-- Yêu cầu -->
+                                <td class="text-end"
+                                    th:with="yc=${tt != null ? tt.soTienYeuCauHieuLuc : (selectedKhoanThu.donGiaPerM2 != null and ho.dienTich != null ? ho.dienTich.multiply(selectedKhoanThu.donGiaPerM2) : selectedKhoanThu.soTien)}">
+                                    <span th:if="${yc != null}"
+                                          th:text="${#numbers.formatDecimal(yc, 0, 'COMMA', 0, 'POINT')} + ' đ'"
+                                          class="text-muted small"></span>
+                                </td>
                                 <!-- Đã nộp -->
                                 <td class="text-end">
                                     <span th:if="${tt != null}"

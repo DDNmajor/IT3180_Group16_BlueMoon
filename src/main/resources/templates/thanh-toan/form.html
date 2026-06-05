@@ -140,13 +140,15 @@
                                     <option value="">-- Chọn khoản thu --</option>
                                     <option th:each="kt : ${danhSachKhoan}"
                                             th:value="${kt.id}"
+                                            th:with="giaHienThi=${kt.donGiaPerM2 != null
+                                                ? (#numbers.formatDecimal(kt.donGiaPerM2, 0, 'COMMA', 0, 'POINT') + ' đ/m²')
+                                                : (#numbers.formatDecimal(kt.soTien, 0, 'COMMA', 0, 'POINT') + ' đ')}"
                                             th:text="${kt.tenKhoanThu}
                                                       + ' ('
                                                       + ${#temporals.format(kt.kyThu, 'MM/yyyy')}
                                                       + ') — '
-                                                      + ${#numbers.formatDecimal(kt.soTien, 0, 'COMMA', 0, 'POINT')}
-                                                      + ' đ'"
-                                            th:selected="${thanhToan.khoanThu?.id == kt.id}">
+                                                      + ${giaHienThi}"
+                                            th:selected="${thanhToan.khoanThu != null and thanhToan.khoanThu.id == kt.id}">
                                     </option>
                                 </select>
                                 <div class="form-text">Chỉ hiển thị khoản thu chưa hoàn thành của hộ này.</div>

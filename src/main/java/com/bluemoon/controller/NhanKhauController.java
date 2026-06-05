@@ -1,6 +1,7 @@
 package com.bluemoon.controller;
 
 import com.bluemoon.model.BienDong;
+import com.bluemoon.model.LoaiBienDong;
 import com.bluemoon.model.NhanKhau;
 import com.bluemoon.service.BienDongService;
 import com.bluemoon.service.HoGiaDinhService;
@@ -177,11 +178,26 @@ public class NhanKhauController {
         NhanKhau nk = nhanKhauService.findById(id);
         bienDong.setNhanKhau(nk);
 
-        if (bindingResult.hasErrors()) {
+        // Validate ngayKetThuc — bắt buộc với TAM_TRU / TAM_VANG
+        var loai = bienDong.getLoaiBienDong();
+        if (loai == LoaiBienDong.TAM_TRU || loai == LoaiBienDong.TAM_VANG) {
+            if (bienDong.getNgayKetThuc() == null) {
+                bindingResult.rejectValue("ngayKetThuc", "required", "Vui lòng nhập ngày kết thúc");
+            } else if (bienDong.getNgayBienDong() != null
+                    && !bienDong.getNgayKetThuc().isAfter(bienDong.getNgayBienDong())) {
+                bindingResult.rejectValue("ngayKetThuc", "invalid", "Ngày kết thúc phải sau ngày biến động");
+            }
+        }
+
+        // nhanKhau luôn được set từ path variable nên bỏ qua lỗi của field này
+        boolean hasFormErrors = bindingResult.getFieldErrors().stream()
+                .anyMatch(e -> !e.getField().equals("nhanKhau"));
+        if (hasFormErrors) {
             model.addAttribute("nhanKhau", nk);
             return "nhan-khau/bien-dong-form";
         }
 
+        bienDong.setId(null); // tránh path variable {id} bị bind vào BienDong.id
         bienDongService.save(bienDong);
         ra.addFlashAttribute("successMsg", "Ghi nhận biến động thành công.");
         return "redirect:/ho-gia-dinh/" + nk.getHoGiaDinh().getId();

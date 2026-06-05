@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mẫu thu định kỳ')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/layout :: sidebar('mau-khoan-thu')}"></div>
+
+        <main class="col-md-10 p-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <a th:href="@{/mau-khoan-thu}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h4 class="mb-0"
+                    th:text="${mauKhoanThu.id == null} ? 'Thêm mẫu thu định kỳ' : 'Sửa mẫu thu định kỳ'"></h4>
+            </div>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <div class="card shadow-sm" style="max-width: 620px;">
+                <div class="card-body">
+
+                    <!-- Thông tin -->
+                    <div class="alert alert-info py-2 small mb-3">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Mẫu chỉ áp dụng cho loại <strong>Bắt buộc - Định kỳ</strong>.
+                        Hệ thống tự tạo khoản thu lúc <strong>8:00 ngày 28</strong> hàng tháng.
+                    </div>
+
+                    <form th:action="${mauKhoanThu.id == null}
+                                        ? @{/mau-khoan-thu/them}
+                                        : @{/mau-khoan-thu/sua/{id}(id=${mauKhoanThu.id})}"
+                          th:object="${mauKhoanThu}" method="post" novalidate>
+
+                        <!-- Tên mẫu -->
+                        <div class="mb-3">
+                            <label class="form-label">Tên mẫu <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{tenMau}" class="form-control"
+                                   th:errorclass="is-invalid"
+                                   placeholder="VD: Phí dịch vụ hàng tháng"/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('tenMau')}"
+                                 th:errors="*{tenMau}"></div>
+                            <div class="form-text">
+                                Khoản thu được tạo sẽ có tên: <em>"[Tên mẫu] MM/yyyy"</em>
+                            </div>
+                        </div>
+
+                        <!-- Tiền tố mã -->
+                        <div class="mb-3">
+                            <label class="form-label">Tiền tố mã <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="text" th:field="*{maMauPrefix}" class="form-control"
+                                       th:errorclass="is-invalid"
+                                       placeholder="VD: DV" style="max-width: 160px;"/>
+                                <span class="input-group-text text-muted">-yyyy-MM</span>
+                            </div>
+                            <div class="invalid-feedback d-block"
+                                 th:if="${#fields.hasErrors('maMauPrefix')}"
+                                 th:errors="*{maMauPrefix}"></div>
+                            <div class="form-text">
+                                Ví dụ: prefix <code>DV</code> → mã khoản thu <code>DV-2026-06</code>
+                            </div>
+                        </div>
+
+                        <!-- Loại khoản thu -->
+                        <div class="mb-3">
+                            <label class="form-label">Loại khoản thu <span class="text-danger">*</span></label>
+                            <select name="loaiKhoanThu.id" class="form-select"
+                                    th:classappend="${#fields.hasErrors('loaiKhoanThu')} ? 'is-invalid' : ''"
+                                    required>
+                                <option value="">-- Chọn loại --</option>
+                                <option th:each="loai : ${danhSachLoai}"
+                                        th:value="${loai.id}"
+                                        th:text="${loai.tenLoai}"
+                                        th:selected="${mauKhoanThu.loaiKhoanThu != null
+                                                       and mauKhoanThu.loaiKhoanThu.id == loai.id}">
+                                </option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('loaiKhoanThu')}"
+                                 th:errors="*{loaiKhoanThu}"></div>
+                        </div>
+
+                        <!-- Số tiền + Đơn vị -->
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Số tiền (cố định) <span class="text-danger">*</span></label>
+                                <input type="number" th:field="*{soTien}" class="form-control"
+                                       th:errorclass="is-invalid" min="0" step="1000" required/>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('soTien')}"
+                                     th:errors="*{soTien}"></div>
+                                <div class="form-text">Dùng khi không tính theo diện tích.</div>
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Đơn vị</label>
+                                <input type="text" th:field="*{donVi}" class="form-control"
+                                       placeholder="VD: VNĐ"/>
+                            </div>
+                        </div>
+
+                        <!-- Đơn giá/m² -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-rulers me-1"></i>Đơn giá/m²
+                                <span class="text-muted small fw-normal">(tùy chọn — tính theo diện tích)</span>
+                            </label>
+                            <div class="input-group">
+                                <input type="number" th:field="*{donGiaPerM2}" class="form-control"
+                                       th:errorclass="is-invalid" step="1000" min="0"
+                                       placeholder="VD: 7000"/>
+                                <span class="input-group-text">đ/m²</span>
+                            </div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('donGiaPerM2')}"
+                                 th:errors="*{donGiaPerM2}"></div>
+                            <div class="form-text">
+                                Nếu điền, số tiền mỗi hộ = <strong>diện tích × đơn giá/m²</strong>.
+                            </div>
+                        </div>
+
+                        <!-- Hạn nộp -->
+                        <div class="mb-3">
+                            <label class="form-label">Hạn nộp (ngày trong tháng)</label>
+                            <div class="input-group" style="max-width: 260px;">
+                                <span class="input-group-text">Ngày</span>
+                                <input type="number" th:field="*{soNgayHanNop}" class="form-control"
+                                       th:errorclass="is-invalid" min="1" max="365"
+                                       placeholder="VD: 15"/>
+                                <span class="input-group-text">trong tháng</span>
+                            </div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('soNgayHanNop')}"
+                                 th:errors="*{soNgayHanNop}"></div>
+                            <div class="form-text">
+                                Để trống nếu không có hạn nộp.
+                                Ví dụ: <code>15</code> → hạn nộp là ngày 15 của kỳ thu.
+                            </div>
+                        </div>
+
+                        <!-- Ghi chú -->
+                        <div class="mb-4">
+                            <label class="form-label">Ghi chú</label>
+                            <textarea th:field="*{ghiChu}" class="form-control" rows="2"
+                                      placeholder="Mô tả thêm về mẫu thu này..."></textarea>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-1"></i>Lưu
+                            </button>
+                            <a th:href="@{/mau-khoan-thu}" class="btn btn-outline-secondary">Hủy</a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

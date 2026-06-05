@@ -56,6 +56,16 @@
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('soDienThoai')}" th:errors="*{soDienThoai}"></div>
                         </div>
 
+                        <div class="mb-3">
+                            <label class="form-label">Email chủ hộ</label>
+                            <input type="email" th:field="*{email}" class="form-control"
+                                   th:errorclass="is-invalid" placeholder="example@gmail.com"/>
+                            <div class="invalid-feedback"
+                                 th:if="${#fields.hasErrors('email')}"
+                                 th:errors="*{email}"></div>
+                            <div class="form-text text-muted">Dùng để nhận thông báo khoản thu. Có thể để trống.</div>
+                        </div>
+
                         <div class="mb-4">
                             <label class="form-label">Ghi chú</label>
                             <textarea th:field="*{ghiChu}" class="form-control" rows="2"></textarea>

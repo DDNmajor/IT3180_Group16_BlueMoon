@@ -37,6 +37,11 @@ public class HoGiaDinh {
     @Column(name = "tang_khu_vuc", length = 50)
     private String tangKhuVuc;
 
+    @Email(message = "Email không đúng định dạng")
+    @Size(max = 255, message = "Email không quá 255 ký tự")
+    @Column(name = "email", length = 255)
+    private String email;
+
     @Column(name = "ghi_chu")
     private String ghiChu;
 

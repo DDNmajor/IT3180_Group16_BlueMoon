@@ -27,6 +27,8 @@ public class KhoanThuService {
     private final ThanhToanRepository    thanhToanRepository;
     private final HoGiaDinhRepository    hoGiaDinhRepository;
     private final LoaiKhoanThuRepository loaiKhoanThuRepository;
+    private final AuditLogService        auditLogService;
+    private final EmailService           emailService;
 
     public List<KhoanThu> findAll() {
         return khoanThuRepository.findAll();
@@ -97,15 +99,21 @@ public class KhoanThuService {
 
         KhoanThu saved = khoanThuRepository.save(khoanThu);
 
+        String user = currentUser();
         if (isNew) {
+            String tenLoai = saved.getLoaiKhoanThu() != null ? saved.getLoaiKhoanThu().getTenLoai() : "?";
             log.info("[AUDIT] Tạo khoản thu: ma={}, ten={}, loai={}, soTien={}, user={}",
-                    saved.getMaKhoanThu(), saved.getTenKhoanThu(),
-                    saved.getLoaiKhoanThu() != null ? saved.getLoaiKhoanThu().getTenLoai() : "?",
-                    saved.getSoTien(), currentUser());
+                    saved.getMaKhoanThu(), saved.getTenKhoanThu(), tenLoai, saved.getSoTien(), user);
+            auditLogService.log("Tạo", "Khoản thu",
+                    "ma=" + saved.getMaKhoanThu() + ", ten=" + saved.getTenKhoanThu()
+                    + ", loai=" + tenLoai + ", soTien=" + saved.getSoTien(), user);
             autoApplyNeuBatBuoc(saved);
         } else {
             log.info("[AUDIT] Sửa khoản thu: id={}, ma={}, ten={}, user={}",
-                    saved.getId(), saved.getMaKhoanThu(), saved.getTenKhoanThu(), currentUser());
+                    saved.getId(), saved.getMaKhoanThu(), saved.getTenKhoanThu(), user);
+            auditLogService.log("Sửa", "Khoản thu",
+                    "id=" + saved.getId() + ", ma=" + saved.getMaKhoanThu()
+                    + ", ten=" + saved.getTenKhoanThu(), user);
         }
 
         return saved;
@@ -122,8 +130,11 @@ public class KhoanThuService {
         // Xóa các bản ghi auto-tạo (soTienDaNop = 0) trước khi xóa khoản thu
         thanhToanRepository.deleteByKhoanThuId(id);
         khoanThuRepository.deleteById(id);
+        String user = currentUser();
         log.info("[AUDIT] Xóa khoản thu: id={}, ma={}, ten={}, user={}",
-                id, kt.getMaKhoanThu(), kt.getTenKhoanThu(), currentUser());
+                id, kt.getMaKhoanThu(), kt.getTenKhoanThu(), user);
+        auditLogService.log("Xóa", "Khoản thu",
+                "id=" + id + ", ma=" + kt.getMaKhoanThu() + ", ten=" + kt.getTenKhoanThu(), user);
     }
 
     private void validateMaKhoanThu(KhoanThu khoanThu) {
@@ -144,6 +155,7 @@ public class KhoanThuService {
 
         List<HoGiaDinh> tatCaHo = hoGiaDinhRepository.findAll();
         for (HoGiaDinh ho : tatCaHo) {
+            BigDecimal soTienYeuCauCuaHo = tinhSoTienYeuCau(khoanThu, ho);
             ThanhToan tt = new ThanhToan();
             tt.setHoGiaDinh(ho);
             tt.setKhoanThu(khoanThu);
@@ -151,11 +163,63 @@ public class KhoanThuService {
             tt.setNgayNop(khoanThu.getKyThu());
             tt.setTrangThai(TrangThaiThanhToan.CON_NO);
             tt.setPhuongThuc(PhuongThucThanhToan.TIEN_MAT);
+            tt.setSoTienYeuCau(soTienYeuCauCuaHo);
             thanhToanRepository.save(tt);
+            emailService.guiThongBaoKhoanThu(ho, khoanThu, soTienYeuCauCuaHo);
         }
 
+        String user = currentUser();
         log.info("[AUDIT] Auto-apply khoản thu bắt buộc: id={}, ma={}, soHo={}, user={}",
-                khoanThu.getId(), khoanThu.getMaKhoanThu(), tatCaHo.size(), currentUser());
+                khoanThu.getId(), khoanThu.getMaKhoanThu(), tatCaHo.size(), user);
+        auditLogService.log("Auto-apply", "Khoản thu",
+                "id=" + khoanThu.getId() + ", ma=" + khoanThu.getMaKhoanThu()
+                + ", áp dụng cho " + tatCaHo.size() + " hộ", user);
+    }
+
+    /**
+     * Áp khoản thu bắt buộc đang tồn tại cho hộ gia đình mới được tạo.
+     * Gọi sau khi lưu HoGiaDinh mới thành công.
+     */
+    @Transactional
+    public void autoApplyForNewHo(HoGiaDinh ho) {
+        List<KhoanThu> batBuocList = khoanThuRepository.findAll().stream()
+                .filter(kt -> kt.getLoaiKhoanThu() != null
+                        && kt.getLoaiKhoanThu().getLoaiApDung() != null
+                        && kt.getLoaiKhoanThu().getLoaiApDung().isBatBuoc())
+                .collect(java.util.stream.Collectors.toList());
+
+        int count = 0;
+        for (KhoanThu kt : batBuocList) {
+            if (thanhToanRepository.existsByHoGiaDinhIdAndKhoanThuId(ho.getId(), kt.getId())) {
+                continue;
+            }
+            ThanhToan tt = new ThanhToan();
+            tt.setHoGiaDinh(ho);
+            tt.setKhoanThu(kt);
+            tt.setSoTienDaNop(BigDecimal.ZERO);
+            tt.setNgayNop(kt.getKyThu());
+            tt.setTrangThai(TrangThaiThanhToan.CON_NO);
+            tt.setPhuongThuc(PhuongThucThanhToan.TIEN_MAT);
+            tt.setSoTienYeuCau(tinhSoTienYeuCau(kt, ho));
+            thanhToanRepository.save(tt);
+            count++;
+        }
+
+        if (count > 0) {
+            String user = currentUser();
+            log.info("[AUDIT] Auto-apply hộ mới: canHo={}, soKhoanThu={}, user={}",
+                    ho.getSoCanHo(), count, user);
+            auditLogService.log("Auto-apply", "Khoản thu",
+                    "canHo=" + ho.getSoCanHo() + ", áp " + count + " khoản thu bắt buộc cho hộ mới", user);
+        }
+    }
+
+    /** Tính soTienYeuCau: nếu donGiaPerM2 và dienTich đều có → diện tích × đơn giá, ngược lại null (fallback soTien). */
+    private BigDecimal tinhSoTienYeuCau(KhoanThu kt, HoGiaDinh ho) {
+        if (kt.getDonGiaPerM2() != null && ho.getDienTich() != null) {
+            return ho.getDienTich().multiply(kt.getDonGiaPerM2());
+        }
+        return null;
     }
 
     private String currentUser() {

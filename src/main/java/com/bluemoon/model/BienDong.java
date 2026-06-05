@@ -29,6 +29,9 @@ public class BienDong {
     @Column(name = "ngay_bien_dong", nullable = false)
     private LocalDate ngayBienDong;
 
+    @Column(name = "ngay_ket_thuc")
+    private LocalDate ngayKetThuc;
+
     @Column(name = "ghi_chu")
     private String ghiChu;
 

@@ -52,9 +52,10 @@
 
                         <div class="row mb-3">
                             <div class="col">
-                                <label class="form-label">Số tiền <span class="text-danger">*</span></label>
+                                <label class="form-label">Số tiền (cố định) <span class="text-danger">*</span></label>
                                 <input type="number" th:field="*{soTien}" class="form-control" th:classappend="${#fields.hasErrors('soTien')} ? 'is-invalid' : ''" min="0" step="1000" required/>
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('soTien')}" th:errors="*{soTien}"></div>
+                                <div class="form-text">Dùng khi không tính theo diện tích.</div>
                             </div>
 
                             <div class="col">
@@ -64,6 +65,25 @@
                                      th:if="${#fields.hasErrors('donVi')}"
                                      th:errors="*{donVi}">
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-rulers me-1"></i>Đơn giá/m²
+                                <span class="text-muted small fw-normal">(tùy chọn — tính theo diện tích)</span>
+                            </label>
+                            <div class="input-group">
+                                <input type="number" th:field="*{donGiaPerM2}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('donGiaPerM2')} ? 'is-invalid' : ''"
+                                       step="1000" min="0"
+                                       placeholder="VD: 7000"/>
+                                <span class="input-group-text">đ/m²</span>
+                            </div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('donGiaPerM2')}" th:errors="*{donGiaPerM2}"></div>
+                            <div class="form-text">
+                                Nếu điền, số tiền yêu cầu mỗi hộ = <strong>diện tích × đơn giá/m²</strong>.
+                                Hộ không có diện tích sẽ dùng "Số tiền cố định" làm fallback.
                             </div>
                         </div>
 

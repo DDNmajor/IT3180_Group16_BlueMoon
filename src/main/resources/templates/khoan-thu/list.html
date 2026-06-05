@@ -86,7 +86,14 @@
                             th:with="today=${T(java.time.LocalDate).now()},
                                      isQuaHan=${kt.hanNop != null && kt.hanNop.isBefore(today)}">
                             <td th:text="${stat.count}"></td>
-                            <td><code th:text="${kt.maKhoanThu}"></code></td>
+                            <td>
+                                <code th:text="${kt.maKhoanThu}"></code>
+                                <span th:if="${kt.mauKhoanThu != null}"
+                                      class="badge bg-info text-dark ms-1 small"
+                                      title="Tự động tạo từ mẫu định kỳ">
+                                    <i class="bi bi-arrow-repeat"></i> Tự động
+                                </span>
+                            </td>
                             <td th:text="${kt.tenKhoanThu}"></td>
                             <td>
                                 <span th:if="${kt.loaiKhoanThu != null}" th:text="${kt.loaiKhoanThu.tenLoai}"></span>
