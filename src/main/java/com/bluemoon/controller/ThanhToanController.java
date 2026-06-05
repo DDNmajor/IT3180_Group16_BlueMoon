@@ -223,12 +223,15 @@ public class ThanhToanController {
     public String nopThem(@PathVariable Integer id,
                           @RequestParam BigDecimal soTienThem,
                           @RequestParam(required = false) Integer idHo,
+                          Authentication auth,
                           RedirectAttributes ra) {
         if (soTienThem == null || soTienThem.compareTo(BigDecimal.ZERO) <= 0) {
             ra.addFlashAttribute("errorMsg", "Số tiền nộp thêm phải lớn hơn 0.");
             return idHo != null ? "redirect:/thanh-toan?idHo=" + idHo : "redirect:/thanh-toan";
         }
-        ThanhToan saved = thanhToanService.nopThem(id, soTienThem);
+        NguoiDung nguoiThu = null;
+        try { nguoiThu = nguoiDungService.findByTenDangNhap(auth.getName()); } catch (Exception ignored) {}
+        ThanhToan saved = thanhToanService.nopThem(id, soTienThem, nguoiThu);
         ra.addFlashAttribute("successMsg",
                 String.format("Đã cộng thêm %,.0f đ — Trạng thái mới: %s",
                         soTienThem.doubleValue(), saved.getTrangThai().getTenHienThi()));
@@ -242,8 +245,11 @@ public class ThanhToanController {
     @PostMapping("/hoan-tien/{id}")
     public String baoDaHoanTien(@PathVariable Integer id,
                                 @RequestParam(required = false) Integer idHo,
+                                Authentication auth,
                                 RedirectAttributes ra) {
-        ThanhToan saved = thanhToanService.baoDaHoanTien(id);
+        NguoiDung nguoiThu = null;
+        try { nguoiThu = nguoiDungService.findByTenDangNhap(auth.getName()); } catch (Exception ignored) {}
+        ThanhToan saved = thanhToanService.baoDaHoanTien(id, nguoiThu);
         ra.addFlashAttribute("successMsg", "Đã ghi nhận hoàn trả tiền thừa — khoản thu chuyển sang Đã đóng.");
         Integer redirectHo = idHo != null ? idHo
                 : (saved.getHoGiaDinh() != null ? saved.getHoGiaDinh().getId() : null);
@@ -254,8 +260,12 @@ public class ThanhToanController {
 
     @PostMapping("/xoa/{id}")
     public String xoa(@PathVariable Integer id, RedirectAttributes ra) {
-        thanhToanService.delete(id);
-        ra.addFlashAttribute("successMsg", "Xóa bản ghi thanh toán thành công.");
+        boolean deleted = thanhToanService.delete(id);
+        if (deleted) {
+            ra.addFlashAttribute("successMsg", "Xóa bản ghi thanh toán thành công.");
+        } else {
+            ra.addFlashAttribute("successMsg", "Khoản thu bắt buộc đã được đặt lại trạng thái Còn nợ.");
+        }
         return "redirect:/thanh-toan";
     }
 }

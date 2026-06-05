@@ -1,6 +1,8 @@
 package com.bluemoon.service;
 
 import com.bluemoon.dao.ThanhToanRepository;
+import com.bluemoon.model.NguoiDung;
+import com.bluemoon.model.PhuongThucThanhToan;
 import com.bluemoon.model.ThanhToan;
 import com.bluemoon.model.TrangThaiThanhToan;
 import lombok.RequiredArgsConstructor;
@@ -72,37 +74,64 @@ public class ThanhToanService {
     }
 
     @Transactional
-    public ThanhToan nopThem(Integer id, BigDecimal soTienThem) {
+    public ThanhToan nopThem(Integer id, BigDecimal soTienThem, NguoiDung nguoiThu) {
         ThanhToan tt = findById(id);
         BigDecimal tongMoi = tt.getSoTienDaNop().add(soTienThem);
         tt.setSoTienDaNop(tongMoi);
         tt.setTrangThai(tinhTrangThai(tongMoi, tt.getKhoanThu().getSoTien()));
+        if (nguoiThu != null) tt.setNguoiThu(nguoiThu);
         ThanhToan saved = thanhToanRepository.save(tt);
-        log.info("[AUDIT] Nộp thêm: id={}, canHo={}, soTienThem={}, tongMoi={}, trangThai={}",
+        log.info("[AUDIT] Nộp thêm: id={}, canHo={}, soTienThem={}, tongMoi={}, trangThai={}, nguoiThu={}",
                 id, tt.getHoGiaDinh() != null ? tt.getHoGiaDinh().getSoCanHo() : "?",
-                soTienThem, tongMoi, saved.getTrangThai());
+                soTienThem, tongMoi, saved.getTrangThai(),
+                saved.getNguoiThu() != null ? saved.getNguoiThu().getTenDangNhap() : "?");
         return saved;
     }
 
     @Transactional
-    public ThanhToan baoDaHoanTien(Integer id) {
+    public ThanhToan baoDaHoanTien(Integer id, NguoiDung nguoiThu) {
         ThanhToan tt = findById(id);
         BigDecimal soTienYeuCau = tt.getKhoanThu().getSoTien();
         tt.setSoTienDaNop(soTienYeuCau);
         tt.setTrangThai(TrangThaiThanhToan.DA_DONG);
+        if (nguoiThu != null) tt.setNguoiThu(nguoiThu);
         ThanhToan saved = thanhToanRepository.save(tt);
-        log.info("[AUDIT] Báo đã hoàn tiền: id={}, canHo={}, soTienSauHoan={}",
-                id, tt.getHoGiaDinh() != null ? tt.getHoGiaDinh().getSoCanHo() : "?", soTienYeuCau);
+        log.info("[AUDIT] Báo đã hoàn tiền: id={}, canHo={}, soTienSauHoan={}, nguoiThu={}",
+                id, tt.getHoGiaDinh() != null ? tt.getHoGiaDinh().getSoCanHo() : "?",
+                soTienYeuCau,
+                saved.getNguoiThu() != null ? saved.getNguoiThu().getTenDangNhap() : "?");
         return saved;
     }
 
+    /**
+     * Xóa thanh toán tự nguyện. Nếu khoản thu là bắt buộc, reset về CON_NO thay vì xóa.
+     * @return true nếu thực sự xóa, false nếu chỉ reset về CON_NO
+     */
     @Transactional
-    public void delete(Integer id) {
+    public boolean delete(Integer id) {
         ThanhToan tt = findById(id);
+        boolean batBuoc = tt.getKhoanThu() != null
+                && tt.getKhoanThu().getLoaiKhoanThu() != null
+                && tt.getKhoanThu().getLoaiKhoanThu().getLoaiApDung() != null
+                && tt.getKhoanThu().getLoaiKhoanThu().getLoaiApDung().isBatBuoc();
+
+        if (batBuoc) {
+            tt.setSoTienDaNop(BigDecimal.ZERO);
+            tt.setTrangThai(TrangThaiThanhToan.CON_NO);
+            tt.setPhuongThuc(PhuongThucThanhToan.TIEN_MAT);
+            thanhToanRepository.save(tt);
+            log.info("[AUDIT] Reset thanh toán bắt buộc về CON_NO: id={}, canHo={}, khoanThu={}",
+                    id,
+                    tt.getHoGiaDinh() != null ? tt.getHoGiaDinh().getSoCanHo()   : "?",
+                    tt.getKhoanThu().getTenKhoanThu());
+            return false;
+        }
+
         thanhToanRepository.deleteById(id);
         log.info("[AUDIT] Xóa thanh toán: id={}, canHo={}, khoanThu={}",
                 id,
                 tt.getHoGiaDinh() != null ? tt.getHoGiaDinh().getSoCanHo()   : "?",
                 tt.getKhoanThu()  != null ? tt.getKhoanThu().getTenKhoanThu() : "?");
+        return true;
     }
 }
