@@ -143,6 +143,7 @@ public class KhoanThuService {
             tt.setSoTienDaNop(BigDecimal.ZERO);
             tt.setNgayNop(khoanThu.getKyThu());
             tt.setTrangThai(TrangThaiThanhToan.CON_NO);
+            tt.setPhuongThuc(PhuongThucThanhToan.TIEN_MAT);
             thanhToanRepository.save(tt);
         }
 
