@@ -33,7 +33,7 @@
                             <tr>
                                 <th style="width:40px">#</th>
                                 <th>Tên mẫu</th>
-                                <th>Tiền tố mã</th>
+                                <th style="min-width:155px">Tiền tố mã</th>
                                 <th>Loại</th>
                                 <th class="text-end">Số tiền / Đơn giá</th>
                                 <th class="text-center">Hạn nộp</th>
@@ -58,7 +58,8 @@
                                 </td>
 
                                 <!-- Tiền tố -->
-                                <td><code th:text="${mau.maMauPrefix}"></code>
+                                <td>
+                                    <code style="font-size: 0.95rem;" th:text="${mau.maMauPrefix}"></code>
                                     <span class="text-muted small">-yyyy-MM</span>
                                 </td>
 

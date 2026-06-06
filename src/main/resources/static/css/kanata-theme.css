@@ -48,8 +48,6 @@
 /* Container transparent để lộ gradient nền */
 [data-theme="light"] .container-fluid {
   background: transparent !important;
-  position: relative;
-  z-index: 1;
 }
 
 /* ─── DECORATIVE STARS ───────────────────────────────────────── */
@@ -63,7 +61,7 @@
   color: #a78bfa;
   opacity: 0.32;
   pointer-events: none;
-  z-index: 0;
+  z-index: -1;
   font-family: sans-serif;
   line-height: 1;
   transform: rotate(12deg);
@@ -82,7 +80,7 @@
   color: #93c5fd;
   opacity: 0.30;
   pointer-events: none;
-  z-index: 0;
+  z-index: -1;
   font-family: sans-serif;
   line-height: 1;
   transform: rotate(-10deg);
@@ -125,18 +123,12 @@
   opacity: 0.60;
 }
 
-[data-theme="light"] .table-dark th::before {
-  color: var(--k-thead-text);
-  opacity: 0.38;
-}
-
 /* ─── SCROLLBAR ──────────────────────────────────────────────── */
 [data-theme="light"] ::-webkit-scrollbar-track {
   background: rgba(240, 238, 255, 0.5);
 }
 [data-theme="light"] ::-webkit-scrollbar-thumb {
   background: rgba(99, 102, 241, 0.28);
-  border-radius: 3px;
 }
 [data-theme="light"] ::-webkit-scrollbar-thumb:hover {
   background: rgba(99, 102, 241, 0.50);
@@ -145,7 +137,7 @@
 /* ─── NAVBAR ─────────────────────────────────────────────────── */
 [data-theme="light"] .moon-navbar {
   background: linear-gradient(90deg, #4f46e5 0%, #6366f1 100%) !important;
-  border-bottom: none !important;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.18) !important;
   position: relative;
   box-shadow: 0 2px 16px rgba(99, 102, 241, 0.30) !important;
   z-index: 100;
@@ -193,6 +185,10 @@
 [data-theme="light"] .moon-navbar .nav-user-name {
   color: rgba(255, 255, 255, 0.92) !important;
 }
+[data-theme="light"] .moon-navbar .nav-user-name .bi {
+  font-size: 1.2rem;
+  vertical-align: middle;
+}
 
 [data-theme="light"] .moon-navbar .btn-outline-light {
   border-color: rgba(255, 255, 255, 0.50) !important;
@@ -226,7 +222,7 @@
 [data-theme="light"] .sidebar {
   background: var(--k-glass-sidebar) !important;
   border-right: 1px solid rgba(167, 139, 250, 0.22) !important;
-  box-shadow: 2px 0 20px rgba(139, 92, 246, 0.07) !important;
+  box-shadow: 0 0 16px rgba(139, 92, 246, 0.07) !important;
   z-index: 10;
   position: relative;
 }
@@ -242,8 +238,8 @@
 
 [data-theme="light"] .sidebar .nav-section {
   color: var(--k-primary) !important;
-  font-size: 0.64rem;
-  letter-spacing: 1.4px;
+  font-size: 0.77rem;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   font-weight: 700;
 }
@@ -274,7 +270,7 @@
   color: var(--k-primary-hover) !important;
   background: rgba(99, 102, 241, 0.12) !important;
   border-left: 3px solid var(--k-primary) !important;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 /* ─── CARDS — Glassmorphism ──────────────────────────────────── */
@@ -282,7 +278,7 @@
   background: var(--k-glass-card) !important;
   border: 1px solid rgba(167, 139, 250, 0.20) !important;
   border-top: 2px solid rgba(99, 102, 241, 0.45) !important;
-  border-radius: 16px !important;
+  border-radius: 12px !important;
   box-shadow: var(--k-shadow) !important;
   transition: box-shadow 0.2s ease;
 }
@@ -304,7 +300,7 @@
   border-bottom: 1px solid rgba(167, 139, 250, 0.18) !important;
   color: var(--k-text) !important;
   font-weight: 600;
-  border-radius: 15px 15px 0 0 !important;
+  border-radius: 12px 12px 0 0 !important;
 }
 
 [data-theme="light"] .card-body {
@@ -317,7 +313,7 @@
   background: rgba(240, 238, 255, 0.60) !important;
   border-top: 1px solid rgba(167, 139, 250, 0.15) !important;
   color: var(--k-text-muted) !important;
-  border-radius: 0 0 15px 15px !important;
+  border-radius: 0 0 12px 12px !important;
 }
 
 [data-theme="light"] .shadow-sm {
@@ -328,28 +324,28 @@
 [data-theme="light"] .card.bg-primary {
   background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%) !important;
   border-top-color: #818cf8 !important;
-  border-radius: 16px !important;
+  border-radius: 12px !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
 [data-theme="light"] .card.bg-success {
   background: linear-gradient(135deg, #15803d 0%, #22c55e 100%) !important;
   border-top-color: #86efac !important;
-  border-radius: 16px !important;
+  border-radius: 12px !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
 [data-theme="light"] .card.bg-warning {
   background: linear-gradient(135deg, #b45309 0%, #f59e0b 100%) !important;
   border-top-color: #fcd34d !important;
-  border-radius: 16px !important;
+  border-radius: 12px !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
 [data-theme="light"] .card.bg-info {
   background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%) !important;
   border-top-color: #93c5fd !important;
-  border-radius: 16px !important;
+  border-radius: 12px !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
@@ -388,9 +384,9 @@
   color:                   var(--k-thead-text) !important;
   font-family:             'Be Vietnam Pro', 'Nunito', sans-serif !important;
   text-transform:          uppercase !important;
-  letter-spacing:          0.03em !important;
+  letter-spacing:          0.8px !important;
   font-size:               0.77rem !important;
-  font-weight:             600 !important;
+  font-weight:             700 !important;
 }
 
 [data-theme="light"] .table-secondary {
@@ -410,82 +406,84 @@
   transition: background 0.15s ease;
 }
 
-/* ─── BADGES — flat accessible style ────────────────────────── */
+/* ─── BADGES — bordered style (khớp dark mode) ──────────────── */
 [data-theme="light"] .badge {
-  border-radius: 20px !important;
-  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  padding: 3px 9px !important;
   font-weight: 600 !important;
   font-size: 0.75em !important;
   font-family: 'Be Vietnam Pro', 'Nunito', sans-serif !important;
 }
 
-/* DA_DONG → emerald flat */
+/* DA_DONG → emerald */
 [data-theme="light"] .badge.bg-success {
   background-color: #dcfce7 !important;
-  border: none !important;
+  border: 1px solid rgba(22, 163, 74, 0.38) !important;
   color: #16a34a !important;
 }
 
-/* CON_NO (bg-warning) → amber flat */
+/* CON_NO (bg-warning) → amber */
 [data-theme="light"] .badge.bg-warning {
   background-color: #fef3c7 !important;
-  border: none !important;
+  border: 1px solid rgba(180, 83, 9, 0.35) !important;
   color: #b45309 !important;
 }
 
-/* DONG_DU (bg-info) → blue flat */
+/* DONG_DU (bg-info) → blue */
 [data-theme="light"] .badge.bg-info {
   background-color: #dbeafe !important;
-  border: none !important;
+  border: 1px solid rgba(29, 78, 216, 0.30) !important;
   color: #1d4ed8 !important;
 }
 
-/* Danger / admin role → red flat */
+/* Danger / admin role → red */
 [data-theme="light"] .badge.bg-danger {
   background-color: #fee2e2 !important;
-  border: none !important;
+  border: 1px solid rgba(220, 38, 38, 0.38) !important;
   color: #dc2626 !important;
 }
 
-/* Secondary / nhanvien → slate flat */
+/* Secondary / nhanvien → slate */
 [data-theme="light"] .badge.bg-secondary {
   background-color: #f1f5f9 !important;
-  border: none !important;
+  border: 1px solid rgba(100, 116, 139, 0.30) !important;
   color: #64748b !important;
 }
 
-/* Primary / audit auto-apply → indigo flat */
+/* Primary / audit auto-apply → indigo */
 [data-theme="light"] .badge.bg-primary {
   background-color: #ede9fe !important;
-  border: none !important;
+  border: 1px solid rgba(99, 102, 241, 0.38) !important;
   color: #6366f1 !important;
 }
 
 [data-theme="light"] .badge.bg-dark {
   background-color: #e2e8f0 !important;
-  border: none !important;
+  border: 1px solid rgba(51, 65, 85, 0.28) !important;
   color: #334155 !important;
 }
 
 /* ─── BUTTONS ────────────────────────────────────────────────── */
 [data-theme="light"] .btn {
-  border-radius: 8px !important;
+  border-radius: 10px !important;
   font-weight: 600 !important;
   font-family: 'Be Vietnam Pro', 'Nunito', sans-serif !important;
   transition: box-shadow 0.2s ease, transform 0.12s ease, background 0.18s ease !important;
 }
+[data-theme="light"] .btn-sm { border-radius: 8px !important; }
 
-/* Primary — indigo gradient (filter/submit buttons) */
+/* Primary — indigo gradient trên nhạt dưới đậm */
 [data-theme="light"] .btn-primary {
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
-  border-color: #4f46e5 !important;
+  background: linear-gradient(180deg, #818cf8 0%, #4f46e5 100%) !important;
+  border: 2px solid rgba(99, 102, 241, 0.40) !important;
   color: #FFFFFF !important;
   box-shadow: 0 2px 8px rgba(99, 102, 241, 0.30) !important;
+  transition: box-shadow 0.2s ease, transform 0.1s ease !important;
 }
 [data-theme="light"] .btn-primary:hover,
 [data-theme="light"] .btn-primary:focus {
-  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
-  border-color: #4338ca !important;
+  background: linear-gradient(180deg, #6366f1 0%, #4338ca 100%) !important;
+  border-color: rgba(99, 102, 241, 0.60) !important;
   box-shadow: 0 4px 16px rgba(99, 102, 241, 0.45) !important;
   transform: translateY(-1px) !important;
 }
@@ -526,30 +524,30 @@
   color: #16a34a !important;
 }
 
-/* Warning — glassmorphism amber (edit buttons trong table) */
+/* Warning — amber gradient trên nhạt dưới đậm */
 [data-theme="light"] .btn-warning {
-  background: rgba(251, 191, 36, 0.14) !important;
-  border: 1px solid rgba(251, 191, 36, 0.35) !important;
-  color: #d97706 !important;
+  background: linear-gradient(180deg, #fcd34d 0%, #d97706 100%) !important;
+  border: 2px solid rgba(217, 119, 6, 0.35) !important;
+  color: #ffffff !important;
 }
 [data-theme="light"] .btn-warning:hover {
-  background: rgba(251, 191, 36, 0.24) !important;
-  border-color: rgba(251, 191, 36, 0.55) !important;
-  color: #b45309 !important;
-  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.22) !important;
+  background: linear-gradient(180deg, #fbbf24 0%, #b45309 100%) !important;
+  border-color: rgba(217, 119, 6, 0.55) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.32) !important;
 }
 
-/* Danger — glassmorphism red (delete buttons trong table) */
+/* Danger — red gradient trên nhạt dưới đậm */
 [data-theme="light"] .btn-danger {
-  background: rgba(239, 68, 68, 0.12) !important;
-  border: 1px solid rgba(239, 68, 68, 0.28) !important;
-  color: #dc2626 !important;
+  background: linear-gradient(180deg, #f87171 0%, #dc2626 100%) !important;
+  border: 2px solid rgba(220, 38, 38, 0.35) !important;
+  color: #ffffff !important;
 }
 [data-theme="light"] .btn-danger:hover {
-  background: rgba(239, 68, 68, 0.20) !important;
-  border-color: rgba(239, 68, 68, 0.45) !important;
-  color: #b91c1c !important;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.22) !important;
+  background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%) !important;
+  border-color: rgba(220, 38, 38, 0.55) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.32) !important;
 }
 
 [data-theme="light"] .btn-outline-danger {
@@ -596,7 +594,7 @@
   background: rgba(255, 255, 255, 0.85) !important;
   border: 1px solid rgba(167, 139, 250, 0.32) !important;
   color: var(--k-text) !important;
-  border-radius: 8px !important;
+  border-radius: 10px !important;
   font-family: 'Be Vietnam Pro', 'Nunito', sans-serif !important;
   transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
 }
@@ -652,7 +650,7 @@
   background: rgba(232, 228, 255, 0.75) !important;
   border-color: rgba(167, 139, 250, 0.32) !important;
   color: var(--k-text-muted) !important;
-  border-radius: 8px !important;
+  border-radius: 10px !important;
 }
 [data-theme="light"] .input-group-text i,
 [data-theme="light"] .input-group-text .bi { color: var(--k-primary) !important; }
@@ -717,7 +715,7 @@
   background: rgba(232, 228, 255, 0.85) !important;
   border-bottom: 1px solid rgba(167, 139, 250, 0.20) !important;
   color: var(--k-text) !important;
-  border-radius: 15px 15px 0 0 !important;
+  border-radius: 16px 16px 0 0 !important;
 }
 [data-theme="light"] .modal-header.bg-warning.bg-opacity-25 {
   background: rgba(245, 158, 11, 0.12) !important;
@@ -801,28 +799,7 @@
   filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.35));
 }
 
-/* ─── LOGIN THEME TOGGLE ─────────────────────────────────────── */
-#loginThemeToggleBtn {
-  background: transparent;
-  border: 2px solid rgba(215, 180, 255, 0.35);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: rgba(215, 180, 255, 0.80);
-  font-size: 1rem;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
-}
-#loginThemeToggleBtn:hover {
-  border-color: rgba(215, 180, 255, 0.80);
-  box-shadow: 0 0 0 3px rgba(167, 125, 255, 0.18),
-              0 0 10px rgba(167, 125, 255, 0.14);
-  color: #D7B4FF;
-}
-
+/* ─── LOGIN THEME TOGGLE (light colors) ──────────────────────── */
 [data-theme="light"] #loginThemeToggleBtn {
   border-color: rgba(99, 102, 241, 0.35);
   color: rgba(99, 102, 241, 0.80);
@@ -888,6 +865,29 @@
   100% { opacity: 0;    transform: translateX(calc(100vw + 800px)); }
 }
 
+/* ─── FEE TAGS — light mode contrast ────────────────────────── */
+[data-theme="light"] .fee-tag-required {
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fcd34d;
+}
+[data-theme="light"] .fee-tag-periodic {
+  background: #f5f3ff;
+  color: #7c3aed;
+  border: 1px solid #c4b5fd;
+}
+[data-theme="light"] .fee-tag-unexpected {
+  background: #fff1f2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+}
+[data-theme="light"] .fee-tag-voluntary {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #6ee7b7;
+  font-weight: 600;
+}
+
 /* ─── DROP SHADOWS (light mode only) ────────────────────────── */
 [data-theme="light"] .card {
   box-shadow: 0 4px 20px rgba(99,102,241,0.13), 0 1px 6px rgba(99,102,241,0.08) !important;
@@ -909,10 +909,10 @@
   box-shadow: 0 3px 10px rgba(34,197,94,0.30) !important;
 }
 [data-theme="light"] .btn-warning {
-  box-shadow: 0 3px 10px rgba(251,191,36,0.22) !important;
+  box-shadow: 0 3px 10px rgba(217,119,6,0.28) !important;
 }
 [data-theme="light"] .btn-danger {
-  box-shadow: 0 3px 10px rgba(239,68,68,0.22) !important;
+  box-shadow: 0 3px 10px rgba(220,38,38,0.28) !important;
 }
 [data-theme="light"] .btn-info {
   box-shadow: 0 3px 10px rgba(59,130,246,0.30) !important;
@@ -944,4 +944,16 @@
 .kanata-cloud {
   pointer-events: none !important;
   user-select: none !important;
+}
+
+/* Decorations phải dưới text sidebar — z-index thấp hơn nav-link */
+[data-theme="light"] .kanata-wings           { z-index: 0 !important; opacity: 0.28 !important; }
+[data-theme="light"] .kanata-cloud           { z-index: 0 !important; opacity: 0.30 !important; }
+[data-theme="light"] .kanata-sidebar-sparkle { z-index: 0 !important; opacity: 0.38 !important; }
+
+/* Nav items nổi lên trên decoration */
+[data-theme="light"] .sidebar .nav-link,
+[data-theme="light"] .sidebar .nav-section {
+  position: relative;
+  z-index: 2;
 }

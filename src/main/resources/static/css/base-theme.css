@@ -1,0 +1,261 @@
+/* ============================================================
+   BASE THEME — BlueMoon Fee Management System
+   Quy định sizing, layout, typography. KHÔNG có màu.
+   Load trước moona & kanata. Cả dark và light kế thừa file này.
+   ============================================================ */
+
+/* ─── SCROLLBAR SIZING ───────────────────────────────────────── */
+::-webkit-scrollbar              { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb        { border-radius: 3px; }
+
+/* ─── TYPOGRAPHY ─────────────────────────────────────────────── */
+body {
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-weight: 600;
+}
+
+/* ─── NAVBAR ─────────────────────────────────────────────────── */
+.moon-navbar {
+  position: relative;
+}
+
+.moon-navbar::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  pointer-events: none;
+}
+
+.navbar-brand {
+  font-family: 'Cinzel', 'Be Vietnam Pro', sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 1.5px;
+}
+
+.moon-navbar .nav-user-name {
+  font-size: 0.875rem;
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+.moon-navbar .nav-user-name .bi {
+  font-size: 1.2rem;
+  vertical-align: middle;
+}
+
+/* ─── SIDEBAR ────────────────────────────────────────────────── */
+.sidebar {
+  min-height: calc(100vh - 56px);
+}
+
+.sidebar .nav-link {
+  border-left: 3px solid transparent;
+  border-radius: 0 8px 8px 0;
+  transition: color 0.2s ease, background-color 0.2s ease, border-left-color 0.2s ease;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-weight: 500;
+  padding-left: 12px;
+  margin-right: 4px;
+}
+
+.sidebar .nav-link.active {
+  font-weight: 600;
+}
+
+.sidebar .nav-section {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 0.77rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  margin-top: 0.4rem;
+  font-weight: 700;
+}
+
+/* ─── CARDS ──────────────────────────────────────────────────── */
+.card {
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.card-header {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-weight: 600;
+  border-radius: 12px 12px 0 0 !important;
+}
+
+.card-footer {
+  border-radius: 0 0 12px 12px !important;
+}
+
+/* ─── TABLES ─────────────────────────────────────────────────── */
+.table td,
+.table th {
+  vertical-align: middle;
+}
+
+.table-dark th {
+  font-family:    'Be Vietnam Pro', sans-serif !important;
+  font-weight:    700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.8px !important;
+  font-size:      0.77rem !important;
+}
+
+.table-dark th::before {
+  display: none;
+  content: none;
+}
+
+/* ─── BADGES ─────────────────────────────────────────────────── */
+.badge {
+  font-family:   'Be Vietnam Pro', sans-serif !important;
+  font-weight:   600 !important;
+  font-size:     0.75em !important;
+  padding:       3px 9px !important;
+  border-radius: 6px !important;
+}
+
+/* ─── BUTTONS ────────────────────────────────────────────────── */
+.btn {
+  border-radius: 10px !important;
+  font-family:   'Be Vietnam Pro', sans-serif !important;
+  font-weight:   600 !important;
+  border-width:  2px !important;
+}
+
+.btn-sm { border-radius: 8px !important; }
+
+/* ─── FORMS ──────────────────────────────────────────────────── */
+.form-control,
+.form-select {
+  border-radius: 10px !important;
+  font-family:   'Be Vietnam Pro', sans-serif !important;
+}
+
+.input-group-text {
+  border-radius: 10px !important;
+}
+
+.form-label {
+  font-weight: 600;
+  font-size:   0.9rem;
+  font-family: 'Be Vietnam Pro', sans-serif !important;
+}
+
+/* ─── ALERTS ─────────────────────────────────────────────────── */
+.alert {
+  border-radius: 10px !important;
+}
+
+/* ─── MODALS ─────────────────────────────────────────────────── */
+.modal-content {
+  border-radius: 16px !important;
+}
+
+.modal-header {
+  border-radius: 16px 16px 0 0 !important;
+}
+
+.modal-title {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-weight: 700;
+}
+
+/* ─── PAGINATION ─────────────────────────────────────────────── */
+.page-link {
+  border-radius: 8px !important;
+}
+
+/* ─── LOGIN ──────────────────────────────────────────────────── */
+body.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  border-radius: 20px !important;
+  width: 420px;
+}
+
+.login-brand {
+  font-family:    'Cinzel', 'Be Vietnam Pro', sans-serif;
+  font-weight:    700;
+  font-size:      1.85rem;
+  letter-spacing: 2px;
+}
+
+.login-subtitle {
+  font-size:   0.84rem;
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+.login-moon-icon {
+  font-size: 2.8rem;
+}
+
+/* ─── HEADING DECORATORS (structure only) ────────────────────── */
+h4::before,
+h5::before,
+.modal-title::before {
+  content:        "✦";
+  font-size:      0.6em;
+  margin-right:   0.45em;
+  vertical-align: middle;
+  font-family:    sans-serif;
+  font-style:     normal;
+  font-weight:    normal;
+}
+
+.sidebar .nav-section::before {
+  content:      "✦";
+  font-size:    0.75em;
+  margin-right: 0.35em;
+  font-family:  sans-serif;
+}
+
+/* ─── FEE TAGS (structure only) ──────────────────────────────── */
+.fee-tag {
+  display:        inline-flex;
+  align-items:    center;
+  padding:        2px 10px;
+  border-radius:  20px;
+  font-size:      12px;
+  font-weight:    500;
+  gap:            4px;
+  white-space:    nowrap;
+}
+
+/* ─── JS-INJECTED DECORATION HELPERS ────────────────────────── */
+.moon-sidebar-star,
+.moon-sparkle-dot,
+.moon-bg-sparkle,
+.kanata-sparkle,
+.kanata-sidebar-sparkle,
+.kanata-wings,
+.kanata-cloud {
+  pointer-events: none !important;
+  user-select:    none !important;
+}
+
+/* ─── LOGIN THEME TOGGLE BUTTON ──────────────────────────────── */
+#loginThemeToggleBtn {
+  border-radius:   50%;
+  width:           40px;
+  height:          40px;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  cursor:          pointer;
+  font-size:       1rem;
+  transition:      border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+  background:      transparent;
+  border-style:    solid;
+  border-width:    2px;
+}

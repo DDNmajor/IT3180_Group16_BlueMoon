@@ -115,7 +115,7 @@
                                 <th style="width:40px">#</th>
                                 <th>Căn hộ</th>
                                 <th>Khoản thu</th>
-                                <th class="text-end">Số tiền</th>
+                                <th class="text-end" style="min-width:130px">Số tiền</th>
                                 <th>Ngày nộp</th>
                                 <th>Phương thức</th>
                                 <th>Người thu</th>
@@ -149,6 +149,7 @@
                                 </td>
                                 <!-- Số tiền -->
                                 <td class="text-end fw-semibold text-success"
+                                    style="font-size: 1.05rem;"
                                     th:text="${#numbers.formatDecimal(tt.soTienDaNop, 0, 'COMMA', 0, 'POINT')} + ' đ'">
                                 </td>
                                 <!-- Ngày nộp -->

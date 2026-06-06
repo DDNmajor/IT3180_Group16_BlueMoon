@@ -43,7 +43,7 @@
                             <th>#</th>
                             <th>Số căn hộ</th>
                             <th>Chủ hộ</th>
-                            <th class="text-end">Diện tích (m²)</th>
+                            <th>Diện tích (m²)</th>
                             <th>SĐT</th>
                             <th class="text-center">Thao tác</th>
                         </tr>
@@ -58,7 +58,7 @@
                                 <a th:href="@{/ho-gia-dinh/{id}(id=${hgd.id})}" th:text="${hgd.soCanHo}" class="text-decoration-none fw-semibold"></a>
                             </td>
                             <td th:text="${hgd.chuHo}"></td>
-                            <td class="text-end" th:text="${hgd.dienTich}"></td>
+                            <td th:text="${hgd.dienTich}"></td>
                             <td th:text="${hgd.soDienThoai}"></td>
                             <td class="text-center">
                                 <a th:href="@{/ho-gia-dinh/{id}(id=${hgd.id})}" class="btn btn-info btn-sm text-white">

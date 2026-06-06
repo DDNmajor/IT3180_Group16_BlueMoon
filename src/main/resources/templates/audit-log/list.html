@@ -68,7 +68,7 @@
                            style="font-size: 0.82rem; table-layout: fixed; width: 100%;">
                         <colgroup>
                             <col style="width: 40px"/>
-                            <col style="width: 150px"/>
+                            <col style="width: 185px"/>
                             <col style="width: 120px"/>
                             <col style="width: 110px"/>
                             <col/>
@@ -93,7 +93,7 @@
                             <tr th:each="entry, stat : ${danhSach}">
                                 <td class="text-muted" style="white-space: nowrap;"
                                     th:text="${stat.count}"></td>
-                                <td style="white-space: nowrap;"
+                                <td style="white-space: nowrap; font-size: 0.9rem;"
                                     th:text="${#temporals.format(entry.thoiGian, 'dd/MM/yyyy HH:mm:ss')}"></td>
                                 <td style="white-space: nowrap;">
                                     <span th:with="hd=${entry.hanhDong}"

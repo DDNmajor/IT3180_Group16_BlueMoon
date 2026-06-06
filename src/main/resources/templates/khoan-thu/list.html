@@ -69,13 +69,13 @@
                             <th>#</th>
                             <th>Mã</th>
                             <th>Tên khoản thu</th>
-                            <th>Loại</th>
+                            <th style="min-width:160px">Loại</th>
                             <th class="text-end">Số tiền</th>
                             <th>Đơn vị</th>
                             <th>Kỳ thu</th>
                             <th>Hạn nộp</th>
                             <th class="text-center">Trạng thái</th>
-                            <th class="text-center">Thao tác</th>
+                            <th class="text-center" style="white-space: nowrap; min-width: 110px;">Thao tác</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -97,6 +97,25 @@
                             <td th:text="${kt.tenKhoanThu}"></td>
                             <td>
                                 <span th:if="${kt.loaiKhoanThu != null}" th:text="${kt.loaiKhoanThu.tenLoai}"></span>
+                                <div th:if="${kt.loaiKhoanThu != null and kt.loaiKhoanThu.loaiApDung != null}"
+                                     class="d-flex flex-wrap gap-1 mt-1">
+                                    <span th:if="${kt.loaiKhoanThu.loaiApDung.name() == 'BAT_BUOC_DINH_KY' or kt.loaiKhoanThu.loaiApDung.name() == 'BAT_BUOC_DOT_XUAT'}"
+                                          class="fee-tag fee-tag-required">
+                                        <i class="bi bi-exclamation-circle"></i>Bắt buộc
+                                    </span>
+                                    <span th:if="${kt.loaiKhoanThu.loaiApDung.name() == 'BAT_BUOC_DINH_KY'}"
+                                          class="fee-tag fee-tag-periodic">
+                                        <i class="bi bi-arrow-repeat"></i>Định kỳ
+                                    </span>
+                                    <span th:if="${kt.loaiKhoanThu.loaiApDung.name() == 'BAT_BUOC_DOT_XUAT'}"
+                                          class="fee-tag fee-tag-unexpected">
+                                        <i class="bi bi-lightning"></i>Đột xuất
+                                    </span>
+                                    <span th:if="${kt.loaiKhoanThu.loaiApDung.name() == 'TU_NGUYEN'}"
+                                          class="fee-tag fee-tag-voluntary">
+                                        <i class="bi bi-heart"></i>Tự nguyện
+                                    </span>
+                                </div>
                             </td>
                             <td class="text-end" th:text="${#numbers.formatDecimal(kt.soTien, 0, 'COMMA', 0, 'POINT')}"></td>
                             <td th:text="${kt.donVi}"></td>

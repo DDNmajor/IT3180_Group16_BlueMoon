@@ -1,11 +1,12 @@
 /* ═══════════════════════════════════════════════════════════════
-   MOONA HOSHINOVA THEME v2 — Moonlit Observatory Dark UI
+   MOONA HOSHINOVA — Dark Mode Colors & Decorations
    BlueMoon Fee Management System
-   Inspired by: moonlight · constellation · arcane crystal · midnight sky
+   Tất cả quy tắc được scope với [data-theme="dark"].
+   Sizing/layout được quản lý trong base-theme.css.
    ═══════════════════════════════════════════════════════════════ */
 
 /* ─── CSS VARIABLES ──────────────────────────────────────────── */
-:root {
+[data-theme="dark"] {
   --moon-bg:           #0B0820;
   --moon-surface:      #1B143D;
   --moon-card:         #241A4D;
@@ -27,10 +28,9 @@
   --moon-glow-gold:    rgba(231, 201, 106, 0.18);
 }
 
-/* ─── GLOBAL ─────────────────────────────────────────────────── */
-body {
+/* ─── BODY & BACKGROUND ──────────────────────────────────────── */
+[data-theme="dark"] body {
   background-color: var(--moon-bg) !important;
-  /* Moonlit depth: purple aurora at top-left, gold shimmer bottom-right */
   background-image:
     radial-gradient(ellipse 80% 55% at 12% 6%,  rgba(167, 125, 255, 0.09) 0%, transparent 60%),
     radial-gradient(ellipse 65% 40% at 88% 94%,  rgba(231, 201, 106, 0.05) 0%, transparent 55%),
@@ -39,8 +39,8 @@ body {
   font-family: 'Be Vietnam Pro', 'Inter', sans-serif !important;
 }
 
-/* Moon watermark — purple-gold gradient + glow */
-body::after {
+/* Moon watermark */
+[data-theme="dark"] body::after {
   content: '☾';
   position: fixed;
   bottom: -30px;
@@ -61,67 +61,57 @@ body::after {
           drop-shadow(0 0 40px rgba(253, 230, 138, 0.10));
 }
 
-.container-fluid { background-color: transparent; }
+/* ─── GLOBAL ─────────────────────────────────────────────────── */
+[data-theme="dark"] .container-fluid { background-color: transparent; }
 
-a             { color: var(--moon-purple); }
-a:hover       { color: var(--moon-lavender); }
+[data-theme="dark"] a       { color: var(--moon-purple); }
+[data-theme="dark"] a:hover { color: var(--moon-lavender); }
 
-.text-muted   { color: var(--moon-text-muted) !important; }
-.text-primary { color: var(--moon-purple) !important; }
-.text-success { color: var(--moon-success) !important; }
-.text-danger  { color: var(--moon-danger) !important; }
-.text-dark    { color: var(--moon-text) !important; }
-.text-white   { color: var(--moon-text) !important; }
+[data-theme="dark"] .text-muted   { color: var(--moon-text-muted) !important; }
+[data-theme="dark"] .text-primary { color: var(--moon-purple) !important; }
+[data-theme="dark"] .text-success { color: var(--moon-success) !important; }
+[data-theme="dark"] .text-danger  { color: var(--moon-danger) !important; }
+[data-theme="dark"] .text-dark    { color: var(--moon-text) !important; }
+[data-theme="dark"] .text-white   { color: var(--moon-text) !important; }
 
-hr { border-color: var(--moon-border) !important; opacity: 1; }
+[data-theme="dark"] hr { border-color: var(--moon-border) !important; opacity: 1; }
 
 /* ─── TYPOGRAPHY ─────────────────────────────────────────────── */
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
-  font-weight: 600;
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6 {
   color: var(--moon-text) !important;
 }
 
 /* ─── SCROLLBAR ──────────────────────────────────────────────── */
-::-webkit-scrollbar              { width: 6px; height: 6px; }
-::-webkit-scrollbar-track        { background: var(--moon-bg); }
-::-webkit-scrollbar-thumb        { background: rgba(167, 125, 255, 0.38); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover  { background: rgba(231, 201, 106, 0.50); }
+[data-theme="dark"] ::-webkit-scrollbar-track { background: var(--moon-bg); }
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: rgba(167, 125, 255, 0.38); }
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: rgba(231, 201, 106, 0.50); }
 
 /* ─── NAVBAR ─────────────────────────────────────────────────── */
-.moon-navbar {
+[data-theme="dark"] .moon-navbar {
   background: linear-gradient(135deg,
-    #0D0A24 0%,
-    #150F38 35%,
-    #120C2E 70%,
-    #0A0820 100%) !important;
+    #0D0A24 0%, #150F38 35%, #120C2E 70%, #0A0820 100%) !important;
   border-bottom: 1px solid rgba(167, 125, 255, 0.14) !important;
-  box-shadow:
-    0 2px 24px rgba(0, 0, 0, 0.55),
-    inset 0 -1px 0 rgba(167, 125, 255, 0.08) !important;
-  position: relative;
+  box-shadow: 0 2px 24px rgba(0, 0, 0, 0.55),
+              inset 0 -1px 0 rgba(167, 125, 255, 0.08) !important;
 }
 
-/* Moonlit shimmer bar — constellation gradient */
-.moon-navbar::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 1px;
+/* Shimmer bar */
+[data-theme="dark"] .moon-navbar::after {
   background: linear-gradient(90deg,
     transparent 0%,
     rgba(231, 201, 106, 0.28) 20%,
     rgba(167, 125, 255, 0.45) 50%,
     rgba(231, 201, 106, 0.28) 80%,
     transparent 100%);
-  pointer-events: none;
 }
 
-/* Brand — Cinzel + Moon Gold gradient text */
-.navbar-brand {
-  font-family: 'Cinzel', 'Be Vietnam Pro', sans-serif !important;
-  font-weight: 700 !important;
-  letter-spacing: 1.5px;
+/* Brand — Moon Gold gradient */
+[data-theme="dark"] .navbar-brand {
   background: linear-gradient(135deg, var(--moon-gold) 0%, var(--moon-gold-light) 55%, var(--moon-lavender) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -129,139 +119,112 @@ h1, h2, h3, h4, h5, h6 {
   filter: drop-shadow(0 0 8px rgba(231, 201, 106, 0.22));
 }
 
-.moon-navbar .nav-user-name {
-  color: var(--moon-text-muted) !important;
-  font-size: 0.875rem;
-  font-family: 'Be Vietnam Pro', sans-serif;
-}
+[data-theme="dark"] .moon-navbar .nav-user-name { color: var(--moon-text-muted) !important; }
 
-.moon-navbar .btn-outline-light {
+[data-theme="dark"] .moon-navbar .btn-outline-light {
   border-color: rgba(167, 125, 255, 0.35) !important;
   color: var(--moon-lavender) !important;
 }
-.moon-navbar .btn-outline-light:hover {
+[data-theme="dark"] .moon-navbar .btn-outline-light:hover {
   background: rgba(167, 125, 255, 0.12) !important;
   border-color: var(--moon-purple) !important;
   color: var(--moon-lavender) !important;
 }
 
 /* ─── SIDEBAR ────────────────────────────────────────────────── */
-.sidebar {
-  background: linear-gradient(180deg,
-    #150E34 0%,
-    #100C2C 100%) !important;
+[data-theme="dark"] .sidebar {
+  background: linear-gradient(180deg, #150E34 0%, #100C2C 100%) !important;
   border-right: 1px solid var(--moon-border);
-  min-height: calc(100vh - 56px);
 }
 
-.sidebar .nav-link {
+[data-theme="dark"] .sidebar .nav-link {
   color: var(--moon-text-muted) !important;
-  border-left: 3px solid transparent;
-  border-radius: 0 8px 8px 0;
-  transition: color 0.2s ease, background-color 0.2s ease, border-left-color 0.2s ease;
-  font-family: 'Be Vietnam Pro', sans-serif;
-  font-weight: 500;
-  padding-left: 12px;
-  margin-right: 4px;
 }
-
-.sidebar .nav-link:hover {
+[data-theme="dark"] .sidebar .nav-link:hover {
   color: var(--moon-lavender) !important;
   background-color: rgba(167, 125, 255, 0.08) !important;
   border-left-color: rgba(167, 125, 255, 0.30) !important;
 }
-
-.sidebar .nav-link.active {
+[data-theme="dark"] .sidebar .nav-link.active {
   color: var(--moon-gold-light) !important;
   background: linear-gradient(90deg,
     rgba(167, 125, 255, 0.18) 0%,
     rgba(167, 125, 255, 0.04) 100%) !important;
   border-left: 3px solid var(--moon-lavender) !important;
-  font-weight: 600;
-  /* Subtle left-edge crystal glow */
-  box-shadow:
-    inset 3px 0 12px rgba(215, 180, 255, 0.06),
-    -1px 0 8px rgba(215, 180, 255, 0.10) !important;
+  box-shadow: inset 3px 0 12px rgba(215, 180, 255, 0.06),
+              -1px 0 8px rgba(215, 180, 255, 0.10) !important;
 }
 
-.sidebar .nav-section {
+[data-theme="dark"] .sidebar .nav-section {
   color: var(--moon-gold) !important;
-  font-family: 'Be Vietnam Pro', sans-serif;
-  font-size: 0.64rem;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  padding: 0.5rem 1rem;
-  margin-top: 0.4rem;
-  font-weight: 700;
   opacity: 0.88;
+}
+[data-theme="dark"] .sidebar .nav-section::before {
+  color: var(--moon-gold);
+  opacity: 0.55;
 }
 
 /* ─── CARDS ──────────────────────────────────────────────────── */
-.card {
+[data-theme="dark"] .card {
   background: linear-gradient(145deg,
     var(--moon-card) 0%,
     rgba(28, 20, 58, 0.97) 100%) !important;
   border: 1px solid rgba(167, 125, 255, 0.16) !important;
   border-top: 2px solid var(--moon-gold) !important;
-  border-radius: 12px !important;
-  box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(167, 125, 255, 0.07) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45),
+              inset 0 1px 0 rgba(167, 125, 255, 0.07) !important;
   color: var(--moon-text);
 }
 
-.card-header {
+[data-theme="dark"] .card-header {
   background: linear-gradient(135deg,
     rgba(167, 125, 255, 0.14) 0%,
     rgba(109, 63, 212, 0.08) 100%) !important;
   border-bottom: 1px solid var(--moon-border) !important;
   color: var(--moon-text) !important;
-  font-family: 'Be Vietnam Pro', sans-serif;
-  font-weight: 600;
 }
 
-.card-body  { color: var(--moon-text); }
+[data-theme="dark"] .card-body { color: var(--moon-text); }
 
-.card-footer {
+[data-theme="dark"] .card-footer {
   background: rgba(167, 125, 255, 0.04) !important;
   border-top: 1px solid var(--moon-border) !important;
   color: var(--moon-text-muted) !important;
 }
 
-.shadow-sm {
-  box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(167, 125, 255, 0.07) !important;
+[data-theme="dark"] .shadow-sm {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45),
+              0 0 0 1px rgba(167, 125, 255, 0.07) !important;
 }
 
 /* Dashboard stat cards */
-.card.bg-primary {
+[data-theme="dark"] .card.bg-primary {
   background: linear-gradient(135deg, var(--moon-purple-dark) 0%, var(--moon-purple) 100%) !important;
   border-top-color: var(--moon-lavender) !important;
   box-shadow: 0 4px 20px rgba(167, 125, 255, 0.22) !important;
 }
-.card.bg-success {
+[data-theme="dark"] .card.bg-success {
   background: linear-gradient(135deg, #1A5245 0%, #2A8265 100%) !important;
   border-top-color: var(--moon-success) !important;
   box-shadow: 0 4px 20px rgba(56, 211, 159, 0.15) !important;
 }
-.card.bg-warning {
+[data-theme="dark"] .card.bg-warning {
   background: linear-gradient(135deg, #7A5200 0%, #B89440 100%) !important;
   border-top-color: var(--moon-gold) !important;
   box-shadow: 0 4px 20px rgba(231, 201, 106, 0.15) !important;
 }
-.card.bg-info {
+[data-theme="dark"] .card.bg-info {
   background: linear-gradient(135deg, #1A3D5C 0%, #2A6FA8 100%) !important;
   border-top-color: var(--moon-info) !important;
   box-shadow: 0 4px 20px rgba(125, 211, 252, 0.12) !important;
 }
-.card.bg-primary .small,
-.card.bg-success .small,
-.card.bg-warning .small,
-.card.bg-info    .small { color: rgba(255, 255, 255, 0.78) !important; }
+[data-theme="dark"] .card.bg-primary .small,
+[data-theme="dark"] .card.bg-success .small,
+[data-theme="dark"] .card.bg-warning .small,
+[data-theme="dark"] .card.bg-info    .small { color: rgba(255, 255, 255, 0.78) !important; }
 
 /* ─── TABLES ─────────────────────────────────────────────────── */
-.table {
+[data-theme="dark"] .table {
   color: var(--moon-text) !important;
   --bs-table-color:        var(--moon-text);
   --bs-table-bg:           transparent;
@@ -269,437 +232,329 @@ h1, h2, h3, h4, h5, h6 {
   --bs-table-hover-bg:     rgba(167, 125, 255, 0.07);
 }
 
-.table > :not(caption) > * > * {
+[data-theme="dark"] .table > :not(caption) > * > * {
   border-bottom-color: rgba(167, 125, 255, 0.10) !important;
 }
 
-.table-bordered { border-color: rgba(167, 125, 255, 0.12) !important; }
+[data-theme="dark"] .table-bordered { border-color: rgba(167, 125, 255, 0.12) !important; }
 
-/* thead table-dark → deep purple + Moon Gold text */
-.table-dark {
+[data-theme="dark"] .table-dark {
   --bs-table-bg:           rgba(109, 63, 212, 0.22) !important;
   --bs-table-border-color: rgba(167, 125, 255, 0.16) !important;
   --bs-table-color:        var(--moon-gold) !important;
 }
-.table-dark th {
+[data-theme="dark"] .table-dark th {
   background: linear-gradient(135deg,
     rgba(109, 63, 212, 0.28) 0%,
     rgba(167, 125, 255, 0.16) 100%) !important;
-  color:          var(--moon-gold) !important;
-  border-color:   rgba(167, 125, 255, 0.16) !important;
-  font-family:    'Be Vietnam Pro', sans-serif !important;
-  font-weight:    700 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.8px !important;
-  font-size:      0.77rem !important;
-  text-shadow:    0 0 8px rgba(231, 201, 106, 0.18);
+  color:        var(--moon-gold) !important;
+  border-color: rgba(167, 125, 255, 0.16) !important;
+  text-shadow:  0 0 8px rgba(231, 201, 106, 0.18);
 }
 
-/* thead table-secondary → purple tint */
-.table-secondary {
+[data-theme="dark"] .table-secondary {
   --bs-table-bg:           rgba(167, 125, 255, 0.10) !important;
   --bs-table-color:        var(--moon-text) !important;
   --bs-table-border-color: rgba(167, 125, 255, 0.14) !important;
 }
-.table-secondary th {
+[data-theme="dark"] .table-secondary th {
   color:            var(--moon-text) !important;
   background-color: rgba(167, 125, 255, 0.10) !important;
   border-color:     rgba(167, 125, 255, 0.14) !important;
 }
 
-/* Row hover */
-.table-hover tbody tr:hover > * {
-  background-color: rgba(167, 125, 255, 0.07) !important;
-  color:            var(--moon-text) !important;
+[data-theme="dark"] .table-hover tbody tr:hover > * {
+  background-color:    rgba(167, 125, 255, 0.07) !important;
+  color:               var(--moon-text) !important;
   --bs-table-hover-bg: rgba(167, 125, 255, 0.07);
 }
 
 /* ─── BADGES ─────────────────────────────────────────────────── */
-.badge {
-  font-family:   'Be Vietnam Pro', sans-serif !important;
-  font-weight:   600 !important;
-  font-size:     0.75em !important;
-  padding:       3px 9px !important;
-  border-radius: 6px !important;
-}
-
-/* DA_DONG → emerald */
-.badge.bg-success {
+[data-theme="dark"] .badge.bg-success {
   background-color: rgba(56, 211, 159, 0.16) !important;
   border: 1px solid rgba(56, 211, 159, 0.32) !important;
   color: var(--moon-success) !important;
 }
-
-/* CON_NO (bg-warning) → coral */
-.badge.bg-warning {
+[data-theme="dark"] .badge.bg-warning {
   background-color: rgba(255, 93, 122, 0.14) !important;
   border: 1px solid rgba(255, 93, 122, 0.28) !important;
   color: var(--moon-danger) !important;
 }
-
-/* DONG_DU (bg-info) → moon gold */
-.badge.bg-info {
+[data-theme="dark"] .badge.bg-info {
   background-color: rgba(231, 201, 106, 0.14) !important;
   border: 1px solid rgba(231, 201, 106, 0.28) !important;
   color: var(--moon-gold-light) !important;
 }
-
-/* Vai trò admin */
-.badge.bg-danger {
+[data-theme="dark"] .badge.bg-danger {
   background-color: rgba(255, 93, 122, 0.16) !important;
   border: 1px solid rgba(255, 93, 122, 0.32) !important;
   color: var(--moon-danger) !important;
 }
-
-/* Vai trò nhanvien / secondary */
-.badge.bg-secondary {
+[data-theme="dark"] .badge.bg-secondary {
   background-color: rgba(184, 178, 216, 0.13) !important;
   border: 1px solid rgba(184, 178, 216, 0.26) !important;
   color: var(--moon-text-muted) !important;
 }
-
-/* Primary / Auto-apply */
-.badge.bg-primary {
+[data-theme="dark"] .badge.bg-primary {
   background-color: rgba(167, 125, 255, 0.18) !important;
   border: 1px solid rgba(193, 140, 255, 0.32) !important;
   color: var(--moon-lavender) !important;
 }
 
 /* ─── BUTTONS ────────────────────────────────────────────────── */
-/* Primary — purple crystal */
-.btn-primary {
-  background: linear-gradient(135deg, var(--moon-purple-dark) 0%, var(--moon-purple) 100%) !important;
+[data-theme="dark"] .btn-primary {
+  background: linear-gradient(135deg, var(--moon-purple) 0%, var(--moon-purple-dark) 100%) !important;
   border-color: var(--moon-purple) !important;
   color: #fff !important;
-  border-radius: 10px !important;
-  font-family: 'Be Vietnam Pro', sans-serif !important;
-  font-weight: 600 !important;
 }
-.btn-primary:hover, .btn-primary:focus {
-  background: linear-gradient(135deg, var(--moon-purple) 0%, var(--moon-purple-hover) 100%) !important;
+[data-theme="dark"] .btn-primary:hover,
+[data-theme="dark"] .btn-primary:focus {
+  background: linear-gradient(135deg, var(--moon-purple-hover) 0%, var(--moon-purple) 100%) !important;
   border-color: var(--moon-lavender) !important;
   box-shadow: 0 0 18px rgba(167, 125, 255, 0.32) !important;
 }
 
-.btn-outline-primary {
+[data-theme="dark"] .btn-outline-primary {
   border-color: var(--moon-purple) !important;
   color: var(--moon-purple) !important;
-  border-radius: 10px !important;
-  font-weight: 600 !important;
 }
-.btn-outline-primary:hover {
+[data-theme="dark"] .btn-outline-primary:hover {
   background-color: rgba(167, 125, 255, 0.14) !important;
   border-color: var(--moon-lavender) !important;
   color: var(--moon-lavender) !important;
 }
 
-/* Success — emerald */
-.btn-success {
-  background: linear-gradient(135deg, #1A5245 0%, #2A8265 100%) !important;
+[data-theme="dark"] .btn-success {
+  background: linear-gradient(135deg, #2A8265 0%, #1A5245 100%) !important;
   border-color: var(--moon-success) !important;
   color: #fff !important;
-  border-radius: 10px !important;
-  font-weight: 600 !important;
 }
-.btn-success:hover {
-  background: linear-gradient(135deg, #1f5f50 0%, #339e77 100%) !important;
+[data-theme="dark"] .btn-success:hover {
+  background: linear-gradient(135deg, #339e77 0%, #1f5f50 100%) !important;
   box-shadow: 0 0 14px rgba(56, 211, 159, 0.22) !important;
 }
 
-.btn-outline-success {
+[data-theme="dark"] .btn-outline-success {
   border-color: #2A8265 !important;
   color: var(--moon-success) !important;
-  border-radius: 10px !important;
-  font-weight: 600 !important;
 }
-.btn-outline-success:hover {
+[data-theme="dark"] .btn-outline-success:hover {
   background-color: rgba(42, 130, 101, 0.14) !important;
   color: var(--moon-success) !important;
 }
 
-/* Warning — Moon Gold */
-.btn-warning {
-  background: linear-gradient(135deg, #7A5200 0%, #B89440 100%) !important;
+[data-theme="dark"] .btn-warning {
+  background: linear-gradient(135deg, #B89440 0%, #7A5200 100%) !important;
   border-color: var(--moon-gold) !important;
   color: #fff !important;
-  border-radius: 10px !important;
-  font-weight: 600 !important;
 }
-.btn-warning:hover {
-  background: linear-gradient(135deg, #8a6000 0%, #d4a840 100%) !important;
+[data-theme="dark"] .btn-warning:hover {
+  background: linear-gradient(135deg, #d4a840 0%, #8a6000 100%) !important;
   box-shadow: 0 0 14px rgba(231, 201, 106, 0.28) !important;
 }
 
-/* Danger — coral */
-.btn-danger {
-  background: linear-gradient(135deg, #8B1A30 0%, #CC3355 100%) !important;
+[data-theme="dark"] .btn-danger {
+  background: linear-gradient(135deg, #CC3355 0%, #8B1A30 100%) !important;
   border-color: var(--moon-danger) !important;
   color: #fff !important;
-  border-radius: 10px !important;
-  font-weight: 600 !important;
 }
-.btn-danger:hover {
-  background: linear-gradient(135deg, #A02040 0%, #DD4466 100%) !important;
+[data-theme="dark"] .btn-danger:hover {
+  background: linear-gradient(135deg, #DD4466 0%, #A02040 100%) !important;
   box-shadow: 0 0 14px rgba(255, 93, 122, 0.28) !important;
 }
 
-.btn-outline-danger {
+[data-theme="dark"] .btn-outline-danger {
   border-color: var(--moon-danger) !important;
   color: var(--moon-danger) !important;
-  border-radius: 10px !important;
-  font-weight: 600 !important;
 }
-.btn-outline-danger:hover {
+[data-theme="dark"] .btn-outline-danger:hover {
   background-color: rgba(255, 93, 122, 0.14) !important;
   color: var(--moon-danger) !important;
 }
 
-/* Info — sky blue */
-.btn-info {
-  background: linear-gradient(135deg, #1A3D5C 0%, #2A6FA8 100%) !important;
+[data-theme="dark"] .btn-info {
+  background: linear-gradient(135deg, #2A6FA8 0%, #1A3D5C 100%) !important;
   border-color: var(--moon-info) !important;
   color: #fff !important;
-  border-radius: 10px !important;
-  font-weight: 600 !important;
 }
-.btn-info:hover {
-  background: linear-gradient(135deg, #1f4a6e 0%, #3280c0 100%) !important;
+[data-theme="dark"] .btn-info:hover {
+  background: linear-gradient(135deg, #3280c0 0%, #1f4a6e 100%) !important;
   box-shadow: 0 0 14px rgba(125, 211, 252, 0.20) !important;
 }
 
-.btn-outline-info {
+[data-theme="dark"] .btn-outline-info {
   border-color: #2A6FA8 !important;
   color: var(--moon-info) !important;
-  border-radius: 10px !important;
-  font-weight: 600 !important;
 }
-.btn-outline-info:hover {
+[data-theme="dark"] .btn-outline-info:hover {
   background-color: rgba(42, 111, 168, 0.14) !important;
   color: var(--moon-info) !important;
 }
 
-/* Secondary — dark crystal */
-.btn-outline-secondary {
+[data-theme="dark"] .btn-outline-secondary {
   border-color: rgba(184, 178, 216, 0.38) !important;
   color: var(--moon-text-muted) !important;
-  border-radius: 10px !important;
-  font-weight: 600 !important;
 }
-.btn-outline-secondary:hover {
+[data-theme="dark"] .btn-outline-secondary:hover {
   background-color: rgba(167, 125, 255, 0.09) !important;
   border-color: rgba(184, 178, 216, 0.55) !important;
   color: var(--moon-text) !important;
 }
 
-/* Global btn defaults */
-.btn {
-  border-radius: 10px !important;
-  font-family: 'Be Vietnam Pro', sans-serif !important;
-  font-weight: 600 !important;
-}
-.btn-sm { border-radius: 8px !important; }
-
-.btn-close { filter: invert(1) brightness(0.75); }
+[data-theme="dark"] .btn-close { filter: invert(1) brightness(0.75); }
 
 /* ─── FORMS ──────────────────────────────────────────────────── */
-.form-control,
-.form-select {
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
   background-color: var(--moon-surface) !important;
   border-color:     rgba(167, 125, 255, 0.22) !important;
   color:            var(--moon-text) !important;
-  border-radius:    10px !important;
-  font-family:      'Be Vietnam Pro', sans-serif !important;
 }
-
-.form-control:focus,
-.form-select:focus {
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus {
   background-color: var(--moon-surface) !important;
   border-color:     var(--moon-purple) !important;
   color:            var(--moon-text) !important;
   box-shadow:       0 0 0 0.2rem rgba(167, 125, 255, 0.22) !important;
 }
+[data-theme="dark"] .form-control::placeholder { color: var(--moon-text-muted) !important; opacity: 1; }
 
-.form-control::placeholder { color: var(--moon-text-muted) !important; opacity: 1; }
+[data-theme="dark"] input[type="date"],
+[data-theme="dark"] input[type="datetime-local"],
+[data-theme="dark"] input[type="month"],
+[data-theme="dark"] input[type="time"] { color-scheme: dark; }
 
-input[type="date"],
-input[type="datetime-local"],
-input[type="month"],
-input[type="time"] {
-  color-scheme: dark;
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator,
-input[type="datetime-local"]::-webkit-calendar-picker-indicator,
-input[type="month"]::-webkit-calendar-picker-indicator {
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator,
+[data-theme="dark"] input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator {
   filter: invert(65%) sepia(40%) saturate(600%) hue-rotate(220deg) brightness(115%);
   opacity: 0.9;
   cursor: pointer;
 }
-
-input[type="date"]::-webkit-calendar-picker-indicator:hover,
-input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover,
-input[type="month"]::-webkit-calendar-picker-indicator:hover {
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator:hover,
+[data-theme="dark"] input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover,
+[data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator:hover {
   filter: invert(65%) sepia(40%) saturate(900%) hue-rotate(220deg) brightness(130%);
   opacity: 1;
 }
 
-.form-control.is-invalid,
-.form-select.is-invalid {
-  border-color: var(--moon-danger) !important;
-}
-.form-control.is-invalid:focus,
-.form-select.is-invalid:focus {
+[data-theme="dark"] .form-control.is-invalid,
+[data-theme="dark"] .form-select.is-invalid { border-color: var(--moon-danger) !important; }
+[data-theme="dark"] .form-control.is-invalid:focus,
+[data-theme="dark"] .form-select.is-invalid:focus {
   box-shadow: 0 0 0 0.2rem rgba(255, 93, 122, 0.22) !important;
 }
+[data-theme="dark"] .invalid-feedback { color: var(--moon-danger) !important; }
 
-.invalid-feedback { color: var(--moon-danger) !important; }
+[data-theme="dark"] .form-label { color: var(--moon-text) !important; }
+[data-theme="dark"] .form-text  { color: var(--moon-text-muted) !important; }
 
-.form-label {
-  color: var(--moon-text) !important;
-  font-weight: 600;
-  font-size: 0.9rem;
-  font-family: 'Be Vietnam Pro', sans-serif !important;
-}
-.form-text { color: var(--moon-text-muted) !important; }
-
-.input-group-text {
+[data-theme="dark"] .input-group-text {
   background-color: rgba(167, 125, 255, 0.08) !important;
   border-color:     rgba(167, 125, 255, 0.22) !important;
   color:            var(--moon-text-muted) !important;
 }
-.input-group-text i,
-.input-group-text .bi {
-  color: var(--moon-purple) !important;
-}
+[data-theme="dark"] .input-group-text i,
+[data-theme="dark"] .input-group-text .bi { color: var(--moon-purple) !important; }
 
-option {
+[data-theme="dark"] option {
   background-color: var(--moon-surface);
   color:            var(--moon-text);
 }
-
-/* Select dropdown arrow → purple */
-.form-select {
+[data-theme="dark"] .form-select {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23A77DFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
 }
 
 /* ─── ALERTS ─────────────────────────────────────────────────── */
-.alert-success {
+[data-theme="dark"] .alert-success {
   background-color: rgba(56, 211, 159, 0.12) !important;
   border-color:     rgba(56, 211, 159, 0.28) !important;
   color:            var(--moon-success) !important;
-  border-radius:    10px !important;
 }
-.alert-danger {
+[data-theme="dark"] .alert-danger {
   background-color: rgba(255, 93, 122, 0.12) !important;
   border-color:     rgba(255, 93, 122, 0.28) !important;
   color:            var(--moon-danger) !important;
-  border-radius:    10px !important;
 }
-.alert-warning {
+[data-theme="dark"] .alert-warning {
   background-color: rgba(231, 201, 106, 0.12) !important;
   border-color:     rgba(231, 201, 106, 0.28) !important;
   color:            var(--moon-gold-light) !important;
-  border-radius:    10px !important;
 }
-.alert-info {
+[data-theme="dark"] .alert-info {
   background-color: rgba(125, 211, 252, 0.10) !important;
   border-color:     rgba(125, 211, 252, 0.24) !important;
   color:            var(--moon-info) !important;
-  border-radius:    10px !important;
 }
 
 /* ─── MODALS ─────────────────────────────────────────────────── */
-.modal-content {
+[data-theme="dark"] .modal-content {
   background: linear-gradient(145deg, var(--moon-card) 0%, #1E1550 100%) !important;
   border: 1px solid rgba(167, 125, 255, 0.18) !important;
   border-top: 2px solid var(--moon-gold) !important;
-  border-radius: 16px !important;
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.65),
-    0 0 40px rgba(167, 125, 255, 0.08) !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65),
+              0 0 40px rgba(167, 125, 255, 0.08) !important;
 }
-
-.modal-header {
+[data-theme="dark"] .modal-header {
   background: linear-gradient(135deg,
     rgba(167, 125, 255, 0.12) 0%,
     rgba(109, 63, 212, 0.06) 100%) !important;
   border-bottom: 1px solid var(--moon-border) !important;
   color: var(--moon-text) !important;
 }
-
-.modal-header.bg-warning.bg-opacity-25 {
+[data-theme="dark"] .modal-header.bg-warning.bg-opacity-25 {
   background: linear-gradient(135deg,
     rgba(231, 201, 106, 0.12) 0%,
     rgba(167, 125, 255, 0.06) 100%) !important;
 }
-
-.modal-footer { border-top: 1px solid var(--moon-border) !important; }
-
-.modal-title {
-  color: var(--moon-text) !important;
-  font-family: 'Be Vietnam Pro', sans-serif;
-  font-weight: 700;
-}
-
-.modal-backdrop {
+[data-theme="dark"] .modal-footer { border-top: 1px solid var(--moon-border) !important; }
+[data-theme="dark"] .modal-title  { color: var(--moon-text) !important; }
+[data-theme="dark"] .modal-backdrop {
   --bs-backdrop-bg:      #0B0820;
   --bs-backdrop-opacity: 0.85;
 }
 
 /* ─── MISC ───────────────────────────────────────────────────── */
-.bg-light {
+[data-theme="dark"] .bg-light {
   background-color: rgba(167, 125, 255, 0.07) !important;
   color: var(--moon-text) !important;
 }
+[data-theme="dark"] dt { color: var(--moon-text-muted); font-weight: 600; }
+[data-theme="dark"] dd { color: var(--moon-text); }
 
-dt { color: var(--moon-text-muted); font-weight: 600; }
-dd { color: var(--moon-text); }
+[data-theme="dark"] .text-decoration-none       { color: var(--moon-purple) !important; }
+[data-theme="dark"] .text-decoration-none:hover { color: var(--moon-lavender) !important; }
 
-.text-decoration-none       { color: var(--moon-purple) !important; }
-.text-decoration-none:hover { color: var(--moon-lavender) !important; }
-
-.page-link {
+[data-theme="dark"] .page-link {
   color: var(--moon-purple);
   background-color: var(--moon-surface);
   border-color: var(--moon-border);
-  border-radius: 8px !important;
 }
-.page-item.active .page-link {
+[data-theme="dark"] .page-item.active .page-link {
   background: linear-gradient(135deg, var(--moon-purple-dark), var(--moon-purple));
   border-color: var(--moon-purple);
   color: #fff;
 }
 
 /* ─── LOGIN PAGE ─────────────────────────────────────────────── */
-body.login-page {
+[data-theme="dark"] body.login-page {
   background-color: #0B0820 !important;
   background-image:
     radial-gradient(ellipse 85% 60% at 50% 0%, rgba(167, 125, 255, 0.13) 0%, transparent 55%),
     radial-gradient(ellipse 60% 45% at 90% 100%, rgba(231, 201, 106, 0.06) 0%, transparent 50%),
     radial-gradient(ellipse 50% 35% at 5% 80%, rgba(109, 63, 212, 0.06) 0%, transparent 50%) !important;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.login-card {
+[data-theme="dark"] .login-card {
   background: linear-gradient(145deg, #241A4D 0%, #1B1442 100%) !important;
   border: 1px solid rgba(167, 125, 255, 0.20) !important;
   border-top: 2px solid var(--moon-gold) !important;
-  border-radius: 20px !important;
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.65),
-    0 0 50px rgba(167, 125, 255, 0.08),
-    inset 0 1px 0 rgba(215, 180, 255, 0.07) !important;
-  width: 420px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65),
+              0 0 50px rgba(167, 125, 255, 0.08),
+              inset 0 1px 0 rgba(215, 180, 255, 0.07) !important;
 }
 
-.login-brand {
-  font-family: 'Cinzel', 'Be Vietnam Pro', sans-serif;
-  font-weight: 700;
-  font-size: 1.85rem;
-  letter-spacing: 2px;
+[data-theme="dark"] .login-brand {
   background: linear-gradient(135deg, var(--moon-gold) 0%, var(--moon-gold-light) 55%, var(--moon-lavender) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -707,14 +562,9 @@ body.login-page {
   filter: drop-shadow(0 0 10px rgba(231, 201, 106, 0.25));
 }
 
-.login-subtitle {
-  color: var(--moon-text-muted) !important;
-  font-size: 0.84rem;
-  font-family: 'Be Vietnam Pro', sans-serif;
-}
+[data-theme="dark"] .login-subtitle { color: var(--moon-text-muted) !important; }
 
-.login-moon-icon {
-  font-size: 2.8rem;
+[data-theme="dark"] .login-moon-icon {
   background: linear-gradient(135deg, var(--moon-gold) 0%, var(--moon-gold-light) 55%, var(--moon-purple) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -722,38 +572,33 @@ body.login-page {
   filter: drop-shadow(0 0 14px rgba(231, 201, 106, 0.38));
 }
 
-/* ─── FOUR-POINTED STAR DECORATOR ───────────────────────────── */
-h4::before,
-h5::before,
-.modal-title::before {
-  content: "✦";
+/* ─── HEADING DECORATORS (dark colors) ───────────────────────── */
+[data-theme="dark"] h4::before,
+[data-theme="dark"] h5::before,
+[data-theme="dark"] .modal-title::before {
   color: var(--moon-gold);
-  font-size: 0.6em;
-  margin-right: 0.45em;
-  vertical-align: middle;
-  opacity: 0.88;
-  font-family: sans-serif;
-  font-style: normal;
   text-shadow: 0 0 6px rgba(231, 201, 106, 0.40);
 }
 
-.sidebar .nav-section::before {
-  content: "✦";
+[data-theme="dark"] .sidebar .nav-section::before {
   color: var(--moon-gold);
-  font-size: 0.75em;
-  margin-right: 0.35em;
   opacity: 0.55;
-  font-family: sans-serif;
 }
 
-.table-dark th::before {
-  content: "✦";
-  color: var(--moon-gold);
-  font-size: 0.6em;
-  margin-right: 0.35em;
-  vertical-align: middle;
-  opacity: 0.45;
-  font-family: sans-serif;
+/* ─── FEE TAGS (dark colors) ─────────────────────────────────── */
+[data-theme="dark"] .fee-tag-required   { background: rgba(251,191,36,0.15);  color: #fde047; }
+[data-theme="dark"] .fee-tag-periodic   { background: rgba(167,139,250,0.15); color: #c084fc; }
+[data-theme="dark"] .fee-tag-unexpected { background: rgba(239,68,68,0.15);   color: #fb923c; }
+[data-theme="dark"] .fee-tag-voluntary  { background: rgba(52,211,153,0.15);  color: #4ade80; }
+
+/* ─── LOGIN THEME TOGGLE (dark colors) ───────────────────────── */
+[data-theme="dark"] #loginThemeToggleBtn {
+  border-color: rgba(167, 125, 255, 0.45);
+  color: var(--moon-lavender);
+}
+[data-theme="dark"] #loginThemeToggleBtn:hover {
+  border-color: var(--moon-purple);
+  box-shadow: 0 0 12px rgba(167, 125, 255, 0.25);
 }
 
 /* ─── ANIMATIONS ─────────────────────────────────────────────── */
@@ -765,12 +610,4 @@ h5::before,
 @keyframes moon-sparkle-appear {
   0%, 100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
   50%       { opacity: 1; transform: scale(1) rotate(45deg); }
-}
-
-/* ─── JS-INJECTED DARK DECORATION HELPERS ───────────────────── */
-.moon-sidebar-star,
-.moon-sparkle-dot,
-.moon-bg-sparkle {
-  pointer-events: none !important;
-  user-select: none !important;
 }
