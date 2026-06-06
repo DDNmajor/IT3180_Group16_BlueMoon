@@ -20,7 +20,9 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ─── NAVBAR ─────────────────────────────────────────────────── */
 .moon-navbar {
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 1030;
 }
 
 .moon-navbar::after {
@@ -49,7 +51,11 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ─── SIDEBAR ────────────────────────────────────────────────── */
 .sidebar {
-  min-height: calc(100vh - 56px);
+  position: sticky;
+  top: 56px; /* khớp với chiều cao navbar */
+  height: calc(100vh - 56px);
+  overflow-y: auto;
+  align-self: flex-start; /* quan trọng: ngăn flexbox kéo dài sidebar theo row height */
 }
 
 .sidebar .nav-link {

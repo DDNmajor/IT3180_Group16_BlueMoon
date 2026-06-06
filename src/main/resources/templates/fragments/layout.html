@@ -67,37 +67,62 @@
             <i class="bi bi-speedometer2 me-2"></i>Dashboard
         </a>
 
-        <span class="nav-section">Sprint 1</span>
-        <a class="nav-link" sec:authorize="hasRole('admin')"
-           th:classappend="${activePage == 'nguoi-dung'} ? 'active' : ''" th:href="@{/nguoi-dung}">
-            <i class="bi bi-people me-2"></i>Người dùng
-        </a>
-        <a class="nav-link" th:classappend="${activePage == 'loai-khoan-thu'} ? 'active' : ''" th:href="@{/loai-khoan-thu}">
+        <!-- DANH MỤC -->
+        <span class="nav-section">Danh mục</span>
+
+        <a class="nav-link"
+           th:classappend="${activePage == 'loai-khoan-thu'} ? 'active' : ''"
+           th:href="@{/loai-khoan-thu}">
             <i class="bi bi-tags me-2"></i>Loại khoản thu
         </a>
-        <a class="nav-link" th:classappend="${activePage == 'khoan-thu'} ? 'active' : ''" th:href="@{/khoan-thu}">
-            <i class="bi bi-receipt me-2"></i>Khoản thu
-        </a>
-        <a class="nav-link" th:classappend="${activePage == 'mau-khoan-thu'} ? 'active' : ''" th:href="@{/mau-khoan-thu}">
+
+        <a class="nav-link"
+           th:classappend="${activePage == 'mau-khoan-thu'} ? 'active' : ''"
+           th:href="@{/mau-khoan-thu}">
             <i class="bi bi-arrow-repeat me-2"></i>Mẫu thu định kỳ
         </a>
 
-        <span class="nav-section">Hệ thống</span>
-        <a class="nav-link" sec:authorize="hasRole('admin')"
-           th:classappend="${activePage == 'audit-log'} ? 'active' : ''" th:href="@{/audit-log}">
-            <i class="bi bi-journal-text me-2"></i>Nhật ký hoạt động
+        <!-- QUẢN LÝ THU PHÍ -->
+        <span class="nav-section">Quản lý thu phí</span>
+
+        <a class="nav-link"
+           th:classappend="${activePage == 'khoan-thu'} ? 'active' : ''"
+           th:href="@{/khoan-thu}">
+            <i class="bi bi-receipt me-2"></i>Khoản thu
         </a>
 
-        <span class="nav-section">Sprint 2</span>
-        <a class="nav-link" th:classappend="${activePage == 'ho-gia-dinh'} ? 'active' : ''" th:href="@{/ho-gia-dinh}">
-            <i class="bi bi-house me-2"></i>Hộ gia đình
-        </a>
-        <a class="nav-link" th:classappend="${activePage == 'nhan-khau'} ? 'active' : ''" th:href="@{/nhan-khau}">
-            <i class="bi bi-person me-2"></i>Nhân khẩu
-        </a>
-        <a class="nav-link" th:classappend="${activePage == 'thanh-toan'} ? 'active' : ''" th:href="@{/thanh-toan}">
+        <a class="nav-link"
+           th:classappend="${activePage == 'thanh-toan'} ? 'active' : ''"
+           th:href="@{/thanh-toan}">
             <i class="bi bi-cash-coin me-2"></i>Thanh toán
         </a>
+
+        <!-- DÂN CƯ -->
+        <span class="nav-section">Dân cư</span>
+
+        <a class="nav-link"
+           th:classappend="${activePage == 'ho-gia-dinh'} ? 'active' : ''"
+           th:href="@{/ho-gia-dinh}">
+            <i class="bi bi-house me-2"></i>Hộ gia đình
+        </a>
+
+        <a class="nav-link"
+           th:classappend="${activePage == 'nhan-khau'} ? 'active' : ''"
+           th:href="@{/nhan-khau}">
+            <i class="bi bi-person me-2"></i>Nhân khẩu
+        </a>
+
+        <div sec:authorize="hasRole('admin')">
+            <!-- tiêu đề mục -->
+            <span class="nav-section">Hệ thống</span>
+
+            <!-- link nhật ký -->
+            <a th:href="@{/audit-log}"
+               class="nav-link"
+               th:classappend="${activePage == 'audit-log'} ? 'active' : ''">
+                <i class="bi bi-journal-text me-2"></i>Nhật ký hoạt động
+            </a>
+        </div>
     </nav>
 </div>
 
@@ -237,7 +262,6 @@
       function createLightSidebarDecorations() {
         var sidebar = document.querySelector('.sidebar');
         if (!sidebar) return;
-        sidebar.style.position = 'relative';
         sidebar.style.overflow = 'hidden';
         var ns = 'http://www.w3.org/2000/svg';
 
@@ -358,7 +382,6 @@
       function createDarkSidebarStars() {
         var sidebar = document.querySelector('.sidebar');
         if (!sidebar) return;
-        sidebar.style.position = 'relative';
         sidebar.style.overflow = 'hidden';
 
         /* [x%, y%, size(px), color, opacity, hasTwinkle] */
