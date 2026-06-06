@@ -1,39 +1,75 @@
 /* ═══════════════════════════════════════════════════════════════
-   MOONA HOSHINOVA THEME — Dark Cosmic UI
+   MOONA HOSHINOVA THEME v2 — Moonlit Observatory Dark UI
    BlueMoon Fee Management System
+   Inspired by: moonlight · constellation · arcane crystal · midnight sky
    ═══════════════════════════════════════════════════════════════ */
 
 /* ─── CSS VARIABLES ──────────────────────────────────────────── */
 :root {
-  --moon-purple:       #7C5CBF;
-  --moon-purple-light: #A987E0;
-  --moon-purple-dark:  #4A3580;
-  --moon-gold:         #C9952A;
-  --moon-gold-light:   #E8C46A;
-  --moon-bg:           #0E0B1A;
-  --moon-surface:      #1A1530;
-  --moon-card:         #221D3A;
-  --moon-border:       rgba(201,149,42,0.25);
-  --moon-text:         #EDE8F5;
-  --moon-text-muted:   #9B93B8;
+  --moon-bg:           #0B0820;
+  --moon-surface:      #1B143D;
+  --moon-card:         #241A4D;
+  --moon-purple:       #A77DFF;
+  --moon-purple-hover: #8B5CF6;
+  --moon-purple-dark:  #6D3FD4;
+  --moon-lavender:     #D7B4FF;
+  --moon-gold:         #E7C96A;
+  --moon-gold-light:   #F0DC9A;
+  --moon-text:         #F5F3FF;
+  --moon-text-muted:   #B8B2D8;
+  --moon-border:       rgba(215, 180, 255, 0.12);
+  --moon-border-lit:   rgba(215, 180, 255, 0.22);
+  --moon-success:      #38D39F;
+  --moon-warning:      #E7C96A;
+  --moon-danger:       #FF5D7A;
+  --moon-info:         #7DD3FC;
+  --moon-glow-purple:  rgba(167, 125, 255, 0.22);
+  --moon-glow-gold:    rgba(231, 201, 106, 0.18);
 }
 
 /* ─── GLOBAL ─────────────────────────────────────────────────── */
 body {
   background-color: var(--moon-bg) !important;
+  /* Moonlit depth: purple aurora at top-left, gold shimmer bottom-right */
+  background-image:
+    radial-gradient(ellipse 80% 55% at 12% 6%,  rgba(167, 125, 255, 0.09) 0%, transparent 60%),
+    radial-gradient(ellipse 65% 40% at 88% 94%,  rgba(231, 201, 106, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 120% 80% at 50% 110%, rgba(11, 8, 32, 0.80) 0%, transparent 65%) !important;
   color: var(--moon-text) !important;
-  font-family: 'Nunito', sans-serif !important;
+  font-family: 'Be Vietnam Pro', 'Inter', sans-serif !important;
 }
 
-.container-fluid { background-color: var(--moon-bg); }
+/* Moon watermark — purple-gold gradient + glow */
+body::after {
+  content: '☾';
+  position: fixed;
+  bottom: -30px;
+  right: 12px;
+  font-size: 220px;
+  background: linear-gradient(135deg, #c4b5fd 0%, #fde68a 50%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  opacity: 0.08;
+  pointer-events: none;
+  z-index: 0;
+  font-family: sans-serif;
+  line-height: 1;
+  transform: rotate(-15deg);
+  user-select: none;
+  filter: drop-shadow(0 0 20px rgba(196, 181, 253, 0.18))
+          drop-shadow(0 0 40px rgba(253, 230, 138, 0.10));
+}
 
-a             { color: var(--moon-purple-light); }
-a:hover       { color: var(--moon-gold-light); }
+.container-fluid { background-color: transparent; }
+
+a             { color: var(--moon-purple); }
+a:hover       { color: var(--moon-lavender); }
 
 .text-muted   { color: var(--moon-text-muted) !important; }
-.text-primary { color: var(--moon-purple-light) !important; }
-.text-success { color: #5EDDCA !important; }
-.text-danger  { color: #FF8A96 !important; }
+.text-primary { color: var(--moon-purple) !important; }
+.text-success { color: var(--moon-success) !important; }
+.text-danger  { color: var(--moon-danger) !important; }
 .text-dark    { color: var(--moon-text) !important; }
 .text-white   { color: var(--moon-text) !important; }
 
@@ -41,306 +77,427 @@ hr { border-color: var(--moon-border) !important; opacity: 1; }
 
 /* ─── TYPOGRAPHY ─────────────────────────────────────────────── */
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
+  font-weight: 600;
   color: var(--moon-text) !important;
 }
 
 /* ─── SCROLLBAR ──────────────────────────────────────────────── */
 ::-webkit-scrollbar              { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track        { background: var(--moon-bg); }
-::-webkit-scrollbar-thumb        { background: rgba(124,92,191,0.4); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover  { background: rgba(201,149,42,0.4); }
+::-webkit-scrollbar-thumb        { background: rgba(167, 125, 255, 0.38); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover  { background: rgba(231, 201, 106, 0.50); }
 
 /* ─── NAVBAR ─────────────────────────────────────────────────── */
 .moon-navbar {
-  background: linear-gradient(135deg, #150F2B 0%, #1E1640 100%) !important;
-  border-bottom: 1px solid rgba(201,149,42,0.25) !important;
+  background: linear-gradient(135deg,
+    #0D0A24 0%,
+    #150F38 35%,
+    #120C2E 70%,
+    #0A0820 100%) !important;
+  border-bottom: 1px solid rgba(167, 125, 255, 0.14) !important;
+  box-shadow:
+    0 2px 24px rgba(0, 0, 0, 0.55),
+    inset 0 -1px 0 rgba(167, 125, 255, 0.08) !important;
+  position: relative;
 }
 
+/* Moonlit shimmer bar — constellation gradient */
+.moon-navbar::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(231, 201, 106, 0.28) 20%,
+    rgba(167, 125, 255, 0.45) 50%,
+    rgba(231, 201, 106, 0.28) 80%,
+    transparent 100%);
+  pointer-events: none;
+}
+
+/* Brand — Cinzel + Moon Gold gradient text */
 .navbar-brand {
-  font-family: 'Playfair Display', serif !important;
+  font-family: 'Cinzel', 'Be Vietnam Pro', sans-serif !important;
   font-weight: 700 !important;
-  letter-spacing: 1px;
-  background: linear-gradient(135deg, var(--moon-gold) 0%, var(--moon-gold-light) 100%);
+  letter-spacing: 1.5px;
+  background: linear-gradient(135deg, var(--moon-gold) 0%, var(--moon-gold-light) 55%, var(--moon-lavender) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  filter: drop-shadow(0 0 8px rgba(231, 201, 106, 0.22));
 }
 
 .moon-navbar .nav-user-name {
   color: var(--moon-text-muted) !important;
   font-size: 0.875rem;
+  font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 .moon-navbar .btn-outline-light {
-  border-color: rgba(201,149,42,0.4) !important;
-  color: var(--moon-gold-light) !important;
+  border-color: rgba(167, 125, 255, 0.35) !important;
+  color: var(--moon-lavender) !important;
 }
 .moon-navbar .btn-outline-light:hover {
-  background: rgba(201,149,42,0.12) !important;
-  border-color: var(--moon-gold) !important;
-  color: var(--moon-gold-light) !important;
+  background: rgba(167, 125, 255, 0.12) !important;
+  border-color: var(--moon-purple) !important;
+  color: var(--moon-lavender) !important;
 }
 
 /* ─── SIDEBAR ────────────────────────────────────────────────── */
 .sidebar {
-  background-color: #130F25 !important;
+  background: linear-gradient(180deg,
+    #150E34 0%,
+    #100C2C 100%) !important;
   border-right: 1px solid var(--moon-border);
   min-height: calc(100vh - 56px);
 }
 
 .sidebar .nav-link {
   color: var(--moon-text-muted) !important;
-  border-left: 2px solid transparent;
-  border-radius: 0 6px 6px 0;
+  border-left: 3px solid transparent;
+  border-radius: 0 8px 8px 0;
   transition: color 0.2s ease, background-color 0.2s ease, border-left-color 0.2s ease;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Be Vietnam Pro', sans-serif;
   font-weight: 500;
   padding-left: 12px;
   margin-right: 4px;
 }
 
 .sidebar .nav-link:hover {
-  color: var(--moon-purple-light) !important;
-  background-color: rgba(124,92,191,0.1) !important;
-  border-left-color: rgba(124,92,191,0.4) !important;
+  color: var(--moon-lavender) !important;
+  background-color: rgba(167, 125, 255, 0.08) !important;
+  border-left-color: rgba(167, 125, 255, 0.30) !important;
 }
 
 .sidebar .nav-link.active {
   color: var(--moon-gold-light) !important;
-  background-color: rgba(124,92,191,0.2) !important;
-  border-left-color: var(--moon-gold) !important;
+  background: linear-gradient(90deg,
+    rgba(167, 125, 255, 0.18) 0%,
+    rgba(167, 125, 255, 0.04) 100%) !important;
+  border-left: 3px solid var(--moon-lavender) !important;
+  font-weight: 600;
+  /* Subtle left-edge crystal glow */
+  box-shadow:
+    inset 3px 0 12px rgba(215, 180, 255, 0.06),
+    -1px 0 8px rgba(215, 180, 255, 0.10) !important;
 }
 
 .sidebar .nav-section {
   color: var(--moon-gold) !important;
-  font-family: 'Playfair Display', serif;
+  font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 0.64rem;
-  letter-spacing: 1.3px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   padding: 0.5rem 1rem;
   margin-top: 0.4rem;
+  font-weight: 700;
+  opacity: 0.88;
 }
 
 /* ─── CARDS ──────────────────────────────────────────────────── */
 .card {
-  background-color: var(--moon-card) !important;
-  border: 1px solid var(--moon-border) !important;
+  background: linear-gradient(145deg,
+    var(--moon-card) 0%,
+    rgba(28, 20, 58, 0.97) 100%) !important;
+  border: 1px solid rgba(167, 125, 255, 0.16) !important;
   border-top: 2px solid var(--moon-gold) !important;
-  border-radius: 10px !important;
+  border-radius: 12px !important;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(167, 125, 255, 0.07) !important;
   color: var(--moon-text);
 }
 
 .card-header {
-  background-color: rgba(124,92,191,0.1) !important;
+  background: linear-gradient(135deg,
+    rgba(167, 125, 255, 0.14) 0%,
+    rgba(109, 63, 212, 0.08) 100%) !important;
   border-bottom: 1px solid var(--moon-border) !important;
   color: var(--moon-text) !important;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Be Vietnam Pro', sans-serif;
   font-weight: 600;
 }
 
 .card-body  { color: var(--moon-text); }
 
 .card-footer {
-  background-color: rgba(124,92,191,0.05) !important;
+  background: rgba(167, 125, 255, 0.04) !important;
   border-top: 1px solid var(--moon-border) !important;
   color: var(--moon-text-muted) !important;
 }
 
-.shadow-sm { box-shadow: 0 2px 8px rgba(0,0,0,0.45) !important; }
+.shadow-sm {
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(167, 125, 255, 0.07) !important;
+}
 
 /* Dashboard stat cards */
 .card.bg-primary {
   background: linear-gradient(135deg, var(--moon-purple-dark) 0%, var(--moon-purple) 100%) !important;
-  border-top-color: var(--moon-purple-light) !important;
+  border-top-color: var(--moon-lavender) !important;
+  box-shadow: 0 4px 20px rgba(167, 125, 255, 0.22) !important;
 }
 .card.bg-success {
   background: linear-gradient(135deg, #1A5245 0%, #2A8265 100%) !important;
-  border-top-color: #3aab88 !important;
+  border-top-color: var(--moon-success) !important;
+  box-shadow: 0 4px 20px rgba(56, 211, 159, 0.15) !important;
 }
 .card.bg-warning {
-  background: linear-gradient(135deg, #7A5200 0%, #C9952A 100%) !important;
-  border-top-color: var(--moon-gold-light) !important;
+  background: linear-gradient(135deg, #7A5200 0%, #B89440 100%) !important;
+  border-top-color: var(--moon-gold) !important;
+  box-shadow: 0 4px 20px rgba(231, 201, 106, 0.15) !important;
 }
 .card.bg-info {
   background: linear-gradient(135deg, #1A3D5C 0%, #2A6FA8 100%) !important;
-  border-top-color: #4d9fd4 !important;
+  border-top-color: var(--moon-info) !important;
+  box-shadow: 0 4px 20px rgba(125, 211, 252, 0.12) !important;
 }
 .card.bg-primary .small,
 .card.bg-success .small,
 .card.bg-warning .small,
-.card.bg-info    .small { color: rgba(255,255,255,0.78) !important; }
+.card.bg-info    .small { color: rgba(255, 255, 255, 0.78) !important; }
 
 /* ─── TABLES ─────────────────────────────────────────────────── */
 .table {
   color: var(--moon-text) !important;
-  --bs-table-color:       var(--moon-text);
-  --bs-table-bg:          transparent;
-  --bs-table-border-color: rgba(201,149,42,0.12);
-  --bs-table-hover-bg:    rgba(124,92,191,0.08);
+  --bs-table-color:        var(--moon-text);
+  --bs-table-bg:           transparent;
+  --bs-table-border-color: rgba(167, 125, 255, 0.12);
+  --bs-table-hover-bg:     rgba(167, 125, 255, 0.07);
 }
 
 .table > :not(caption) > * > * {
-  border-bottom-color: rgba(201,149,42,0.12) !important;
+  border-bottom-color: rgba(167, 125, 255, 0.10) !important;
 }
 
-.table-bordered { border-color: rgba(201,149,42,0.15) !important; }
+.table-bordered { border-color: rgba(167, 125, 255, 0.12) !important; }
 
-/* thead table-dark → gold header */
+/* thead table-dark → deep purple + Moon Gold text */
 .table-dark {
-  --bs-table-bg:           rgba(201,149,42,0.06) !important;
-  --bs-table-border-color: rgba(201,149,42,0.2) !important;
+  --bs-table-bg:           rgba(109, 63, 212, 0.22) !important;
+  --bs-table-border-color: rgba(167, 125, 255, 0.16) !important;
   --bs-table-color:        var(--moon-gold) !important;
 }
 .table-dark th {
-  font-family:      'Playfair Display', serif !important;
-  text-transform:   uppercase !important;
-  letter-spacing:   0.8px !important;
-  font-size:        0.77rem !important;
-  color:            var(--moon-gold) !important;
-  background-color: rgba(201,149,42,0.06) !important;
-  border-color:     rgba(201,149,42,0.2) !important;
+  background: linear-gradient(135deg,
+    rgba(109, 63, 212, 0.28) 0%,
+    rgba(167, 125, 255, 0.16) 100%) !important;
+  color:          var(--moon-gold) !important;
+  border-color:   rgba(167, 125, 255, 0.16) !important;
+  font-family:    'Be Vietnam Pro', sans-serif !important;
+  font-weight:    700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.8px !important;
+  font-size:      0.77rem !important;
+  text-shadow:    0 0 8px rgba(231, 201, 106, 0.18);
 }
 
 /* thead table-secondary → purple tint */
 .table-secondary {
-  --bs-table-bg:           rgba(124,92,191,0.1) !important;
+  --bs-table-bg:           rgba(167, 125, 255, 0.10) !important;
   --bs-table-color:        var(--moon-text) !important;
-  --bs-table-border-color: rgba(201,149,42,0.15) !important;
+  --bs-table-border-color: rgba(167, 125, 255, 0.14) !important;
 }
 .table-secondary th {
   color:            var(--moon-text) !important;
-  background-color: rgba(124,92,191,0.1) !important;
-  border-color:     rgba(201,149,42,0.15) !important;
+  background-color: rgba(167, 125, 255, 0.10) !important;
+  border-color:     rgba(167, 125, 255, 0.14) !important;
 }
 
 /* Row hover */
 .table-hover tbody tr:hover > * {
-  background-color: rgba(124,92,191,0.08) !important;
+  background-color: rgba(167, 125, 255, 0.07) !important;
   color:            var(--moon-text) !important;
-  --bs-table-hover-bg: rgba(124,92,191,0.08);
+  --bs-table-hover-bg: rgba(167, 125, 255, 0.07);
 }
 
 /* ─── BADGES ─────────────────────────────────────────────────── */
 .badge {
-  font-family:   'Nunito', sans-serif !important;
+  font-family:   'Be Vietnam Pro', sans-serif !important;
   font-weight:   600 !important;
-  font-size:     0.77em !important;
-  padding:       3px 8px !important;
+  font-size:     0.75em !important;
+  padding:       3px 9px !important;
   border-radius: 6px !important;
 }
 
-/* DA_DONG → teal */
+/* DA_DONG → emerald */
 .badge.bg-success {
-  background-color: rgba(32,178,170,0.18) !important;
-  border: 1px solid rgba(32,178,170,0.35) !important;
-  color: #5EDDCA !important;
+  background-color: rgba(56, 211, 159, 0.16) !important;
+  border: 1px solid rgba(56, 211, 159, 0.32) !important;
+  color: var(--moon-success) !important;
 }
 
-/* CON_NO (bg-warning) → red */
+/* CON_NO (bg-warning) → coral */
 .badge.bg-warning {
-  background-color: rgba(220,53,69,0.15) !important;
-  border: 1px solid rgba(220,53,69,0.3) !important;
-  color: #FF8A96 !important;
+  background-color: rgba(255, 93, 122, 0.14) !important;
+  border: 1px solid rgba(255, 93, 122, 0.28) !important;
+  color: var(--moon-danger) !important;
 }
 
-/* DONG_DU (bg-info) → gold */
+/* DONG_DU (bg-info) → moon gold */
 .badge.bg-info {
-  background-color: rgba(201,149,42,0.15) !important;
-  border: 1px solid rgba(201,149,42,0.3) !important;
+  background-color: rgba(231, 201, 106, 0.14) !important;
+  border: 1px solid rgba(231, 201, 106, 0.28) !important;
   color: var(--moon-gold-light) !important;
 }
 
 /* Vai trò admin */
 .badge.bg-danger {
-  background-color: rgba(220,53,69,0.18) !important;
-  border: 1px solid rgba(220,53,69,0.35) !important;
-  color: #FF8A96 !important;
+  background-color: rgba(255, 93, 122, 0.16) !important;
+  border: 1px solid rgba(255, 93, 122, 0.32) !important;
+  color: var(--moon-danger) !important;
 }
 
-/* Vai trò nhanvien */
+/* Vai trò nhanvien / secondary */
 .badge.bg-secondary {
-  background-color: rgba(155,147,184,0.15) !important;
-  border: 1px solid rgba(155,147,184,0.3) !important;
+  background-color: rgba(184, 178, 216, 0.13) !important;
+  border: 1px solid rgba(184, 178, 216, 0.26) !important;
   color: var(--moon-text-muted) !important;
 }
 
+/* Primary / Auto-apply */
+.badge.bg-primary {
+  background-color: rgba(167, 125, 255, 0.18) !important;
+  border: 1px solid rgba(193, 140, 255, 0.32) !important;
+  color: var(--moon-lavender) !important;
+}
+
 /* ─── BUTTONS ────────────────────────────────────────────────── */
+/* Primary — purple crystal */
 .btn-primary {
-  background: linear-gradient(135deg, var(--moon-purple-dark), #5A3D9E) !important;
-  border-color: var(--moon-purple-light) !important;
+  background: linear-gradient(135deg, var(--moon-purple-dark) 0%, var(--moon-purple) 100%) !important;
+  border-color: var(--moon-purple) !important;
   color: #fff !important;
+  border-radius: 10px !important;
+  font-family: 'Be Vietnam Pro', sans-serif !important;
+  font-weight: 600 !important;
 }
 .btn-primary:hover, .btn-primary:focus {
-  background: linear-gradient(135deg, #5A3D9E, var(--moon-purple)) !important;
-  border-color: var(--moon-purple-light) !important;
+  background: linear-gradient(135deg, var(--moon-purple) 0%, var(--moon-purple-hover) 100%) !important;
+  border-color: var(--moon-lavender) !important;
+  box-shadow: 0 0 18px rgba(167, 125, 255, 0.32) !important;
 }
 
 .btn-outline-primary {
   border-color: var(--moon-purple) !important;
-  color: var(--moon-purple-light) !important;
+  color: var(--moon-purple) !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
 }
 .btn-outline-primary:hover {
-  background-color: rgba(124,92,191,0.15) !important;
-  border-color: var(--moon-purple-light) !important;
-  color: var(--moon-purple-light) !important;
+  background-color: rgba(167, 125, 255, 0.14) !important;
+  border-color: var(--moon-lavender) !important;
+  color: var(--moon-lavender) !important;
 }
 
+/* Success — emerald */
 .btn-success {
-  background: linear-gradient(135deg, #1A5245, #2A8265) !important;
-  border-color: #3aab88 !important;
+  background: linear-gradient(135deg, #1A5245 0%, #2A8265 100%) !important;
+  border-color: var(--moon-success) !important;
   color: #fff !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
 }
-.btn-success:hover { background: linear-gradient(135deg, #1f5f50, #339e77) !important; }
+.btn-success:hover {
+  background: linear-gradient(135deg, #1f5f50 0%, #339e77 100%) !important;
+  box-shadow: 0 0 14px rgba(56, 211, 159, 0.22) !important;
+}
 
 .btn-outline-success {
   border-color: #2A8265 !important;
-  color: #5EDDCA !important;
+  color: var(--moon-success) !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
 }
-.btn-outline-success:hover { background-color: rgba(42,130,101,0.15) !important; color: #5EDDCA !important; }
+.btn-outline-success:hover {
+  background-color: rgba(42, 130, 101, 0.14) !important;
+  color: var(--moon-success) !important;
+}
 
+/* Warning — Moon Gold */
 .btn-warning {
-  background: linear-gradient(135deg, #7A5200, #C9952A) !important;
-  border-color: var(--moon-gold-light) !important;
+  background: linear-gradient(135deg, #7A5200 0%, #B89440 100%) !important;
+  border-color: var(--moon-gold) !important;
   color: #fff !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
 }
-.btn-warning:hover { background: linear-gradient(135deg, #8a6000, #d9a535) !important; }
+.btn-warning:hover {
+  background: linear-gradient(135deg, #8a6000 0%, #d4a840 100%) !important;
+  box-shadow: 0 0 14px rgba(231, 201, 106, 0.28) !important;
+}
 
+/* Danger — coral */
 .btn-danger {
-  background: linear-gradient(135deg, #6B1111, #BB2222) !important;
-  border-color: #e05555 !important;
+  background: linear-gradient(135deg, #8B1A30 0%, #CC3355 100%) !important;
+  border-color: var(--moon-danger) !important;
   color: #fff !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
 }
-.btn-danger:hover { background: linear-gradient(135deg, #7d1515, #cc2e2e) !important; }
+.btn-danger:hover {
+  background: linear-gradient(135deg, #A02040 0%, #DD4466 100%) !important;
+  box-shadow: 0 0 14px rgba(255, 93, 122, 0.28) !important;
+}
 
 .btn-outline-danger {
-  border-color: #BB2222 !important;
-  color: #FF8A96 !important;
+  border-color: var(--moon-danger) !important;
+  color: var(--moon-danger) !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
 }
-.btn-outline-danger:hover { background-color: rgba(187,34,34,0.15) !important; color: #FF8A96 !important; }
+.btn-outline-danger:hover {
+  background-color: rgba(255, 93, 122, 0.14) !important;
+  color: var(--moon-danger) !important;
+}
 
+/* Info — sky blue */
 .btn-info {
-  background: linear-gradient(135deg, #1A3D5C, #2A6FA8) !important;
-  border-color: #4d9fd4 !important;
+  background: linear-gradient(135deg, #1A3D5C 0%, #2A6FA8 100%) !important;
+  border-color: var(--moon-info) !important;
   color: #fff !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
 }
-.btn-info:hover { background: linear-gradient(135deg, #1f4a6e, #3280c0) !important; }
+.btn-info:hover {
+  background: linear-gradient(135deg, #1f4a6e 0%, #3280c0 100%) !important;
+  box-shadow: 0 0 14px rgba(125, 211, 252, 0.20) !important;
+}
 
 .btn-outline-info {
   border-color: #2A6FA8 !important;
-  color: #6BBCF0 !important;
+  color: var(--moon-info) !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
 }
-.btn-outline-info:hover { background-color: rgba(42,111,168,0.15) !important; color: #6BBCF0 !important; }
+.btn-outline-info:hover {
+  background-color: rgba(42, 111, 168, 0.14) !important;
+  color: var(--moon-info) !important;
+}
 
+/* Secondary — dark crystal */
 .btn-outline-secondary {
-  border-color: rgba(155,147,184,0.4) !important;
+  border-color: rgba(184, 178, 216, 0.38) !important;
   color: var(--moon-text-muted) !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
 }
 .btn-outline-secondary:hover {
-  background-color: rgba(155,147,184,0.1) !important;
-  border-color: rgba(155,147,184,0.6) !important;
+  background-color: rgba(167, 125, 255, 0.09) !important;
+  border-color: rgba(184, 178, 216, 0.55) !important;
   color: var(--moon-text) !important;
 }
+
+/* Global btn defaults */
+.btn {
+  border-radius: 10px !important;
+  font-family: 'Be Vietnam Pro', sans-serif !important;
+  font-weight: 600 !important;
+}
+.btn-sm { border-radius: 8px !important; }
 
 .btn-close { filter: invert(1) brightness(0.75); }
 
@@ -348,16 +505,18 @@ h1, h2, h3, h4, h5, h6 {
 .form-control,
 .form-select {
   background-color: var(--moon-surface) !important;
-  border-color:     rgba(201,149,42,0.22) !important;
+  border-color:     rgba(167, 125, 255, 0.22) !important;
   color:            var(--moon-text) !important;
+  border-radius:    10px !important;
+  font-family:      'Be Vietnam Pro', sans-serif !important;
 }
 
 .form-control:focus,
 .form-select:focus {
   background-color: var(--moon-surface) !important;
-  border-color:     var(--moon-purple-light) !important;
+  border-color:     var(--moon-purple) !important;
   color:            var(--moon-text) !important;
-  box-shadow:       0 0 0 0.2rem rgba(124,92,191,0.25) !important;
+  box-shadow:       0 0 0 0.2rem rgba(167, 125, 255, 0.22) !important;
 }
 
 .form-control::placeholder { color: var(--moon-text-muted) !important; opacity: 1; }
@@ -385,20 +544,32 @@ input[type="month"]::-webkit-calendar-picker-indicator:hover {
 }
 
 .form-control.is-invalid,
-.form-select.is-invalid   { border-color: #CC2A2A !important; }
-
+.form-select.is-invalid {
+  border-color: var(--moon-danger) !important;
+}
 .form-control.is-invalid:focus,
-.form-select.is-invalid:focus { box-shadow: 0 0 0 0.2rem rgba(204,42,42,0.25) !important; }
+.form-select.is-invalid:focus {
+  box-shadow: 0 0 0 0.2rem rgba(255, 93, 122, 0.22) !important;
+}
 
-.invalid-feedback { color: #FF8A96 !important; }
+.invalid-feedback { color: var(--moon-danger) !important; }
 
-.form-label { color: var(--moon-text) !important; font-weight: 500; }
-.form-text  { color: var(--moon-text-muted) !important; }
+.form-label {
+  color: var(--moon-text) !important;
+  font-weight: 600;
+  font-size: 0.9rem;
+  font-family: 'Be Vietnam Pro', sans-serif !important;
+}
+.form-text { color: var(--moon-text-muted) !important; }
 
 .input-group-text {
-  background-color: rgba(201,149,42,0.08) !important;
-  border-color:     rgba(201,149,42,0.22) !important;
+  background-color: rgba(167, 125, 255, 0.08) !important;
+  border-color:     rgba(167, 125, 255, 0.22) !important;
   color:            var(--moon-text-muted) !important;
+}
+.input-group-text i,
+.input-group-text .bi {
+  color: var(--moon-purple) !important;
 }
 
 option {
@@ -406,79 +577,106 @@ option {
   color:            var(--moon-text);
 }
 
-/* Mũi tên dropdown của <select> → tím */
+/* Select dropdown arrow → purple */
 .form-select {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23A987E0' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
-}
-
-/* Icon bên trong input-group-text (search, v.v.) → tím */
-.input-group-text i,
-.input-group-text .bi {
-  color: var(--moon-purple-light) !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23A77DFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
 }
 
 /* ─── ALERTS ─────────────────────────────────────────────────── */
 .alert-success {
-  background-color: rgba(42,130,101,0.14) !important;
-  border-color:     rgba(42,130,101,0.35) !important;
-  color:            #5EDDCA !important;
+  background-color: rgba(56, 211, 159, 0.12) !important;
+  border-color:     rgba(56, 211, 159, 0.28) !important;
+  color:            var(--moon-success) !important;
+  border-radius:    10px !important;
 }
 .alert-danger {
-  background-color: rgba(204,42,42,0.12) !important;
-  border-color:     rgba(204,42,42,0.35) !important;
-  color:            #FF8A96 !important;
+  background-color: rgba(255, 93, 122, 0.12) !important;
+  border-color:     rgba(255, 93, 122, 0.28) !important;
+  color:            var(--moon-danger) !important;
+  border-radius:    10px !important;
 }
 .alert-warning {
-  background-color: rgba(201,149,42,0.12) !important;
-  border-color:     rgba(201,149,42,0.35) !important;
+  background-color: rgba(231, 201, 106, 0.12) !important;
+  border-color:     rgba(231, 201, 106, 0.28) !important;
   color:            var(--moon-gold-light) !important;
+  border-radius:    10px !important;
+}
+.alert-info {
+  background-color: rgba(125, 211, 252, 0.10) !important;
+  border-color:     rgba(125, 211, 252, 0.24) !important;
+  color:            var(--moon-info) !important;
+  border-radius:    10px !important;
 }
 
 /* ─── MODALS ─────────────────────────────────────────────────── */
 .modal-content {
-  background-color: var(--moon-surface) !important;
-  border: 1px solid var(--moon-border) !important;
+  background: linear-gradient(145deg, var(--moon-card) 0%, #1E1550 100%) !important;
+  border: 1px solid rgba(167, 125, 255, 0.18) !important;
   border-top: 2px solid var(--moon-gold) !important;
-  border-radius: 12px !important;
+  border-radius: 16px !important;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.65),
+    0 0 40px rgba(167, 125, 255, 0.08) !important;
 }
 
 .modal-header {
+  background: linear-gradient(135deg,
+    rgba(167, 125, 255, 0.12) 0%,
+    rgba(109, 63, 212, 0.06) 100%) !important;
   border-bottom: 1px solid var(--moon-border) !important;
   color: var(--moon-text) !important;
 }
 
 .modal-header.bg-warning.bg-opacity-25 {
-  background-color: rgba(201,149,42,0.1) !important;
+  background: linear-gradient(135deg,
+    rgba(231, 201, 106, 0.12) 0%,
+    rgba(167, 125, 255, 0.06) 100%) !important;
 }
 
 .modal-footer { border-top: 1px solid var(--moon-border) !important; }
 
 .modal-title {
-  font-family: 'Playfair Display', serif;
-  color:        var(--moon-text) !important;
+  color: var(--moon-text) !important;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-weight: 700;
 }
 
 .modal-backdrop {
-  --bs-backdrop-bg:      #0E0B1A;
+  --bs-backdrop-bg:      #0B0820;
   --bs-backdrop-opacity: 0.85;
 }
 
 /* ─── MISC ───────────────────────────────────────────────────── */
 .bg-light {
-  background-color: rgba(124,92,191,0.06) !important;
+  background-color: rgba(167, 125, 255, 0.07) !important;
   color: var(--moon-text) !important;
 }
 
-.text-decoration-none          { color: var(--moon-purple-light) !important; }
-.text-decoration-none:hover    { color: var(--moon-gold-light) !important; }
-
-/* dl/dt/dd in detail pages */
 dt { color: var(--moon-text-muted); font-weight: 600; }
 dd { color: var(--moon-text); }
 
+.text-decoration-none       { color: var(--moon-purple) !important; }
+.text-decoration-none:hover { color: var(--moon-lavender) !important; }
+
+.page-link {
+  color: var(--moon-purple);
+  background-color: var(--moon-surface);
+  border-color: var(--moon-border);
+  border-radius: 8px !important;
+}
+.page-item.active .page-link {
+  background: linear-gradient(135deg, var(--moon-purple-dark), var(--moon-purple));
+  border-color: var(--moon-purple);
+  color: #fff;
+}
+
 /* ─── LOGIN PAGE ─────────────────────────────────────────────── */
 body.login-page {
-  background: radial-gradient(ellipse at 50% 0%, #1E1640 0%, var(--moon-bg) 65%) !important;
+  background-color: #0B0820 !important;
+  background-image:
+    radial-gradient(ellipse 85% 60% at 50% 0%, rgba(167, 125, 255, 0.13) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 45% at 90% 100%, rgba(231, 201, 106, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 35% at 5% 80%, rgba(109, 63, 212, 0.06) 0%, transparent 50%) !important;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -486,37 +684,42 @@ body.login-page {
 }
 
 .login-card {
-  background-color: var(--moon-surface) !important;
-  border: 1px solid var(--moon-border) !important;
+  background: linear-gradient(145deg, #241A4D 0%, #1B1442 100%) !important;
+  border: 1px solid rgba(167, 125, 255, 0.20) !important;
   border-top: 2px solid var(--moon-gold) !important;
-  border-radius: 16px !important;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.65), 0 0 60px rgba(124,92,191,0.08) !important;
+  border-radius: 20px !important;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.65),
+    0 0 50px rgba(167, 125, 255, 0.08),
+    inset 0 1px 0 rgba(215, 180, 255, 0.07) !important;
   width: 420px;
 }
 
 .login-brand {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Cinzel', 'Be Vietnam Pro', sans-serif;
   font-weight: 700;
   font-size: 1.85rem;
   letter-spacing: 2px;
-  background: linear-gradient(135deg, var(--moon-gold) 0%, var(--moon-gold-light) 100%);
+  background: linear-gradient(135deg, var(--moon-gold) 0%, var(--moon-gold-light) 55%, var(--moon-lavender) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  filter: drop-shadow(0 0 10px rgba(231, 201, 106, 0.25));
 }
 
 .login-subtitle {
   color: var(--moon-text-muted) !important;
   font-size: 0.84rem;
+  font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 .login-moon-icon {
   font-size: 2.8rem;
-  background: linear-gradient(135deg, var(--moon-gold) 0%, var(--moon-gold-light) 60%, var(--moon-purple-light) 100%);
+  background: linear-gradient(135deg, var(--moon-gold) 0%, var(--moon-gold-light) 55%, var(--moon-purple) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 0 12px rgba(201,149,42,0.4));
+  filter: drop-shadow(0 0 14px rgba(231, 201, 106, 0.38));
 }
 
 /* ─── FOUR-POINTED STAR DECORATOR ───────────────────────────── */
@@ -528,9 +731,10 @@ h5::before,
   font-size: 0.6em;
   margin-right: 0.45em;
   vertical-align: middle;
-  opacity: 0.85;
+  opacity: 0.88;
   font-family: sans-serif;
   font-style: normal;
+  text-shadow: 0 0 6px rgba(231, 201, 106, 0.40);
 }
 
 .sidebar .nav-section::before {
@@ -538,7 +742,7 @@ h5::before,
   color: var(--moon-gold);
   font-size: 0.75em;
   margin-right: 0.35em;
-  opacity: 0.6;
+  opacity: 0.55;
   font-family: sans-serif;
 }
 
@@ -548,6 +752,25 @@ h5::before,
   font-size: 0.6em;
   margin-right: 0.35em;
   vertical-align: middle;
-  opacity: 0.5;
+  opacity: 0.45;
   font-family: sans-serif;
+}
+
+/* ─── ANIMATIONS ─────────────────────────────────────────────── */
+@keyframes moon-twinkle {
+  0%, 100% { opacity: 0.3; }
+  50%       { opacity: 0.9; }
+}
+
+@keyframes moon-sparkle-appear {
+  0%, 100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
+  50%       { opacity: 1; transform: scale(1) rotate(45deg); }
+}
+
+/* ─── JS-INJECTED DARK DECORATION HELPERS ───────────────────── */
+.moon-sidebar-star,
+.moon-sparkle-dot,
+.moon-bg-sparkle {
+  pointer-events: none !important;
+  user-select: none !important;
 }

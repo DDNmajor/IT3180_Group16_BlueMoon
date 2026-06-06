@@ -47,7 +47,7 @@ public class EmailService {
                 + "  Mã khoản thu  : %s%n"
                 + "  Số tiền       : %s đ%n"
                 + "  Hạn nộp       : %s%n%n"
-                + "Vui lòng nộp phí đúng hạn tại văn phòng Ban quản trị.%n%n"
+                + "Vui lòng nộp phí đúng hạn tại văn phòng Ban quản trị hoặc chuyển khoản qua tài khoản ngân hàng của Ban quản lý.%n%n"
                 + "Trân trọng,%n"
                 + "Ban quản trị chung cư BlueMoon",
                 ho.getChuHo(), ho.getSoCanHo(),

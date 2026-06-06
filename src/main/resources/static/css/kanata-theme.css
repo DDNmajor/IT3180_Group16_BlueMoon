@@ -1,0 +1,947 @@
+/* ============================================================
+   KANATA LIGHT THEME v3 — BlueMoon Fee Management
+   Soft Purple Glassmorphism · Amane Kanata inspired
+   Active khi <html data-theme="light">
+   Default (no attribute) = moona dark theme
+   ============================================================ */
+
+/* ─── CSS VARIABLES ─────────────────────────────────────────── */
+[data-theme="light"] {
+  --k-primary:       #6366f1;
+  --k-primary-hover: #4f46e5;
+  --k-secondary:     #818cf8;
+  --k-accent:        #a78bfa;
+  --k-bg-from:       #f0eeff;
+  --k-bg-mid:        #e8e4ff;
+  --k-bg-to:         #dde8ff;
+  --k-glass-sidebar: rgba(255, 255, 255, 0.92);
+  --k-glass-card:    rgba(255, 255, 255, 0.90);
+  --k-glass-modal:   rgba(255, 255, 255, 0.94);
+  --k-surface:       #FFFFFF;
+  --k-text:          #1e1b4b;
+  --k-text-muted:    #6b7280;
+  --k-border:        rgba(167, 139, 250, 0.22);
+  --k-border-solid:  #e0d9ff;
+  --k-active-bg:     rgba(99, 102, 241, 0.10);
+  --k-thead-bg:      rgba(232, 228, 255, 0.85);
+  --k-thead-text:    #4338ca;
+  --k-shadow:        0 4px 24px rgba(139, 92, 246, 0.09);
+  --k-shadow-hover:  0 8px 32px rgba(139, 92, 246, 0.16);
+  --k-success:       #22C55E;
+  --k-warning:       #F59E0B;
+  --k-danger:        #EF4444;
+  --k-info:          #3B82F6;
+}
+
+/* ─── BODY & BACKGROUND ──────────────────────────────────────── */
+[data-theme="light"] body {
+  background: linear-gradient(135deg,
+    var(--k-bg-from) 0%,
+    var(--k-bg-mid)  40%,
+    var(--k-bg-to)   100%) !important;
+  background-attachment: fixed !important;
+  color: var(--k-text) !important;
+  font-family: 'Be Vietnam Pro', 'Nunito', sans-serif !important;
+  min-height: 100vh;
+}
+
+/* Container transparent để lộ gradient nền */
+[data-theme="light"] .container-fluid {
+  background: transparent !important;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── DECORATIVE STARS ───────────────────────────────────────── */
+/* Star góc dưới-trái: tím lavender */
+[data-theme="light"] body::before {
+  content: '✦';
+  position: fixed;
+  bottom: 55px;
+  left: 48px;
+  font-size: 108px;
+  color: #a78bfa;
+  opacity: 0.32;
+  pointer-events: none;
+  z-index: 0;
+  font-family: sans-serif;
+  line-height: 1;
+  transform: rotate(12deg);
+  user-select: none;
+}
+
+/* Star góc trên-phải: xanh nhạt — override moon watermark của dark mode */
+[data-theme="light"] body::after {
+  content: '✦';
+  position: fixed;
+  top: 85px;
+  right: 55px;
+  bottom: auto;
+  left: auto;
+  font-size: 86px;
+  color: #93c5fd;
+  opacity: 0.30;
+  pointer-events: none;
+  z-index: 0;
+  font-family: sans-serif;
+  line-height: 1;
+  transform: rotate(-10deg);
+  user-select: none;
+  filter: none;
+}
+
+/* ─── LINKS & TEXT UTILITIES ─────────────────────────────────── */
+[data-theme="light"] a       { color: var(--k-primary); }
+[data-theme="light"] a:hover { color: var(--k-primary-hover); }
+
+[data-theme="light"] .text-muted    { color: var(--k-text-muted) !important; }
+[data-theme="light"] .text-primary  { color: var(--k-primary) !important; }
+[data-theme="light"] .text-success  { color: #16a34a !important; }
+[data-theme="light"] .text-danger   { color: #dc2626 !important; }
+[data-theme="light"] .text-dark     { color: var(--k-text) !important; }
+[data-theme="light"] .text-white    { color: #FFFFFF !important; }
+
+[data-theme="light"] hr {
+  border-color: var(--k-border-solid) !important;
+  opacity: 1;
+}
+
+/* ─── TYPOGRAPHY ─────────────────────────────────────────────── */
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] h5,
+[data-theme="light"] h6 {
+  color: var(--k-text) !important;
+  font-family: 'Be Vietnam Pro', 'Nunito', sans-serif !important;
+}
+
+/* ✦ Star decorator — indigo */
+[data-theme="light"] h4::before,
+[data-theme="light"] h5::before,
+[data-theme="light"] .modal-title::before {
+  color: var(--k-primary);
+  opacity: 0.60;
+}
+
+[data-theme="light"] .table-dark th::before {
+  color: var(--k-thead-text);
+  opacity: 0.38;
+}
+
+/* ─── SCROLLBAR ──────────────────────────────────────────────── */
+[data-theme="light"] ::-webkit-scrollbar-track {
+  background: rgba(240, 238, 255, 0.5);
+}
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.28);
+  border-radius: 3px;
+}
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.50);
+}
+
+/* ─── NAVBAR ─────────────────────────────────────────────────── */
+[data-theme="light"] .moon-navbar {
+  background: linear-gradient(90deg, #4f46e5 0%, #6366f1 100%) !important;
+  border-bottom: none !important;
+  position: relative;
+  box-shadow: 0 2px 16px rgba(99, 102, 241, 0.30) !important;
+  z-index: 100;
+}
+
+/* Subtle shimmer dưới navbar */
+[data-theme="light"] .moon-navbar::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent       0%,
+    rgba(255,255,255,0.30) 25%,
+    rgba(255,255,255,0.45) 50%,
+    rgba(255,255,255,0.30) 75%,
+    transparent       100%);
+  pointer-events: none;
+}
+
+/* Brand — animated gradient text (bright against indigo navbar) */
+[data-theme="light"] .navbar-brand {
+  font-family: 'Cinzel', 'Be Vietnam Pro', sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 1.5px;
+  background: linear-gradient(
+    90deg,
+    #ffffff  0%,
+    #fde68a 22%,
+    #67e8f9 50%,
+    #fde68a 78%,
+    #ffffff 100%
+  ) !important;
+  background-size: 200% auto !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  animation: kanata-gradient-shift 4s linear infinite;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.65))
+          drop-shadow(0 0 22px rgba(253, 230, 138, 0.50)) !important;
+}
+
+[data-theme="light"] .moon-navbar .nav-user-name {
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+[data-theme="light"] .moon-navbar .btn-outline-light {
+  border-color: rgba(255, 255, 255, 0.50) !important;
+  color: #FFFFFF !important;
+}
+[data-theme="light"] .moon-navbar .btn-outline-light:hover {
+  background-color: rgba(255, 255, 255, 0.16) !important;
+  border-color: #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+
+/* ─── THEME TOGGLE ───────────────────────────────────────────── */
+[data-theme="light"] #themeToggleBtn {
+  background: transparent !important;
+  border: 2px solid rgba(255, 255, 255, 0.45) !important;
+  color: rgba(255, 255, 255, 0.92) !important;
+  box-shadow: none !important;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
+}
+[data-theme="light"] #themeToggleBtn:hover,
+[data-theme="light"] #themeToggleBtn:focus {
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.90) !important;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.18),
+              0 0 10px rgba(255, 255, 255, 0.12) !important;
+  color: #FFFFFF !important;
+}
+
+/* ─── SIDEBAR — Glassmorphism ────────────────────────────────── */
+/* Fallback cho browser không hỗ trợ backdrop-filter */
+[data-theme="light"] .sidebar {
+  background: var(--k-glass-sidebar) !important;
+  border-right: 1px solid rgba(167, 139, 250, 0.22) !important;
+  box-shadow: 2px 0 20px rgba(139, 92, 246, 0.07) !important;
+  z-index: 10;
+  position: relative;
+}
+
+/* Progressive enhancement: kính mờ thực sự */
+@supports (backdrop-filter: blur(1px)) {
+  [data-theme="light"] .sidebar {
+    background: rgba(255, 255, 255, 0.55) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+  }
+}
+
+[data-theme="light"] .sidebar .nav-section {
+  color: var(--k-primary) !important;
+  font-size: 0.64rem;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+[data-theme="light"] .sidebar .nav-section::before {
+  color: var(--k-primary);
+  opacity: 0.50;
+}
+
+[data-theme="light"] .sidebar .nav-link {
+  color: var(--k-text-muted) !important;
+  border-left: 3px solid transparent !important;
+  border-radius: 0 8px 8px 0 !important;
+  transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+  font-weight: 500;
+  padding-left: 12px;
+  margin-right: 4px;
+  font-family: 'Be Vietnam Pro', 'Nunito', sans-serif !important;
+}
+
+[data-theme="light"] .sidebar .nav-link:hover {
+  color: var(--k-primary) !important;
+  background: rgba(99, 102, 241, 0.07) !important;
+  border-left-color: var(--k-secondary) !important;
+}
+
+[data-theme="light"] .sidebar .nav-link.active {
+  color: var(--k-primary-hover) !important;
+  background: rgba(99, 102, 241, 0.12) !important;
+  border-left: 3px solid var(--k-primary) !important;
+  font-weight: 700;
+}
+
+/* ─── CARDS — Glassmorphism ──────────────────────────────────── */
+[data-theme="light"] .card {
+  background: var(--k-glass-card) !important;
+  border: 1px solid rgba(167, 139, 250, 0.20) !important;
+  border-top: 2px solid rgba(99, 102, 241, 0.45) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--k-shadow) !important;
+  transition: box-shadow 0.2s ease;
+}
+
+[data-theme="light"] .card:hover {
+  box-shadow: var(--k-shadow-hover) !important;
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  [data-theme="light"] .card {
+    background: rgba(255, 255, 255, 0.75) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+  }
+}
+
+[data-theme="light"] .card-header {
+  background: rgba(232, 228, 255, 0.85) !important;
+  border-bottom: 1px solid rgba(167, 139, 250, 0.18) !important;
+  color: var(--k-text) !important;
+  font-weight: 600;
+  border-radius: 15px 15px 0 0 !important;
+}
+
+[data-theme="light"] .card-body {
+  color: var(--k-text);
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme="light"] .card-footer {
+  background: rgba(240, 238, 255, 0.60) !important;
+  border-top: 1px solid rgba(167, 139, 250, 0.15) !important;
+  color: var(--k-text-muted) !important;
+  border-radius: 0 0 15px 15px !important;
+}
+
+[data-theme="light"] .shadow-sm {
+  box-shadow: var(--k-shadow) !important;
+}
+
+/* Dashboard stat cards — opaque gradient tetap */
+[data-theme="light"] .card.bg-primary {
+  background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%) !important;
+  border-top-color: #818cf8 !important;
+  border-radius: 16px !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+[data-theme="light"] .card.bg-success {
+  background: linear-gradient(135deg, #15803d 0%, #22c55e 100%) !important;
+  border-top-color: #86efac !important;
+  border-radius: 16px !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+[data-theme="light"] .card.bg-warning {
+  background: linear-gradient(135deg, #b45309 0%, #f59e0b 100%) !important;
+  border-top-color: #fcd34d !important;
+  border-radius: 16px !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+[data-theme="light"] .card.bg-info {
+  background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%) !important;
+  border-top-color: #93c5fd !important;
+  border-radius: 16px !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+[data-theme="light"] .card.bg-primary .small,
+[data-theme="light"] .card.bg-success .small,
+[data-theme="light"] .card.bg-warning .small,
+[data-theme="light"] .card.bg-info    .small {
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+
+/* ─── TABLES ─────────────────────────────────────────────────── */
+[data-theme="light"] .table {
+  color: var(--k-text) !important;
+  --bs-table-color:        var(--k-text);
+  --bs-table-bg:           transparent;
+  --bs-table-border-color: rgba(167, 139, 250, 0.16);
+}
+
+[data-theme="light"] .table > :not(caption) > * > * {
+  border-bottom-color: rgba(167, 139, 250, 0.15) !important;
+}
+
+[data-theme="light"] .table-bordered {
+  border-color: rgba(167, 139, 250, 0.18) !important;
+}
+
+/* thead table-dark → soft purple header */
+[data-theme="light"] .table-dark,
+[data-theme="light"] thead.table-dark,
+[data-theme="light"] .table-dark th,
+[data-theme="light"] thead.table-dark th {
+  --bs-table-bg:           var(--k-thead-bg) !important;
+  --bs-table-color:        var(--k-thead-text) !important;
+  --bs-table-border-color: rgba(167, 139, 250, 0.20) !important;
+  background-color:        var(--k-thead-bg) !important;
+  color:                   var(--k-thead-text) !important;
+  font-family:             'Be Vietnam Pro', 'Nunito', sans-serif !important;
+  text-transform:          uppercase !important;
+  letter-spacing:          0.03em !important;
+  font-size:               0.77rem !important;
+  font-weight:             600 !important;
+}
+
+[data-theme="light"] .table-secondary {
+  --bs-table-bg:           rgba(232, 228, 255, 0.65) !important;
+  --bs-table-color:        var(--k-text) !important;
+  --bs-table-border-color: rgba(167, 139, 250, 0.18) !important;
+}
+[data-theme="light"] .table-secondary th {
+  color:            var(--k-text) !important;
+  background-color: rgba(232, 228, 255, 0.65) !important;
+  border-color:     rgba(167, 139, 250, 0.18) !important;
+}
+
+[data-theme="light"] .table-hover tbody tr:hover > * {
+  background-color: rgba(99, 102, 241, 0.04) !important;
+  color: var(--k-text) !important;
+  transition: background 0.15s ease;
+}
+
+/* ─── BADGES — flat accessible style ────────────────────────── */
+[data-theme="light"] .badge {
+  border-radius: 20px !important;
+  padding: 4px 10px !important;
+  font-weight: 600 !important;
+  font-size: 0.75em !important;
+  font-family: 'Be Vietnam Pro', 'Nunito', sans-serif !important;
+}
+
+/* DA_DONG → emerald flat */
+[data-theme="light"] .badge.bg-success {
+  background-color: #dcfce7 !important;
+  border: none !important;
+  color: #16a34a !important;
+}
+
+/* CON_NO (bg-warning) → amber flat */
+[data-theme="light"] .badge.bg-warning {
+  background-color: #fef3c7 !important;
+  border: none !important;
+  color: #b45309 !important;
+}
+
+/* DONG_DU (bg-info) → blue flat */
+[data-theme="light"] .badge.bg-info {
+  background-color: #dbeafe !important;
+  border: none !important;
+  color: #1d4ed8 !important;
+}
+
+/* Danger / admin role → red flat */
+[data-theme="light"] .badge.bg-danger {
+  background-color: #fee2e2 !important;
+  border: none !important;
+  color: #dc2626 !important;
+}
+
+/* Secondary / nhanvien → slate flat */
+[data-theme="light"] .badge.bg-secondary {
+  background-color: #f1f5f9 !important;
+  border: none !important;
+  color: #64748b !important;
+}
+
+/* Primary / audit auto-apply → indigo flat */
+[data-theme="light"] .badge.bg-primary {
+  background-color: #ede9fe !important;
+  border: none !important;
+  color: #6366f1 !important;
+}
+
+[data-theme="light"] .badge.bg-dark {
+  background-color: #e2e8f0 !important;
+  border: none !important;
+  color: #334155 !important;
+}
+
+/* ─── BUTTONS ────────────────────────────────────────────────── */
+[data-theme="light"] .btn {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-family: 'Be Vietnam Pro', 'Nunito', sans-serif !important;
+  transition: box-shadow 0.2s ease, transform 0.12s ease, background 0.18s ease !important;
+}
+
+/* Primary — indigo gradient (filter/submit buttons) */
+[data-theme="light"] .btn-primary {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+  border-color: #4f46e5 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.30) !important;
+}
+[data-theme="light"] .btn-primary:hover,
+[data-theme="light"] .btn-primary:focus {
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
+  border-color: #4338ca !important;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.45) !important;
+  transform: translateY(-1px) !important;
+}
+[data-theme="light"] .btn-primary:active {
+  transform: translateY(0) !important;
+}
+
+[data-theme="light"] .btn-outline-primary {
+  color: var(--k-primary) !important;
+  border-color: var(--k-primary) !important;
+  background: transparent !important;
+}
+[data-theme="light"] .btn-outline-primary:hover {
+  background: rgba(99, 102, 241, 0.10) !important;
+  color: var(--k-primary-hover) !important;
+  border-color: var(--k-primary-hover) !important;
+}
+
+/* Success — solid green */
+[data-theme="light"] .btn-success {
+  background: #22c55e !important;
+  border-color: #22c55e !important;
+  color: #FFFFFF !important;
+}
+[data-theme="light"] .btn-success:hover {
+  background: #16a34a !important;
+  border-color: #16a34a !important;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.30) !important;
+}
+
+[data-theme="light"] .btn-outline-success {
+  border-color: #22c55e !important;
+  color: #16a34a !important;
+  background: transparent !important;
+}
+[data-theme="light"] .btn-outline-success:hover {
+  background: rgba(34, 197, 94, 0.10) !important;
+  color: #16a34a !important;
+}
+
+/* Warning — glassmorphism amber (edit buttons trong table) */
+[data-theme="light"] .btn-warning {
+  background: rgba(251, 191, 36, 0.14) !important;
+  border: 1px solid rgba(251, 191, 36, 0.35) !important;
+  color: #d97706 !important;
+}
+[data-theme="light"] .btn-warning:hover {
+  background: rgba(251, 191, 36, 0.24) !important;
+  border-color: rgba(251, 191, 36, 0.55) !important;
+  color: #b45309 !important;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.22) !important;
+}
+
+/* Danger — glassmorphism red (delete buttons trong table) */
+[data-theme="light"] .btn-danger {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border: 1px solid rgba(239, 68, 68, 0.28) !important;
+  color: #dc2626 !important;
+}
+[data-theme="light"] .btn-danger:hover {
+  background: rgba(239, 68, 68, 0.20) !important;
+  border-color: rgba(239, 68, 68, 0.45) !important;
+  color: #b91c1c !important;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.22) !important;
+}
+
+[data-theme="light"] .btn-outline-danger {
+  border-color: rgba(239, 68, 68, 0.40) !important;
+  color: #dc2626 !important;
+  background: transparent !important;
+}
+[data-theme="light"] .btn-outline-danger:hover {
+  background: rgba(239, 68, 68, 0.10) !important;
+  border-color: rgba(239, 68, 68, 0.55) !important;
+  color: #b91c1c !important;
+}
+
+/* Info — blue */
+[data-theme="light"] .btn-info {
+  background: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: #FFFFFF !important;
+}
+[data-theme="light"] .btn-info:hover {
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.30) !important;
+}
+
+/* Secondary outline */
+[data-theme="light"] .btn-outline-secondary {
+  color: var(--k-text-muted) !important;
+  border-color: rgba(167, 139, 250, 0.35) !important;
+  background: rgba(255, 255, 255, 0.65) !important;
+}
+[data-theme="light"] .btn-outline-secondary:hover {
+  background: rgba(99, 102, 241, 0.08) !important;
+  border-color: var(--k-secondary) !important;
+  color: var(--k-text) !important;
+}
+
+[data-theme="light"] .btn-close { filter: none; }
+
+/* ─── FORMS ──────────────────────────────────────────────────── */
+/* Glass inputs — fallback */
+[data-theme="light"] .form-control,
+[data-theme="light"] .form-select {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(167, 139, 250, 0.32) !important;
+  color: var(--k-text) !important;
+  border-radius: 8px !important;
+  font-family: 'Be Vietnam Pro', 'Nunito', sans-serif !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  [data-theme="light"] .form-control,
+  [data-theme="light"] .form-select {
+    background: rgba(255, 255, 255, 0.75) !important;
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+  }
+}
+
+[data-theme="light"] .form-control:focus,
+[data-theme="light"] .form-select:focus {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: #6366f1 !important;
+  color: var(--k-text) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12) !important;
+  outline: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+[data-theme="light"] .form-control::placeholder { color: #a0a8c0 !important; }
+
+[data-theme="light"] input[type="date"],
+[data-theme="light"] input[type="datetime-local"],
+[data-theme="light"] input[type="month"],
+[data-theme="light"] input[type="time"] { color-scheme: light; }
+
+[data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator,
+[data-theme="light"] input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+[data-theme="light"] input[type="month"]::-webkit-calendar-picker-indicator {
+  filter: none;
+  opacity: 0.6;
+}
+
+[data-theme="light"] .form-control.is-invalid,
+[data-theme="light"] .form-select.is-invalid {
+  border-color: #ef4444 !important;
+}
+[data-theme="light"] .invalid-feedback { color: #dc2626 !important; }
+
+[data-theme="light"] .form-label {
+  color: var(--k-text) !important;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+[data-theme="light"] .form-text { color: var(--k-text-muted) !important; }
+
+[data-theme="light"] .input-group-text {
+  background: rgba(232, 228, 255, 0.75) !important;
+  border-color: rgba(167, 139, 250, 0.32) !important;
+  color: var(--k-text-muted) !important;
+  border-radius: 8px !important;
+}
+[data-theme="light"] .input-group-text i,
+[data-theme="light"] .input-group-text .bi { color: var(--k-primary) !important; }
+
+/* Select arrow → indigo; phải set lại repeat/position/size vì background shorthand ở trên đã reset chúng */
+[data-theme="light"] .form-select {
+  background-image:    url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236366f1' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+  background-repeat:   no-repeat !important;
+  background-position: right 0.75rem center !important;
+  background-size:     16px 12px !important;
+}
+
+[data-theme="light"] option {
+  background-color: #FFFFFF;
+  color: var(--k-text);
+}
+
+/* ─── ALERTS ─────────────────────────────────────────────────── */
+[data-theme="light"] .alert-success {
+  background-color: #dcfce7 !important;
+  border-color: #86efac !important;
+  color: #15803d !important;
+  border-radius: 10px !important;
+}
+[data-theme="light"] .alert-danger {
+  background-color: #fee2e2 !important;
+  border-color: #fca5a5 !important;
+  color: #b91c1c !important;
+  border-radius: 10px !important;
+}
+[data-theme="light"] .alert-warning {
+  background-color: #fef3c7 !important;
+  border-color: #fcd34d !important;
+  color: #92400e !important;
+  border-radius: 10px !important;
+}
+[data-theme="light"] .alert-info {
+  background-color: #dbeafe !important;
+  border-color: #93c5fd !important;
+  color: #1e40af !important;
+  border-radius: 10px !important;
+}
+
+/* ─── MODALS — Glassmorphism ─────────────────────────────────── */
+[data-theme="light"] .modal-content {
+  background: var(--k-glass-modal) !important;
+  border: 1px solid rgba(167, 139, 250, 0.22) !important;
+  border-top: 3px solid var(--k-primary) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 40px rgba(99, 102, 241, 0.16) !important;
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  [data-theme="light"] .modal-content {
+    background: rgba(255, 255, 255, 0.88) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+  }
+}
+
+[data-theme="light"] .modal-header {
+  background: rgba(232, 228, 255, 0.85) !important;
+  border-bottom: 1px solid rgba(167, 139, 250, 0.20) !important;
+  color: var(--k-text) !important;
+  border-radius: 15px 15px 0 0 !important;
+}
+[data-theme="light"] .modal-header.bg-warning.bg-opacity-25 {
+  background: rgba(245, 158, 11, 0.12) !important;
+}
+[data-theme="light"] .modal-footer {
+  border-top: 1px solid rgba(167, 139, 250, 0.18) !important;
+}
+[data-theme="light"] .modal-title { color: var(--k-text) !important; }
+[data-theme="light"] .modal-backdrop {
+  --bs-backdrop-bg:      #2d2d6e;
+  --bs-backdrop-opacity: 0.40;
+}
+
+/* ─── MISC ───────────────────────────────────────────────────── */
+[data-theme="light"] .bg-light {
+  background: rgba(232, 228, 255, 0.60) !important;
+  color: var(--k-text) !important;
+}
+[data-theme="light"] dt { color: var(--k-text-muted); font-weight: 600; }
+[data-theme="light"] dd { color: var(--k-text); }
+
+[data-theme="light"] .text-decoration-none       { color: var(--k-primary) !important; }
+[data-theme="light"] .text-decoration-none:hover { color: var(--k-primary-hover) !important; }
+
+[data-theme="light"] .page-link {
+  color: var(--k-primary);
+  background: rgba(255, 255, 255, 0.80);
+  border-color: rgba(167, 139, 250, 0.28);
+  border-radius: 8px !important;
+}
+[data-theme="light"] .page-item.active .page-link {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  border-color: #4f46e5;
+  color: #FFFFFF;
+}
+
+/* ─── LOGIN PAGE ─────────────────────────────────────────────── */
+[data-theme="light"] body.login-page {
+  background: linear-gradient(135deg,
+    #f0eeff 0%,
+    #e2dcff 35%,
+    #d8e4ff 70%,
+    #dde8ff 100%) !important;
+  background-attachment: fixed !important;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-theme="light"] .login-card {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid rgba(167, 139, 250, 0.22) !important;
+  border-top: 3px solid var(--k-primary) !important;
+  border-radius: 20px !important;
+  box-shadow:
+    0 8px 40px rgba(99, 102, 241, 0.16),
+    0 0 60px rgba(167, 139, 250, 0.08) !important;
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  [data-theme="light"] .login-card {
+    background: rgba(255, 255, 255, 0.78) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+  }
+}
+
+[data-theme="light"] .login-brand {
+  background: linear-gradient(135deg, var(--k-primary) 0%, var(--k-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+[data-theme="light"] .login-subtitle { color: var(--k-text-muted) !important; }
+[data-theme="light"] .login-moon-icon {
+  background: linear-gradient(135deg, var(--k-primary) 0%, var(--k-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.35));
+}
+
+/* ─── LOGIN THEME TOGGLE ─────────────────────────────────────── */
+#loginThemeToggleBtn {
+  background: transparent;
+  border: 2px solid rgba(215, 180, 255, 0.35);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: rgba(215, 180, 255, 0.80);
+  font-size: 1rem;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+}
+#loginThemeToggleBtn:hover {
+  border-color: rgba(215, 180, 255, 0.80);
+  box-shadow: 0 0 0 3px rgba(167, 125, 255, 0.18),
+              0 0 10px rgba(167, 125, 255, 0.14);
+  color: #D7B4FF;
+}
+
+[data-theme="light"] #loginThemeToggleBtn {
+  border-color: rgba(99, 102, 241, 0.35);
+  color: rgba(99, 102, 241, 0.80);
+}
+[data-theme="light"] #loginThemeToggleBtn:hover {
+  border-color: rgba(99, 102, 241, 0.80);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.14),
+              0 0 10px rgba(99, 102, 241, 0.12);
+  color: #4f46e5;
+}
+
+/* ─── ANIMATIONS ─────────────────────────────────────────────── */
+@keyframes kanata-gradient-shift {
+  0%   { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes kanata-twinkle {
+  0%, 100% { opacity: 0.75; transform: scale(0.90); }
+  50%       { opacity: 1;    transform: scale(1); }
+}
+
+@keyframes kanata-wings-float {
+  0%, 100% { transform: translateY(0px)   rotate(-1.5deg); }
+  50%       { transform: translateY(-14px) rotate(1.5deg);  }
+}
+
+/* Lông vũ nghiêng phải: biến thiên 10→90° */
+@keyframes kanata-feather-fall-a {
+  0%   { opacity: 0;    transform: translateY(-10px)  rotate(15deg);  }
+  10%  { opacity: 0.72; transform: translateY(22px)   rotate(55deg);  }
+  25%  {                transform: translateY(68px)   rotate(80deg);  }
+  40%  {                transform: translateY(118px)  rotate(25deg);  }
+  55%  { opacity: 0.50; transform: translateY(163px)  rotate(88deg);  }
+  70%  { opacity: 0.30; transform: translateY(210px)  rotate(40deg);  }
+  85%  { opacity: 0.10; transform: translateY(250px)  rotate(72deg);  }
+  100% { opacity: 0;    transform: translateY(280px)  rotate(10deg);  }
+}
+
+/* Lông vũ nghiêng trái: biến thiên -20→-90° */
+@keyframes kanata-feather-fall-b {
+  0%   { opacity: 0;    transform: translateY(-10px)  rotate(-22deg); }
+  10%  { opacity: 0.72; transform: translateY(22px)   rotate(-65deg); }
+  25%  {                transform: translateY(68px)   rotate(-28deg); }
+  40%  {                transform: translateY(118px)  rotate(-88deg); }
+  55%  { opacity: 0.50; transform: translateY(163px)  rotate(-35deg); }
+  70%  { opacity: 0.30; transform: translateY(210px)  rotate(-78deg); }
+  85%  { opacity: 0.10; transform: translateY(250px)  rotate(-45deg); }
+  100% { opacity: 0;    transform: translateY(280px)  rotate(-60deg); }
+}
+
+@keyframes kanata-cloud-drift {
+  0%   { opacity: 0;    transform: translateX(-35px); }
+  14%  { opacity: 0.85; }
+  78%  { opacity: 0.72; }
+  100% { opacity: 0;    transform: translateX(190px); }
+}
+
+@keyframes kanata-bg-cloud-drift {
+  0%   { opacity: 0;    transform: translateX(0); }
+  8%   { opacity: 0.90; }
+  88%  { opacity: 0.82; }
+  100% { opacity: 0;    transform: translateX(calc(100vw + 800px)); }
+}
+
+/* ─── DROP SHADOWS (light mode only) ────────────────────────── */
+[data-theme="light"] .card {
+  box-shadow: 0 4px 20px rgba(99,102,241,0.13), 0 1px 6px rgba(99,102,241,0.08) !important;
+}
+[data-theme="light"] .card:hover {
+  box-shadow: 0 8px 32px rgba(99,102,241,0.22), 0 2px 8px rgba(99,102,241,0.12) !important;
+}
+[data-theme="light"] .shadow-sm {
+  box-shadow: 0 4px 20px rgba(99,102,241,0.13), 0 1px 6px rgba(99,102,241,0.08) !important;
+}
+[data-theme="light"] .btn-primary {
+  box-shadow: 0 4px 14px rgba(99,102,241,0.38), 0 1px 4px rgba(79,70,229,0.22) !important;
+}
+[data-theme="light"] .btn-primary:hover,
+[data-theme="light"] .btn-primary:focus {
+  box-shadow: 0 6px 20px rgba(99,102,241,0.52), 0 2px 8px rgba(79,70,229,0.32) !important;
+}
+[data-theme="light"] .btn-success {
+  box-shadow: 0 3px 10px rgba(34,197,94,0.30) !important;
+}
+[data-theme="light"] .btn-warning {
+  box-shadow: 0 3px 10px rgba(251,191,36,0.22) !important;
+}
+[data-theme="light"] .btn-danger {
+  box-shadow: 0 3px 10px rgba(239,68,68,0.22) !important;
+}
+[data-theme="light"] .btn-info {
+  box-shadow: 0 3px 10px rgba(59,130,246,0.30) !important;
+}
+[data-theme="light"] .sidebar .nav-link.active {
+  box-shadow: 0 2px 12px rgba(99,102,241,0.22), inset 0 0 8px rgba(99,102,241,0.08) !important;
+}
+[data-theme="light"] .form-control:focus,
+[data-theme="light"] .form-select:focus {
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.12), 0 2px 8px rgba(99,102,241,0.16) !important;
+}
+[data-theme="light"] .alert-success,
+[data-theme="light"] .alert-danger,
+[data-theme="light"] .alert-warning,
+[data-theme="light"] .alert-info {
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07) !important;
+}
+[data-theme="light"] .modal-content {
+  box-shadow: 0 12px 48px rgba(99,102,241,0.22), 0 4px 16px rgba(99,102,241,0.12) !important;
+}
+[data-theme="light"] .moon-navbar {
+  box-shadow: 0 4px 20px rgba(79,70,229,0.40), 0 1px 6px rgba(79,70,229,0.25) !important;
+}
+
+/* ─── JS-INJECTED LIGHT DECORATION HELPERS ──────────────────── */
+.kanata-sparkle,
+.kanata-sidebar-sparkle,
+.kanata-wings,
+.kanata-cloud {
+  pointer-events: none !important;
+  user-select: none !important;
+}
