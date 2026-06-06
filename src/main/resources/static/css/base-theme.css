@@ -19,10 +19,17 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ─── NAVBAR ─────────────────────────────────────────────────── */
+:root {
+  --navbar-h: 62px;
+}
+
 .moon-navbar {
   position: sticky;
   top: 0;
   z-index: 1030;
+  min-height: var(--navbar-h);
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
 }
 
 .moon-navbar::after {
@@ -36,26 +43,30 @@ h1, h2, h3, h4, h5, h6 {
 .navbar-brand {
   font-family: 'Cinzel', 'Be Vietnam Pro', sans-serif !important;
   font-weight: 700 !important;
+  font-size: 1.6rem !important;
   letter-spacing: 1.5px;
 }
 
 .moon-navbar .nav-user-name {
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 .moon-navbar .nav-user-name .bi {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   vertical-align: middle;
 }
 
 /* ─── SIDEBAR ────────────────────────────────────────────────── */
 .sidebar {
   position: sticky;
-  top: 56px; /* khớp với chiều cao navbar */
-  height: calc(100vh - 56px);
+  top: var(--navbar-h);
+  height: calc(100vh - var(--navbar-h));
   overflow-y: auto;
   align-self: flex-start; /* quan trọng: ngăn flexbox kéo dài sidebar theo row height */
+  will-change: transform;  /* pre-composite GPU layer, tránh jitter khi bắt đầu scroll */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .sidebar .nav-link {
