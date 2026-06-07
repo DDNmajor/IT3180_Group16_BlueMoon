@@ -1,6 +1,7 @@
 package com.bluemoon.controller;
 
 import com.bluemoon.model.LoaiApDung;
+import com.bluemoon.model.LoaiTinhPhi;
 import com.bluemoon.model.MauKhoanThu;
 import com.bluemoon.service.LoaiKhoanThuService;
 import com.bluemoon.service.MauKhoanThuService;
@@ -12,7 +13,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.math.BigDecimal;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/mau-khoan-thu")
@@ -26,10 +30,9 @@ public class MauKhoanThuController {
     public String list(Model model) {
         var danhSach = mauKhoanThuService.findAll();
         model.addAttribute("danhSach", danhSach);
-        // Thêm số kỳ đã tạo cho mỗi mẫu (dùng trong template)
         model.addAttribute("khoanThuMap",
-                danhSach.stream().collect(java.util.stream.Collectors.toMap(
-                        m -> m.getId(),
+                danhSach.stream().collect(Collectors.toMap(
+                        MauKhoanThu::getId,
                         m -> mauKhoanThuService.findKhoanThuCuaMau(m.getId()))));
         return "mau-khoan-thu/list";
     }
@@ -39,6 +42,7 @@ public class MauKhoanThuController {
         model.addAttribute("mauKhoanThu", new MauKhoanThu());
         model.addAttribute("danhSachLoai",
                 loaiKhoanThuService.findByLoaiApDung(LoaiApDung.BAT_BUOC_DINH_KY));
+        model.addAttribute("loaiTinhPhiValues", LoaiTinhPhi.values());
         return "mau-khoan-thu/form";
     }
 
@@ -50,6 +54,7 @@ public class MauKhoanThuController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("danhSachLoai",
                     loaiKhoanThuService.findByLoaiApDung(LoaiApDung.BAT_BUOC_DINH_KY));
+            model.addAttribute("loaiTinhPhiValues", LoaiTinhPhi.values());
             return "mau-khoan-thu/form";
         }
         try {
@@ -60,6 +65,7 @@ public class MauKhoanThuController {
             bindingResult.rejectValue("maMauPrefix", "duplicate", e.getMessage());
             model.addAttribute("danhSachLoai",
                     loaiKhoanThuService.findByLoaiApDung(LoaiApDung.BAT_BUOC_DINH_KY));
+            model.addAttribute("loaiTinhPhiValues", LoaiTinhPhi.values());
             return "mau-khoan-thu/form";
         }
     }
@@ -69,6 +75,7 @@ public class MauKhoanThuController {
         model.addAttribute("mauKhoanThu", mauKhoanThuService.findById(id));
         model.addAttribute("danhSachLoai",
                 loaiKhoanThuService.findByLoaiApDung(LoaiApDung.BAT_BUOC_DINH_KY));
+        model.addAttribute("loaiTinhPhiValues", LoaiTinhPhi.values());
         return "mau-khoan-thu/form";
     }
 
@@ -82,6 +89,7 @@ public class MauKhoanThuController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("danhSachLoai",
                     loaiKhoanThuService.findByLoaiApDung(LoaiApDung.BAT_BUOC_DINH_KY));
+            model.addAttribute("loaiTinhPhiValues", LoaiTinhPhi.values());
             return "mau-khoan-thu/form";
         }
         try {
@@ -92,6 +100,7 @@ public class MauKhoanThuController {
             bindingResult.rejectValue("maMauPrefix", "duplicate", e.getMessage());
             model.addAttribute("danhSachLoai",
                     loaiKhoanThuService.findByLoaiApDung(LoaiApDung.BAT_BUOC_DINH_KY));
+            model.addAttribute("loaiTinhPhiValues", LoaiTinhPhi.values());
             return "mau-khoan-thu/form";
         }
     }
@@ -107,7 +116,6 @@ public class MauKhoanThuController {
         return "redirect:/mau-khoan-thu";
     }
 
-    /** Toggle active/inactive */
     @PostMapping("/{id}/doi-trang-thai")
     public String doiTrangThai(@PathVariable Integer id, RedirectAttributes ra) {
         boolean nowActive = mauKhoanThuService.toggleActive(id);
@@ -116,7 +124,6 @@ public class MauKhoanThuController {
         return "redirect:/mau-khoan-thu";
     }
 
-    /** Tạo thủ công khoản thu cho một kỳ cụ thể */
     @PostMapping("/{id}/tao-ky")
     public String taoKy(@PathVariable Integer id,
                         @RequestParam String thang,
@@ -126,7 +133,7 @@ public class MauKhoanThuController {
             mauKhoanThuService.taoKhoanThuChoKy(id, ym);
             ra.addFlashAttribute("successMsg",
                     "Đã tạo khoản thu cho kỳ "
-                    + ym.format(java.time.format.DateTimeFormatter.ofPattern("MM/yyyy")) + ".");
+                    + ym.format(DateTimeFormatter.ofPattern("MM/yyyy")) + ".");
         } catch (IllegalStateException e) {
             ra.addFlashAttribute("errorMsg", e.getMessage());
         } catch (Exception e) {
@@ -138,6 +145,22 @@ public class MauKhoanThuController {
     private void validateLoai(MauKhoanThu mau, BindingResult br) {
         if (mau.getLoaiKhoanThu() == null || mau.getLoaiKhoanThu().getId() == null) {
             br.rejectValue("loaiKhoanThu", "required", "Vui lòng chọn loại khoản thu");
+        }
+        LoaiTinhPhi ltp = mau.getLoaiTinhPhi();
+        if (ltp == LoaiTinhPhi.PER_M2
+                && (mau.getDonGiaPerM2() == null
+                    || mau.getDonGiaPerM2().compareTo(BigDecimal.ZERO) <= 0)) {
+            br.rejectValue("donGiaPerM2", "donGiaPerM2.required",
+                    "Vui lòng nhập đơn giá/m² lớn hơn 0");
+        }
+        if (ltp == LoaiTinhPhi.PER_XE) {
+            mau.setSoTien(BigDecimal.ZERO);
+            if (mau.getGiaXeMay() == null || mau.getGiaXeMay().compareTo(BigDecimal.ZERO) <= 0) {
+                br.rejectValue("giaXeMay", "required", "Vui lòng nhập giá xe máy lớn hơn 0");
+            }
+            if (mau.getGiaOto() == null || mau.getGiaOto().compareTo(BigDecimal.ZERO) <= 0) {
+                br.rejectValue("giaOto", "required", "Vui lòng nhập giá ô tô lớn hơn 0");
+            }
         }
     }
 }

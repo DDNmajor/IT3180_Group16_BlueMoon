@@ -116,6 +116,13 @@
             <!-- tiêu đề mục -->
             <span class="nav-section">Hệ thống</span>
 
+            <!-- link người dùng -->
+            <a th:href="@{/nguoi-dung}"
+               class="nav-link"
+               th:classappend="${activePage == 'nguoi-dung'} ? 'active' : ''">
+                <i class="bi bi-people me-2"></i>Người dùng
+            </a>
+
             <!-- link nhật ký -->
             <a th:href="@{/audit-log}"
                class="nav-link"
@@ -136,6 +143,11 @@
     <div th:if="${errorMsg}" class="alert alert-danger alert-dismissible fade show" role="alert">
         <i class="bi bi-exclamation-triangle me-2"></i>
         <span th:text="${errorMsg}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${warnMsg}" class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle me-2"></i>
+        <span th:text="${warnMsg}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 </div>

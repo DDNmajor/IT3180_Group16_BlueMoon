@@ -40,7 +40,10 @@ public class ThanhToanService {
         return thanhToanRepository.findByKhoanThuIdOrderByNgayNopDesc(idKhoanThu);
     }
 
-    /** Kiểm tra hộ đã hoàn tất (DA_DONG hoặc DONG_DU) khoản thu này chưa — dùng cho anti-duplicate */
+    public List<ThanhToan> findByHoGiaDinhAndKhoanThu(Integer idHo, Integer idKhoan) {
+        return thanhToanRepository.findByHoGiaDinhIdAndKhoanThuIdOrderByNgayNopDesc(idHo, idKhoan);
+    }
+
     public boolean daDongHoanTat(Integer idHoGiaDinh, Integer idKhoanThu) {
         return thanhToanRepository.existsByHoGiaDinhIdAndKhoanThuIdAndTrangThaiIn(
                 idHoGiaDinh, idKhoanThu,
@@ -56,7 +59,6 @@ public class ThanhToanService {
 
     @Transactional
     public ThanhToan save(ThanhToan thanhToan) {
-        // Tính soTienYeuCau theo diện tích nếu khoản thu dùng đơn giá/m²
         if (thanhToan.getSoTienYeuCau() == null
                 && thanhToan.getKhoanThu() != null
                 && thanhToan.getKhoanThu().getDonGiaPerM2() != null
@@ -129,10 +131,7 @@ public class ThanhToanService {
         return auth != null ? auth.getName() : "system";
     }
 
-    /**
-     * Xóa thanh toán tự nguyện. Nếu khoản thu là bắt buộc, reset về CON_NO thay vì xóa.
-     * @return true nếu thực sự xóa, false nếu chỉ reset về CON_NO
-     */
+    // bắt buộc: reset về CON_NO thay vì xóa hẳn
     @Transactional
     public boolean delete(Integer id) {
         ThanhToan tt = findById(id);

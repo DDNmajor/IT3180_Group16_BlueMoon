@@ -46,6 +46,14 @@ public class KhoanThu {
     @Column(name = "don_gia_per_m2", precision = 15, scale = 2)
     private BigDecimal donGiaPerM2;
 
+    @DecimalMin(value = "0", message = "Giá xe máy không được nhỏ hơn 0")
+    @Column(name = "gia_xe_may", precision = 15, scale = 2)
+    private BigDecimal giaXeMay;
+
+    @DecimalMin(value = "0", message = "Giá ô tô không được nhỏ hơn 0")
+    @Column(name = "gia_oto", precision = 15, scale = 2)
+    private BigDecimal giaOto;
+
     @Size(max = 50, message = "Đơn vị không được vượt quá 50 ký tự")
     @Column(name = "don_vi", length = 50)
     private String donVi;
@@ -62,6 +70,10 @@ public class KhoanThu {
 
     @Column(name = "ngay_tao", updatable = false)
     private LocalDateTime ngayTao;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "loai_tinh_phi", length = 20)
+    private LoaiTinhPhi loaiTinhPhi = LoaiTinhPhi.FIXED;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_mau")

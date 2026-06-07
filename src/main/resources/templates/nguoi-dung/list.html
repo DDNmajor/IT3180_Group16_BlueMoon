@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/layout :: head('Quản lý người dùng')}"></head>
 <body>
 
@@ -62,6 +63,17 @@
                                 <a th:href="@{/nguoi-dung/sua/{id}(id=${nd.id})}" class="btn btn-warning btn-sm">
                                     <i class="bi bi-pencil"></i>
                                 </a>
+                                <th:block th:with="isSelf=${#authentication?.name == nd.tenDangNhap}">
+                                    <form th:if="${!isSelf}"
+                                          th:action="@{/nguoi-dung/doi-trang-thai/{id}(id=${nd.id})}" method="post" class="d-inline"
+                                          th:onsubmit="${nd.active} ? 'return confirm(\'Vô hiệu hoá tài khoản ' + nd.tenDangNhap + '?\')' : 'return true'">
+                                        <button type="submit"
+                                                th:class="${nd.active} ? 'btn btn-outline-secondary btn-sm' : 'btn btn-success btn-sm'"
+                                                th:title="${nd.active} ? 'Vô hiệu hoá' : 'Kích hoạt'">
+                                            <i th:class="${nd.active} ? 'bi bi-slash-circle' : 'bi bi-check-circle'"></i>
+                                        </button>
+                                    </form>
+                                </th:block>
                                 <form th:action="@{/nguoi-dung/xoa/{id}(id=${nd.id})}" method="post" class="d-inline"
                                       onsubmit="return confirm('Xác nhận xóa người dùng này?')">
                                     <button type="submit" class="btn btn-danger btn-sm">

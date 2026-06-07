@@ -1,8 +1,11 @@
 package com.bluemoon.controller;
 
 import com.bluemoon.model.KhoanThu;
+import com.bluemoon.model.LoaiTinhPhi;
 import com.bluemoon.service.KhoanThuService;
 import com.bluemoon.service.LoaiKhoanThuService;
+
+import java.math.BigDecimal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -26,7 +29,7 @@ public class KhoanThuController {
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
-        // Cho phép form gửi kyThu dạng "yyyy-MM" (type=month), chuyển thành ngày đầu tháng
+        // type=month gửi "yyyy-MM", chuyển sang ngày đầu tháng
         binder.registerCustomEditor(LocalDate.class, "kyThu", new PropertyEditorSupport() {
             @Override
             public void setAsText(String text) {
@@ -60,8 +63,9 @@ public class KhoanThuController {
 
     @GetMapping("/them")
     public String themForm(Model model) {
-        model.addAttribute("khoanThu",     new KhoanThu());
-        model.addAttribute("danhSachLoai", loaiKhoanThuService.findAll());
+        model.addAttribute("khoanThu",          new KhoanThu());
+        model.addAttribute("danhSachLoai",      loaiKhoanThuService.findAll());
+        model.addAttribute("loaiTinhPhiValues", LoaiTinhPhi.values());
         return "khoan-thu/form";
     }
 
@@ -71,7 +75,8 @@ public class KhoanThuController {
                        Model model, RedirectAttributes ra) {
         validateKhoanThu(khoanThu, bindingResult);
         if (bindingResult.hasErrors()) {
-            model.addAttribute("danhSachLoai", loaiKhoanThuService.findAll());
+            model.addAttribute("danhSachLoai",      loaiKhoanThuService.findAll());
+            model.addAttribute("loaiTinhPhiValues", LoaiTinhPhi.values());
             return "khoan-thu/form";
         }
         try {
@@ -80,15 +85,17 @@ public class KhoanThuController {
             return "redirect:/khoan-thu";
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("maKhoanThu", "duplicate", e.getMessage());
-            model.addAttribute("danhSachLoai", loaiKhoanThuService.findAll());
+            model.addAttribute("danhSachLoai",      loaiKhoanThuService.findAll());
+            model.addAttribute("loaiTinhPhiValues", LoaiTinhPhi.values());
             return "khoan-thu/form";
         }
     }
 
     @GetMapping("/sua/{id}")
     public String suaForm(@PathVariable Integer id, Model model) {
-        model.addAttribute("khoanThu",     khoanThuService.findById(id));
-        model.addAttribute("danhSachLoai", loaiKhoanThuService.findAll());
+        model.addAttribute("khoanThu",          khoanThuService.findById(id));
+        model.addAttribute("danhSachLoai",      loaiKhoanThuService.findAll());
+        model.addAttribute("loaiTinhPhiValues", LoaiTinhPhi.values());
         return "khoan-thu/form";
     }
 
@@ -100,7 +107,8 @@ public class KhoanThuController {
         khoanThu.setId(id);
         validateKhoanThu(khoanThu, bindingResult);
         if (bindingResult.hasErrors()) {
-            model.addAttribute("danhSachLoai", loaiKhoanThuService.findAll());
+            model.addAttribute("danhSachLoai",      loaiKhoanThuService.findAll());
+            model.addAttribute("loaiTinhPhiValues", LoaiTinhPhi.values());
             return "khoan-thu/form";
         }
         try {
@@ -109,7 +117,8 @@ public class KhoanThuController {
             return "redirect:/khoan-thu";
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("maKhoanThu", "duplicate", e.getMessage());
-            model.addAttribute("danhSachLoai", loaiKhoanThuService.findAll());
+            model.addAttribute("danhSachLoai",      loaiKhoanThuService.findAll());
+            model.addAttribute("loaiTinhPhiValues", LoaiTinhPhi.values());
             return "khoan-thu/form";
         }
     }
@@ -128,6 +137,22 @@ public class KhoanThuController {
     private void validateKhoanThu(KhoanThu khoanThu, BindingResult bindingResult) {
         if (khoanThu.getLoaiKhoanThu() == null || khoanThu.getLoaiKhoanThu().getId() == null) {
             bindingResult.rejectValue("loaiKhoanThu", "loaiKhoanThu.required", "Vui lòng chọn loại khoản thu");
+        }
+        LoaiTinhPhi ltp = khoanThu.getLoaiTinhPhi();
+        if (ltp == LoaiTinhPhi.PER_M2
+                && (khoanThu.getDonGiaPerM2() == null
+                    || khoanThu.getDonGiaPerM2().compareTo(BigDecimal.ZERO) <= 0)) {
+            bindingResult.rejectValue("donGiaPerM2", "donGiaPerM2.required",
+                    "Vui lòng nhập đơn giá/m² lớn hơn 0");
+        }
+        if (ltp == LoaiTinhPhi.PER_XE) {
+            khoanThu.setSoTien(BigDecimal.ZERO);
+            if (khoanThu.getGiaXeMay() == null || khoanThu.getGiaXeMay().compareTo(BigDecimal.ZERO) <= 0) {
+                bindingResult.rejectValue("giaXeMay", "required", "Vui lòng nhập giá xe máy lớn hơn 0");
+            }
+            if (khoanThu.getGiaOto() == null || khoanThu.getGiaOto().compareTo(BigDecimal.ZERO) <= 0) {
+                bindingResult.rejectValue("giaOto", "required", "Vui lòng nhập giá ô tô lớn hơn 0");
+            }
         }
         if (khoanThu.getKyThu() != null) {
             int year = khoanThu.getKyThu().getYear();

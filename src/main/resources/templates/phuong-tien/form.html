@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Phương tiện')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/layout :: sidebar('ho-gia-dinh')}"></div>
+
+        <main class="col-md-10 p-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <a th:href="@{/ho-gia-dinh/{id}(id=${hoGiaDinh.id})}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h4 class="mb-0"
+                    th:text="${phuongTien.id == null} ? 'Thêm phương tiện' : 'Sửa phương tiện'"></h4>
+                <span class="text-muted ms-1">
+                    — Căn hộ <strong th:text="${hoGiaDinh.soCanHo}"></strong>
+                </span>
+            </div>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <div class="card shadow-sm" style="max-width: 480px;">
+                <div class="card-body">
+                    <form th:action="${phuongTien.id == null}
+                                     ? @{/ho-gia-dinh/{idHo}/phuong-tien/them(idHo=${hoGiaDinh.id})}
+                                     : @{/ho-gia-dinh/{idHo}/phuong-tien/sua/{id}(idHo=${hoGiaDinh.id}, id=${phuongTien.id})}"
+                          th:object="${phuongTien}" method="post" novalidate>
+
+                        <input type="hidden" th:if="${phuongTien.id != null}" th:field="*{id}"/>
+
+                        <div class="mb-3">
+                            <label class="form-label">Loại xe <span class="text-danger">*</span></label>
+                            <select th:field="*{loaiXe}" class="form-select"
+                                    th:classappend="${#fields.hasErrors('loaiXe')} ? 'is-invalid' : ''"
+                                    required>
+                                <option value="">-- Chọn loại xe --</option>
+                                <option th:each="lx : ${loaiXeList}"
+                                        th:value="${lx.name()}"
+                                        th:text="${lx.tenHienThi}"
+                                        th:selected="${phuongTien.loaiXe == lx}">
+                                </option>
+                            </select>
+                            <div class="invalid-feedback"
+                                 th:if="${#fields.hasErrors('loaiXe')}"
+                                 th:errors="*{loaiXe}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Biển số <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{bienSo}" class="form-control"
+                                   th:classappend="${#fields.hasErrors('bienSo')} ? 'is-invalid' : ''"
+                                   placeholder="VD: 29A-12345" required/>
+                            <div class="invalid-feedback"
+                                 th:if="${#fields.hasErrors('bienSo')}"
+                                 th:errors="*{bienSo}"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Ghi chú</label>
+                            <textarea th:field="*{ghiChu}" class="form-control" rows="2"
+                                      placeholder="Màu sắc, ghi chú thêm..."></textarea>
+                        </div>
+
+                        <!-- Lý do chỉ hiển thị khi thêm mới; sửa luôn là nhập sai nên không cần hỏi -->
+                        <div class="mb-4" th:if="${phuongTien.id == null}">
+                            <label class="form-label fw-semibold">Lý do thêm <span class="text-danger">*</span></label>
+                            <div class="d-flex flex-column gap-2 mt-1">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio"
+                                           name="lyDo" id="lyDoDangKy" value="DANG_KY_THEM" checked/>
+                                    <label class="form-check-label" for="lyDoDangKy">
+                                        Đăng ký thêm xe mới
+                                        <small class="text-muted d-block">Phí xe được tính từ tháng này nếu chưa qua ngày 25, ngược lại tháng sau</small>
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio"
+                                           name="lyDo" id="lyDoNhapSai" value="NHAP_SAI"/>
+                                    <label class="form-check-label" for="lyDoNhapSai">
+                                        Bổ sung thiếu thông tin / nhập sai trước đó
+                                        <small class="text-muted d-block">Phí xe được tính lại từ tháng hiện tại</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-1"></i>Lưu
+                            </button>
+                            <a th:href="@{/ho-gia-dinh/{id}(id=${hoGiaDinh.id})}"
+                               class="btn btn-outline-secondary">Hủy</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

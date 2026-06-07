@@ -3,7 +3,12 @@ package com.bluemoon.controller;
 import com.bluemoon.model.HoGiaDinh;
 import com.bluemoon.service.BienDongService;
 import com.bluemoon.service.HoGiaDinhService;
+import com.bluemoon.service.KhoanThuService;
+import com.bluemoon.service.PhuongTienService;
 import com.bluemoon.service.ThanhToanService;
+
+import java.math.BigDecimal;
+import java.util.Objects;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -20,6 +25,8 @@ public class HoGiaDinhController {
     private final HoGiaDinhService  hoGiaDinhService;
     private final ThanhToanService  thanhToanService;
     private final BienDongService   bienDongService;
+    private final PhuongTienService phuongTienService;
+    private final KhoanThuService   khoanThuService;
 
     @GetMapping
     public String list(@RequestParam(required = false) String search, Model model) {
@@ -40,9 +47,10 @@ public class HoGiaDinhController {
     public String detail(@PathVariable Integer id, Model model, RedirectAttributes ra) {
         try {
             HoGiaDinh ho = hoGiaDinhService.findById(id);
-            model.addAttribute("hoGiaDinh", ho);
-            model.addAttribute("lichSuThanhToan", thanhToanService.findByHoGiaDinh(id));
-            model.addAttribute("lichSuBienDong",  bienDongService.findByHoGiaDinh(id));
+            model.addAttribute("hoGiaDinh",          ho);
+            model.addAttribute("lichSuThanhToan",    thanhToanService.findByHoGiaDinh(id));
+            model.addAttribute("lichSuBienDong",     bienDongService.findByHoGiaDinh(id));
+            model.addAttribute("danhSachPhuongTien", phuongTienService.findByHoGiaDinh(id));
         } catch (Exception e) {
             ra.addFlashAttribute("errorMsg", "Không tìm thấy hộ gia đình.");
             return "redirect:/ho-gia-dinh";
@@ -93,9 +101,23 @@ public class HoGiaDinhController {
         }
         if (bindingResult.hasErrors()) return "ho-gia-dinh/form";
 
+        BigDecimal dienTichCu = hoGiaDinhService.findById(id).getDienTich();
         hoGiaDinh.setId(id);
         hoGiaDinhService.save(hoGiaDinh);
-        ra.addFlashAttribute("successMsg", "Cập nhật hộ gia đình thành công.");
+
+        if (!Objects.equals(dienTichCu, hoGiaDinh.getDienTich())) {
+            int flagged = khoanThuService.recalculatePerM2ForHo(hoGiaDinh, dienTichCu);
+            if (flagged > 0) {
+                ra.addFlashAttribute("warnMsg",
+                        "Đã cập nhật hộ gia đình và điều chỉnh khoản phí m². "
+                        + flagged + " khoản đang nộp dở cần xem lại trong lịch sử thanh toán.");
+            } else {
+                ra.addFlashAttribute("successMsg",
+                        "Đã cập nhật hộ gia đình và điều chỉnh khoản phí theo diện tích mới.");
+            }
+        } else {
+            ra.addFlashAttribute("successMsg", "Cập nhật hộ gia đình thành công.");
+        }
         return "redirect:/ho-gia-dinh/" + id;
     }
 

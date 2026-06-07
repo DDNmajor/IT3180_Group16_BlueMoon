@@ -62,7 +62,7 @@ public class NhanKhauService {
         return saved;
     }
 
-    // Called by BienDongService to update tinhTrang without triggering full audit
+    // không ghi audit — chỉ dùng nội bộ cho BienDongService
     @Transactional
     public NhanKhau saveRaw(NhanKhau nhanKhau) {
         return nhanKhauRepository.save(nhanKhau);

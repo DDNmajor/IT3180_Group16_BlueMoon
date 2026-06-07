@@ -53,7 +53,7 @@ public class NguoiDungService {
             nguoiDung.setDoiMatKhauLanDau(true);
         }
 
-        // Encode password nếu chưa được mã hoá (BCrypt hash bắt đầu bằng $2a$)
+        // skip nếu đã là BCrypt hash ($2a$)
         if (nguoiDung.getMatKhau() != null
                 && !nguoiDung.getMatKhau().isBlank()
                 && !nguoiDung.getMatKhau().startsWith("$2a$")) {
@@ -69,6 +69,33 @@ public class NguoiDungService {
                 "id=" + saved.getId() + ", username=" + saved.getTenDangNhap()
                 + ", vaiTro=" + saved.getVaiTro(), user);
         return saved;
+    }
+
+    @Transactional
+    public void toggleActive(Integer id, String currentUsername) {
+        NguoiDung nd = findById(id);
+
+        if (nd.getTenDangNhap().equals(currentUsername)) {
+            throw new IllegalArgumentException("Không thể vô hiệu hoá tài khoản đang đăng nhập");
+        }
+
+        boolean seVoHieuHoa = Boolean.TRUE.equals(nd.getActive());
+        if (seVoHieuHoa && nd.getVaiTro() == VaiTro.admin) {
+            long soAdminConLai = nguoiDungRepository.findByVaiTro(VaiTro.admin)
+                    .stream().filter(a -> Boolean.TRUE.equals(a.getActive()) && !a.getId().equals(id)).count();
+            if (soAdminConLai == 0) {
+                throw new IllegalArgumentException("Không thể vô hiệu hoá admin cuối cùng còn hoạt động");
+            }
+        }
+
+        nd.setActive(!Boolean.TRUE.equals(nd.getActive()));
+        nguoiDungRepository.save(nd);
+
+        String action = nd.getActive() ? "Kích hoạt" : "Vô hiệu hoá";
+        String user = currentUser();
+        log.info("[AUDIT] {} người dùng: id={}, username={}, user={}", action, nd.getId(), nd.getTenDangNhap(), user);
+        auditLogService.log(action, "Người dùng",
+                "id=" + nd.getId() + ", username=" + nd.getTenDangNhap(), user);
     }
 
     @Transactional

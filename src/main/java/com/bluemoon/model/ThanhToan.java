@@ -52,7 +52,7 @@ public class ThanhToan {
     @Column(name = "so_tien_yeu_cau", precision = 15, scale = 2)
     private BigDecimal soTienYeuCau;
 
-    /** Số tiền yêu cầu hiệu lực: dùng soTienYeuCau nếu có, fallback về khoanThu.soTien */
+    // null = fallback về khoanThu.soTien
     public BigDecimal getSoTienYeuCauHieuLuc() {
         if (soTienYeuCau != null) return soTienYeuCau;
         return khoanThu != null ? khoanThu.getSoTien() : BigDecimal.ZERO;

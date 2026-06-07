@@ -25,7 +25,7 @@ public class NguoiDung {
     @Column(name = "ten_dang_nhap", nullable = false, unique = true)
     private String tenDangNhap;
 
-    // Không @NotBlank, không @Size(min) — khi sửa, bỏ trống = giữ mật khẩu cũ; độ dài check trong controller
+    // bỏ trống = giữ hash cũ; @NotBlank cố ý bỏ để cho phép update không đổi mật khẩu
     @Size(max = 100, message = "Mật khẩu không được vượt quá 100 ký tự")
     @Column(name = "mat_khau", nullable = false)
     private String matKhau;

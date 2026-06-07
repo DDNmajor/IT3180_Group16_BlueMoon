@@ -17,14 +17,21 @@
                     <h4 class="mb-0" th:if="${hoGiaDinhFilter == null and khoanThuFilter == null and timKiem == null}">
                         Lịch sử thanh toán
                     </h4>
-                    <h4 class="mb-0" th:if="${hoGiaDinhFilter != null}">
+                    <h4 class="mb-0" th:if="${hoGiaDinhFilter != null and khoanThuFilter != null}">
+                        <i class="bi bi-house me-1 text-primary"></i>
+                        Căn hộ <span class="text-primary" th:text="${hoGiaDinhFilter.soCanHo}"></span>
+                        <i class="bi bi-chevron-right mx-1 text-muted small"></i>
+                        <i class="bi bi-receipt me-1 text-primary"></i>
+                        <span class="text-primary" th:text="${khoanThuFilter.tenKhoanThu}"></span>
+                    </h4>
+                    <h4 class="mb-0" th:if="${hoGiaDinhFilter != null and khoanThuFilter == null}">
                         <i class="bi bi-house me-1 text-primary"></i>
                         Thanh toán — Căn hộ
                         <span class="text-primary" th:text="${hoGiaDinhFilter.soCanHo}"></span>
                         <small class="text-muted fw-normal ms-1"
                                th:text="'(' + ${hoGiaDinhFilter.chuHo} + ')'"></small>
                     </h4>
-                    <h4 class="mb-0" th:if="${khoanThuFilter != null}">
+                    <h4 class="mb-0" th:if="${khoanThuFilter != null and hoGiaDinhFilter == null}">
                         <i class="bi bi-receipt me-1 text-primary"></i>
                         Thanh toán — <span class="text-primary" th:text="${khoanThuFilter.tenKhoanThu}"></span>
                     </h4>
@@ -45,58 +52,52 @@
 
             <div th:replace="~{fragments/layout :: alerts}"></div>
 
-            <!-- Thanh tìm kiếm & lọc -->
-            <div class="row g-2 mb-3">
+            <!-- Thanh tìm kiếm & lọc — một form duy nhất để giữ state các filter -->
+            <form method="get" th:action="@{/thanh-toan}" class="row g-2 mb-3 align-items-end">
                 <!-- Tìm theo căn hộ / chủ hộ (text) -->
                 <div class="col-md-4">
-                    <form method="get" th:action="@{/thanh-toan}" class="input-group input-group-sm">
+                    <div class="input-group input-group-sm">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
                         <input type="text" name="timKiem" th:value="${timKiem}"
                                class="form-control" placeholder="Tìm theo căn hộ hoặc chủ hộ..."/>
                         <button type="submit" class="btn btn-outline-secondary">Tìm</button>
-                    </form>
+                    </div>
                 </div>
                 <!-- Lọc theo hộ gia đình -->
                 <div class="col-md-3">
-                    <form method="get" th:action="@{/thanh-toan}">
-                        <select name="idHo" class="form-select form-select-sm"
-                                onchange="this.form.submit()">
-                            <option value="">Tất cả căn hộ</option>
-                            <option th:each="hgd : ${danhSachHo}"
-                                    th:value="${hgd.id}"
-                                    th:text="${hgd.soCanHo} + ' — ' + ${hgd.chuHo}"
-                                    th:selected="${hoGiaDinhFilter != null and hoGiaDinhFilter.id == hgd.id}">
-                            </option>
-                        </select>
-                    </form>
+                    <select name="idHo" class="form-select form-select-sm"
+                            onchange="this.form.submit()">
+                        <option value="">Tất cả căn hộ</option>
+                        <option th:each="hgd : ${danhSachHo}"
+                                th:value="${hgd.id}"
+                                th:text="${hgd.soCanHo} + ' — ' + ${hgd.chuHo}"
+                                th:selected="${hoGiaDinhFilter != null and hoGiaDinhFilter.id == hgd.id}">
+                        </option>
+                    </select>
                 </div>
                 <!-- Lọc theo khoản thu -->
                 <div class="col-md-3">
-                    <form method="get" th:action="@{/thanh-toan}">
-                        <select name="idKhoan" class="form-select form-select-sm"
-                                onchange="this.form.submit()">
-                            <option value="">Tất cả khoản thu</option>
-                            <option th:each="kt : ${danhSachKhoan}"
-                                    th:value="${kt.id}"
-                                    th:text="${kt.tenKhoanThu}"
-                                    th:selected="${khoanThuFilter != null and khoanThuFilter.id == kt.id}">
-                            </option>
-                        </select>
-                    </form>
+                    <select name="idKhoan" class="form-select form-select-sm"
+                            onchange="this.form.submit()">
+                        <option value="">Tất cả khoản thu</option>
+                        <option th:each="kt : ${danhSachKhoan}"
+                                th:value="${kt.id}"
+                                th:text="${kt.tenKhoanThu}"
+                                th:selected="${khoanThuFilter != null and khoanThuFilter.id == kt.id}">
+                        </option>
+                    </select>
                 </div>
                 <!-- Lọc theo trạng thái -->
                 <div class="col-md-2">
-                    <form method="get" th:action="@{/thanh-toan}">
-                        <select name="trangThai" class="form-select form-select-sm"
-                                onchange="this.form.submit()">
-                            <option value="">Tất cả trạng thái</option>
-                            <option th:each="ts : ${trangThaiValues}"
-                                    th:value="${ts.name()}"
-                                    th:text="${ts.tenHienThi}"
-                                    th:selected="${trangThaiFilter == ts.name()}">
-                            </option>
-                        </select>
-                    </form>
+                    <select name="trangThai" class="form-select form-select-sm"
+                            onchange="this.form.submit()">
+                        <option value="">Tất cả trạng thái</option>
+                        <option th:each="ts : ${trangThaiValues}"
+                                th:value="${ts.name()}"
+                                th:text="${ts.tenHienThi}"
+                                th:selected="${trangThaiFilter == ts.name()}">
+                        </option>
+                    </select>
                 </div>
                 <!-- Xóa bộ lọc -->
                 <div class="col-auto" th:if="${hoGiaDinhFilter != null or khoanThuFilter != null or timKiem != null or trangThaiFilter != null}">
@@ -104,7 +105,7 @@
                         <i class="bi bi-x-circle me-1"></i>Xóa lọc
                     </a>
                 </div>
-            </div>
+            </form>
 
             <!-- Bảng danh sách -->
             <div class="card shadow-sm">

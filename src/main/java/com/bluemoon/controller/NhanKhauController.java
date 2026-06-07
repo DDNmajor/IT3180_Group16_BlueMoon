@@ -59,7 +59,7 @@ public class NhanKhauController {
                        @RequestParam(required = false) Integer idHo,
                        Model model, RedirectAttributes ra) {
 
-        // Resolve hoGiaDinh từ ID (select box dùng name, không bind đầy đủ)
+        // select dùng name= nên chỉ bind id, không phải object đầy đủ
         Integer idHoForm = nhanKhau.getHoGiaDinh() != null ? nhanKhau.getHoGiaDinh().getId() : null;
         if (idHoForm == null) {
             bindingResult.rejectValue("hoGiaDinh", "required", "Vui lòng chọn hộ gia đình");
@@ -111,7 +111,7 @@ public class NhanKhauController {
             return "redirect:/nhan-khau";
         }
 
-        // CCCD uniqueness: only check if CCCD changed
+        // chỉ check trùng CCCD khi người dùng thay đổi giá trị
         String cccdMoi = nhanKhau.getCccd();
         if (!bindingResult.hasFieldErrors("cccd")
                 && cccdMoi != null && !cccdMoi.isBlank()
@@ -127,7 +127,6 @@ public class NhanKhauController {
 
         nhanKhau.setId(id);
         nhanKhau.setNgayTao(cu.getNgayTao());
-        // Resolve hoGiaDinh
         Integer idHoForm = nhanKhau.getHoGiaDinh() != null ? nhanKhau.getHoGiaDinh().getId() : null;
         if (idHoForm != null) nhanKhau.setHoGiaDinh(hoGiaDinhService.findById(idHoForm));
         if (nhanKhau.getTinhTrang() == null) nhanKhau.setTinhTrang(cu.getTinhTrang());
@@ -151,8 +150,6 @@ public class NhanKhauController {
             return "redirect:/nhan-khau";
         }
     }
-
-    // ── Biến động ────────────────────────────────────────────────────
 
     @GetMapping("/{id}/bien-dong")
     public String bienDongForm(@PathVariable Integer id, Model model, RedirectAttributes ra) {
@@ -178,7 +175,6 @@ public class NhanKhauController {
         NhanKhau nk = nhanKhauService.findById(id);
         bienDong.setNhanKhau(nk);
 
-        // Validate ngayKetThuc — bắt buộc với TAM_TRU / TAM_VANG
         var loai = bienDong.getLoaiBienDong();
         if (loai == LoaiBienDong.TAM_TRU || loai == LoaiBienDong.TAM_VANG) {
             if (bienDong.getNgayKetThuc() == null) {
@@ -189,7 +185,7 @@ public class NhanKhauController {
             }
         }
 
-        // nhanKhau luôn được set từ path variable nên bỏ qua lỗi của field này
+        // bỏ qua field error của nhanKhau vì đã set từ path
         boolean hasFormErrors = bindingResult.getFieldErrors().stream()
                 .anyMatch(e -> !e.getField().equals("nhanKhau"));
         if (hasFormErrors) {

@@ -29,8 +29,6 @@ public class MauKhoanThuService {
     private final LoaiKhoanThuRepository loaiKhoanThuRepository;
     private final AuditLogService       auditLogService;
 
-    // ── CRUD ──────────────────────────────────────────────────────
-
     public List<MauKhoanThu> findAll() {
         return mauKhoanThuRepository.findAll();
     }
@@ -46,7 +44,6 @@ public class MauKhoanThuService {
 
     @Transactional
     public MauKhoanThu save(MauKhoanThu mau) {
-        // Resolve loaiKhoanThu
         if (mau.getLoaiKhoanThu() != null && mau.getLoaiKhoanThu().getId() != null) {
             LoaiKhoanThu loai = loaiKhoanThuRepository.findById(mau.getLoaiKhoanThu().getId())
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy loại khoản thu"));
@@ -56,7 +53,6 @@ public class MauKhoanThuService {
             mau.setLoaiKhoanThu(loai);
         }
 
-        // Validate unique prefix
         boolean isNew = (mau.getId() == null);
         if (isNew) {
             if (mauKhoanThuRepository.existsByMaMauPrefix(mau.getMaMauPrefix())) {
@@ -84,7 +80,7 @@ public class MauKhoanThuService {
     @Transactional
     public void delete(Integer id) {
         MauKhoanThu mau = findById(id);
-        // ON DELETE SET NULL trên DB — xóa template, FK trong khoan_thu → NULL
+        // ON DELETE SET NULL — KhoanThu đã tạo vẫn giữ nguyên
         mauKhoanThuRepository.deleteById(id);
         String user = currentUser();
         log.info("[AUDIT] Xóa mẫu khoản thu: id={}, tenMau={}, user={}", id, mau.getTenMau(), user);
@@ -105,8 +101,6 @@ public class MauKhoanThuService {
         return mau.isActive();
     }
 
-    // ── Tạo thủ công một kỳ cụ thể ───────────────────────────────
-
     @Transactional
     public KhoanThu taoKhoanThuChoKy(Integer mauId, YearMonth ym) {
         MauKhoanThu mau = findById(mauId);
@@ -123,8 +117,6 @@ public class MauKhoanThuService {
         return saved;
     }
 
-    // ── Scheduled: 8:00 ngày 28 hàng tháng — tạo cho tháng tới ──
-
     @Scheduled(cron = "0 0 8 28 * *")
     public void autoTaoThangTiepTheo() {
         YearMonth nextMonth = YearMonth.now().plusMonths(1);
@@ -132,24 +124,17 @@ public class MauKhoanThuService {
         taoChoTatCaMauActive(nextMonth, "Auto-tạo");
     }
 
-    // ── Startup check: bù kỳ bị bỏ khi server down ───────────────
-
     @EventListener(ApplicationReadyEvent.class)
     public void kiemTraKhiKhoiDong() {
         YearMonth currentMonth = YearMonth.now();
         YearMonth nextMonth    = currentMonth.plusMonths(1);
         log.info("[AUTO] Startup check: kiểm tra kỳ {} và {}", currentMonth, nextMonth);
 
-        // Bù tháng hiện tại nếu chưa có
         taoChoTatCaMauActive(currentMonth, "Auto-bù khởi động");
-
-        // Bù tháng tới nếu đã qua ngày 28 và chưa có
         if (LocalDate.now().getDayOfMonth() >= 28) {
             taoChoTatCaMauActive(nextMonth, "Auto-bù khởi động");
         }
     }
-
-    // ── Internal ──────────────────────────────────────────────────
 
     private void taoChoTatCaMauActive(YearMonth ym, String nguon) {
         List<MauKhoanThu> mauList = mauKhoanThuRepository.findByActiveTrue();
@@ -182,8 +167,11 @@ public class MauKhoanThuService {
         kt.setTenKhoanThu(mau.getTenMau() + " "
                 + ym.format(DateTimeFormatter.ofPattern("MM/yyyy")));
         kt.setLoaiKhoanThu(mau.getLoaiKhoanThu());
+        kt.setLoaiTinhPhi(mau.getLoaiTinhPhi() != null ? mau.getLoaiTinhPhi() : com.bluemoon.model.LoaiTinhPhi.FIXED);
         kt.setSoTien(mau.getSoTien());
         kt.setDonGiaPerM2(mau.getDonGiaPerM2());
+        kt.setGiaXeMay(mau.getGiaXeMay());
+        kt.setGiaOto(mau.getGiaOto());
         kt.setDonVi(mau.getDonVi());
         kt.setKyThu(kyThu);
         kt.setMauKhoanThu(mau);

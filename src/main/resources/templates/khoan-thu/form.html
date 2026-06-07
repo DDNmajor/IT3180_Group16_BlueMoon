@@ -50,40 +50,75 @@
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('loaiKhoanThu')}" th:errors="*{loaiKhoanThu}"></div>
                         </div>
 
-                        <div class="row mb-3">
-                            <div class="col">
-                                <label class="form-label">Số tiền (cố định) <span class="text-danger">*</span></label>
-                                <input type="number" th:field="*{soTien}" class="form-control" th:classappend="${#fields.hasErrors('soTien')} ? 'is-invalid' : ''" min="0" step="1000" required/>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('soTien')}" th:errors="*{soTien}"></div>
-                                <div class="form-text">Dùng khi không tính theo diện tích.</div>
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label">Cách tính phí <span class="text-danger">*</span></label>
+                            <select id="loaiTinhPhi" th:field="*{loaiTinhPhi}" class="form-select">
+                                <option th:each="ltp : ${loaiTinhPhiValues}"
+                                        th:value="${ltp.name()}"
+                                        th:text="${ltp.tenHienThi}"
+                                        th:selected="${khoanThu.loaiTinhPhi == ltp}">
+                                </option>
+                            </select>
+                        </div>
 
+                        <!-- FIXED / PER_M2: hiện soTien -->
+                        <div id="groupSoTien" class="row mb-3">
+                            <div class="col">
+                                <label id="labelSoTien" class="form-label">Số tiền <span class="text-danger">*</span></label>
+                                <input type="number" th:field="*{soTien}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('soTien')} ? 'is-invalid' : ''"
+                                       min="0" step="1000"/>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('soTien')}" th:errors="*{soTien}"></div>
+                                <div id="soTienHint" class="form-text"></div>
+                            </div>
                             <div class="col">
                                 <label class="form-label">Đơn vị</label>
-                                <input type="text" th:field="*{donVi}" class="form-control" placeholder="VD: VNĐ, VNĐ/m²"/>
-                                <div class="text-danger small mt-1"
-                                     th:if="${#fields.hasErrors('donVi')}"
-                                     th:errors="*{donVi}">
-                                </div>
+                                <input type="text" th:field="*{donVi}" class="form-control" placeholder="VD: VNĐ"/>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('donVi')}" th:errors="*{donVi}"></div>
                             </div>
                         </div>
 
-                        <div class="mb-3">
+                        <!-- PER_M2: hiện donGiaPerM2 -->
+                        <div id="groupPerM2" class="mb-3" style="display:none;">
                             <label class="form-label">
-                                <i class="bi bi-rulers me-1"></i>Đơn giá/m²
-                                <span class="text-muted small fw-normal">(tùy chọn — tính theo diện tích)</span>
+                                <i class="bi bi-rulers me-1"></i>Đơn giá/m² <span class="text-danger">*</span>
                             </label>
                             <div class="input-group">
                                 <input type="number" th:field="*{donGiaPerM2}" class="form-control"
                                        th:classappend="${#fields.hasErrors('donGiaPerM2')} ? 'is-invalid' : ''"
-                                       step="1000" min="0"
-                                       placeholder="VD: 7000"/>
+                                       step="1000" min="0" placeholder="VD: 7000"/>
                                 <span class="input-group-text">đ/m²</span>
                             </div>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('donGiaPerM2')}" th:errors="*{donGiaPerM2}"></div>
-                            <div class="form-text">
-                                Nếu điền, số tiền yêu cầu mỗi hộ = <strong>diện tích × đơn giá/m²</strong>.
-                                Hộ không có diện tích sẽ dùng "Số tiền cố định" làm fallback.
+                            <div class="form-text">Số tiền mỗi hộ = <strong>diện tích × đơn giá/m²</strong>.</div>
+                        </div>
+
+                        <!-- PER_XE: nhập giá từng loại xe -->
+                        <div id="groupPerXe" class="mb-3" style="display:none;">
+                            <div class="alert alert-info py-2 mb-2">
+                                <i class="bi bi-car-front me-1"></i>
+                                Số tiền mỗi hộ = (số xe máy × giá xe máy) + (số ô tô × giá ô tô).
+                                Hộ không có xe sẽ không được tạo bản ghi thanh toán.
+                            </div>
+                            <div class="row g-2">
+                                <div class="col">
+                                    <label class="form-label">Giá xe máy <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="number" th:field="*{giaXeMay}" id="giaXeMay" class="form-control"
+                                               th:errorclass="is-invalid" min="0" placeholder="70000"/>
+                                        <span class="input-group-text">đ/xe</span>
+                                    </div>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('giaXeMay')}" th:errors="*{giaXeMay}"></div>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label">Giá ô tô <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="number" th:field="*{giaOto}" id="giaOto" class="form-control"
+                                               th:errorclass="is-invalid" min="0" placeholder="1200000"/>
+                                        <span class="input-group-text">đ/xe</span>
+                                    </div>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('giaOto')}" th:errors="*{giaOto}"></div>
+                                </div>
                             </div>
                         </div>
 
@@ -127,6 +162,44 @@
 <div th:replace="~{fragments/layout :: scripts}"></div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // ── Toggle cách tính phí ──────────────────────────────────
+        const loaiTinhPhiSel = document.getElementById('loaiTinhPhi');
+        const groupSoTien    = document.getElementById('groupSoTien');
+        const groupPerM2     = document.getElementById('groupPerM2');
+        const groupPerXe     = document.getElementById('groupPerXe');
+        const soTienInput    = groupSoTien.querySelector('input[type=number]');
+
+        const labelSoTien = document.getElementById('labelSoTien');
+        const soTienHint  = document.getElementById('soTienHint');
+
+        const giaXeMayInput = document.getElementById('giaXeMay');
+        const giaOtoInput   = document.getElementById('giaOto');
+
+        function applyLoaiTinhPhi() {
+            const val = loaiTinhPhiSel.value;
+            groupSoTien.style.display = (val === 'PER_XE') ? 'none' : '';
+            groupPerM2.style.display  = (val === 'PER_M2') ? ''     : 'none';
+            groupPerXe.style.display  = (val === 'PER_XE') ? ''     : 'none';
+            if (val === 'PER_XE') {
+                soTienInput.value = '0';
+                if (!giaXeMayInput.value) giaXeMayInput.value = '70000';
+                if (!giaOtoInput.value)   giaOtoInput.value   = '1200000';
+            }
+            if (labelSoTien) {
+                labelSoTien.innerHTML = val === 'PER_M2'
+                    ? 'Số tiền fallback <span class="text-danger">*</span>'
+                    : 'Số tiền <span class="text-danger">*</span>';
+            }
+            if (soTienHint) {
+                soTienHint.textContent = val === 'PER_M2'
+                    ? 'Dùng khi hộ không có diện tích.'
+                    : '';
+            }
+        }
+
+        loaiTinhPhiSel.addEventListener('change', applyLoaiTinhPhi);
+        applyLoaiTinhPhi();
+
         const kyThuInput = document.getElementById('kyThu');
         const hanNopInput = document.getElementById('hanNop');
 

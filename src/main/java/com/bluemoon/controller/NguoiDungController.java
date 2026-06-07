@@ -86,14 +86,12 @@ public class NguoiDungController {
             return "redirect:/nguoi-dung";
         }
 
-        // Không cho tự đổi vai trò của chính mình
         if (auth.getName().equals(nguoiDungCu.getTenDangNhap())
                 && nguoiDung.getVaiTro() != nguoiDungCu.getVaiTro()) {
             bindingResult.rejectValue("vaiTro", "selfRole",
                     "Không thể thay đổi quyền của tài khoản đang đăng nhập");
         }
 
-        // Validate mật khẩu mới nếu có nhập, bỏ trống = giữ nguyên
         String matKhauMoi = nguoiDung.getMatKhau();
         if (matKhauMoi != null && !matKhauMoi.isBlank() && matKhauMoi.length() < 6) {
             bindingResult.rejectValue("matKhau", "size", "Mật khẩu phải từ 6 ký tự trở lên");
@@ -104,19 +102,30 @@ public class NguoiDungController {
             return "nguoi-dung/form";
         }
 
-        // Khoá username, giữ ngày tạo
         nguoiDung.setId(id);
         nguoiDung.setTenDangNhap(nguoiDungCu.getTenDangNhap());
         nguoiDung.setNgayTao(nguoiDungCu.getNgayTao());
         nguoiDung.setDoiMatKhauLanDau(nguoiDungCu.getDoiMatKhauLanDau());
 
-        // Nếu không nhập mật khẩu mới, giữ lại mật khẩu cũ (đã encode)
         if (matKhauMoi == null || matKhauMoi.isBlank()) {
             nguoiDung.setMatKhau(nguoiDungCu.getMatKhau());
         }
 
         nguoiDungService.save(nguoiDung);
         ra.addFlashAttribute("successMsg", "Cập nhật người dùng thành công.");
+        return "redirect:/nguoi-dung";
+    }
+
+    @PostMapping("/doi-trang-thai/{id}")
+    public String doiTrangThai(@PathVariable Integer id, RedirectAttributes ra, Authentication auth) {
+        try {
+            nguoiDungService.toggleActive(id, auth.getName());
+            ra.addFlashAttribute("successMsg", "Cập nhật trạng thái người dùng thành công.");
+        } catch (IllegalArgumentException e) {
+            ra.addFlashAttribute("errorMsg", e.getMessage());
+        } catch (Exception e) {
+            ra.addFlashAttribute("errorMsg", "Cập nhật trạng thái thất bại: " + e.getMessage());
+        }
         return "redirect:/nguoi-dung";
     }
 

@@ -1,6 +1,6 @@
 /* ============================================================
-   KANATA LIGHT THEME v3 — BlueMoon Fee Management
-   Soft Purple Glassmorphism · Amane Kanata inspired
+   LIGHT THEME — BlueMoon Fee Management
+   Soft Purple Glassmorphism
    Active khi <html data-theme="light">
    Default (no attribute) = moona dark theme
    ============================================================ */
@@ -51,7 +51,7 @@
 }
 
 /* ─── DECORATIVE STARS ───────────────────────────────────────── */
-/* Star góc dưới-trái: tím lavender */
+/* Star tím lavender */
 [data-theme="light"] body::before {
   content: '✦';
   position: fixed;
@@ -68,7 +68,7 @@
   user-select: none;
 }
 
-/* Star góc trên-phải: xanh nhạt — override moon watermark của dark mode */
+/* Star xanh nhạt — override moon watermark của dark mode */
 [data-theme="light"] body::after {
   content: '✦';
   position: fixed;
@@ -115,7 +115,7 @@
   font-family: 'Be Vietnam Pro', 'Nunito', sans-serif !important;
 }
 
-/* ✦ Star decorator — indigo */
+/* Star decorator — indigo */
 [data-theme="light"] h4::before,
 [data-theme="light"] h5::before,
 [data-theme="light"] .modal-title::before {

@@ -28,7 +28,7 @@
                                th:value="${thangFilter}"/>
                         <a th:href="@{/khoan-thu(idLoai=${idLoaiFilter}, trangThai=${trangThaiFilter})}"
                            class="btn btn-sm text-nowrap"
-                           th:classappend="${thangFilter == null} ? 'btn-secondary' : 'btn-outline-secondary'"
+                           th:classappend="${thangFilter != null} ? 'btn-outline-primary' : 'btn-outline-secondary'"
                            title="Hiển thị tất cả tháng">
                             <i class="bi bi-calendar3"></i> Tất cả
                         </a>
@@ -68,10 +68,10 @@
                         <tr>
                             <th>#</th>
                             <th>Mã</th>
-                            <th>Tên khoản thu</th>
+                            <th style="max-width:180px">Tên khoản thu</th>
                             <th style="min-width:160px">Loại</th>
                             <th class="text-end">Số tiền</th>
-                            <th>Đơn vị</th>
+                            <th style="min-width:130px">Đơn vị</th>
                             <th>Kỳ thu</th>
                             <th>Hạn nộp</th>
                             <th class="text-center">Trạng thái</th>
@@ -117,8 +117,34 @@
                                     </span>
                                 </div>
                             </td>
-                            <td class="text-end" th:text="${#numbers.formatDecimal(kt.soTien, 0, 'COMMA', 0, 'POINT')}"></td>
-                            <td th:text="${kt.donVi}"></td>
+                            <td class="text-end">
+                                <span th:if="${kt.loaiTinhPhi == null or kt.loaiTinhPhi.name() == 'FIXED'}"
+                                      th:text="${#numbers.formatDecimal(kt.soTien, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                                <span th:if="${kt.loaiTinhPhi != null and kt.loaiTinhPhi.name() == 'PER_M2'}"
+                                      th:with="v=${kt.donGiaPerM2 != null ? kt.donGiaPerM2 : kt.soTien}"
+                                      th:text="${#numbers.formatDecimal(v, 0, 'COMMA', 0, 'POINT')} + ' đ/m²'"></span>
+                                <span th:if="${kt.loaiTinhPhi != null and kt.loaiTinhPhi.name() == 'PER_XE'}"
+                                      th:with="xeMay=${kt.giaXeMay}, oto=${kt.giaOto}"
+                                      class="d-flex flex-column">
+                                    <span th:if="${xeMay != null}"
+                                          th:with="v=${xeMay}"
+                                          th:text="${#numbers.formatDecimal(v, 0, 'COMMA', 0, 'POINT')}"></span>
+                                    <span th:if="${oto != null}"
+                                          th:with="v=${oto}"
+                                          th:text="${#numbers.formatDecimal(v, 0, 'COMMA', 0, 'POINT')}"></span>
+                                </span>
+                            </td>
+                            <td>
+                                <span th:if="${kt.loaiTinhPhi == null or kt.loaiTinhPhi.name() == 'FIXED'}"
+                                      th:text="${kt.donVi}"></span>
+                                <span th:if="${kt.loaiTinhPhi != null and kt.loaiTinhPhi.name() == 'PER_M2'}"
+                                      class="badge bg-secondary">theo m²</span>
+                                <span th:if="${kt.loaiTinhPhi != null and kt.loaiTinhPhi.name() == 'PER_XE'}"
+                                      class="d-flex flex-column">
+                                    <span>đ/xe máy/hộ</span>
+                                    <span>đ/ô tô/hộ</span>
+                                </span>
+                            </td>
                             <td th:text="${#temporals.format(kt.kyThu, 'MM/yyyy')}"></td>
                             <td th:text="${kt.hanNop != null} ? ${#temporals.format(kt.hanNop, 'dd/MM/yyyy')} : '--'"></td>
                             <td class="text-center">

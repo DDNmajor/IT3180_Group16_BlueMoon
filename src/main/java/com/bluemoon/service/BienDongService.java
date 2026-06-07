@@ -35,7 +35,6 @@ public class BienDongService {
     @Transactional
     public BienDong save(BienDong bienDong) {
         BienDong saved = bienDongRepository.save(bienDong);
-        // Cập nhật tình trạng cư trú của nhân khẩu
         var nk = saved.getNhanKhau();
         switch (saved.getLoaiBienDong()) {
             case TAM_TRU    -> nk.setTinhTrang(TinhTrangCuTru.TAM_TRU);

@@ -26,8 +26,6 @@ public class ThanhToanController {
     private final KhoanThuService    khoanThuService;
     private final NguoiDungService   nguoiDungService;
 
-    // ── UC006A / UC007 — Lịch sử + lọc theo trạng thái ──────────
-
     @GetMapping
     public String list(@RequestParam(required = false) Integer idHo,
                        @RequestParam(required = false) Integer idKhoan,
@@ -37,7 +35,11 @@ public class ThanhToanController {
 
         List<ThanhToan> danhSach;
 
-        if (idHo != null) {
+        if (idHo != null && idKhoan != null) {
+            danhSach = thanhToanService.findByHoGiaDinhAndKhoanThu(idHo, idKhoan);
+            model.addAttribute("hoGiaDinhFilter", hoGiaDinhService.findById(idHo));
+            model.addAttribute("khoanThuFilter",  khoanThuService.findById(idKhoan));
+        } else if (idHo != null) {
             danhSach = thanhToanService.findByHoGiaDinh(idHo);
             model.addAttribute("hoGiaDinhFilter", hoGiaDinhService.findById(idHo));
         } else if (idKhoan != null) {
@@ -63,12 +65,10 @@ public class ThanhToanController {
         model.addAttribute("danhSach",        danhSach);
         model.addAttribute("danhSachHo",      hoGiaDinhService.findAll());
         model.addAttribute("danhSachKhoan",   khoanThuService.findAll());
-        model.addAttribute("trangThaiFilter", trangThai);
+        model.addAttribute("trangThaiFilter", (trangThai != null && !trangThai.isBlank()) ? trangThai : null);
         model.addAttribute("trangThaiValues", TrangThaiThanhToan.values());
         return "thanh-toan/list";
     }
-
-    // ── UC008 — Theo dõi trạng thái thu phí từng căn hộ ──────────
 
     @GetMapping("/theo-doi")
     public String theoDoi(@RequestParam(required = false) String  thang,
@@ -121,8 +121,6 @@ public class ThanhToanController {
         return "thanh-toan/theo-doi";
     }
 
-    // ── UC006 — Form ghi nhận thanh toán (GET) ───────────────────
-
     @GetMapping("/them")
     public String themForm(@RequestParam(required = false) Integer idHo,
                            @RequestParam(required = false) Integer idKhoan,
@@ -168,8 +166,6 @@ public class ThanhToanController {
         model.addAttribute("today",          LocalDate.now().toString());
         return "thanh-toan/form";
     }
-
-    // ── UC006 — Xử lý ghi nhận thanh toán (POST) ─────────────────
 
     @PostMapping("/them")
     public String them(@ModelAttribute ThanhToan thanhToan,
@@ -217,8 +213,6 @@ public class ThanhToanController {
         return "redirect:/thanh-toan?idHo=" + idHo;
     }
 
-    // ── Nộp thêm (CON_NO) ────────────────────────────────────────
-
     @PostMapping("/nop-them/{id}")
     public String nopThem(@PathVariable Integer id,
                           @RequestParam BigDecimal soTienThem,
@@ -240,8 +234,6 @@ public class ThanhToanController {
         return redirectHo != null ? "redirect:/thanh-toan?idHo=" + redirectHo : "redirect:/thanh-toan";
     }
 
-    // ── Báo đã hoàn tiền (DONG_DU) ───────────────────────────────
-
     @PostMapping("/hoan-tien/{id}")
     public String baoDaHoanTien(@PathVariable Integer id,
                                 @RequestParam(required = false) Integer idHo,
@@ -255,8 +247,6 @@ public class ThanhToanController {
                 : (saved.getHoGiaDinh() != null ? saved.getHoGiaDinh().getId() : null);
         return redirectHo != null ? "redirect:/thanh-toan?idHo=" + redirectHo : "redirect:/thanh-toan";
     }
-
-    // ── Xóa bản ghi ──────────────────────────────────────────────
 
     @PostMapping("/xoa/{id}")
     public String xoa(@PathVariable Integer id, RedirectAttributes ra) {
