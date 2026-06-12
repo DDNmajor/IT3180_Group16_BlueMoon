@@ -71,7 +71,8 @@
                             <input type="month" id="inputThang" name="thang"
                                    class="form-control" style="min-width:170px"
                                    th:value="${thang}"
-                                   th:disabled="${tatCaThang}">
+                                   th:disabled="${tatCaThang}"
+                                   onchange="if(!this.disabled) this.form.submit()">
                         </div>
                         <div class="align-self-end pb-1">
                             <div class="form-check mb-0">
@@ -83,15 +84,20 @@
                         </div>
                         <div>
                             <label class="form-label mb-1">Loại khoản thu</label>
-                            <select name="loai" class="form-select" style="min-width:160px">
+                            <select name="loai" class="form-select" style="min-width:160px"
+                                    onchange="this.form.submit()">
                                 <option value="ALL"       th:selected="${loai == 'ALL'}">Tất cả</option>
                                 <option value="BAT_BUOC"  th:selected="${loai == 'BAT_BUOC'}">Bắt buộc</option>
                                 <option value="DOT_XUAT"  th:selected="${loai == 'DOT_XUAT'}">Đột xuất</option>
                                 <option value="TU_NGUYEN" th:selected="${loai == 'TU_NGUYEN'}">Tự nguyện</option>
                             </select>
                         </div>
-                        <div>
+                        <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary px-4">Lọc</button>
+                            <a th:href="@{/thanh-toan/thong-ke/export(thang=${thang}, loai=${loai})}"
+                               class="btn btn-success px-4" title="Xuất báo cáo Excel">
+                                <i class="bi bi-file-earmark-excel me-1"></i>Xuất báo cáo
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -109,6 +115,7 @@
                         var mm = String(now.getMonth() + 1).padStart(2, '0');
                         input.value = now.getFullYear() + '-' + mm;
                     }
+                    chk.form.submit();
                 }
             </script>
 

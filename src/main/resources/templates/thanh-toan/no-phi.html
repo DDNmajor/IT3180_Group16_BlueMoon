@@ -66,7 +66,8 @@
                         </div>
                         <div>
                             <label class="form-label mb-1">Khoản thu</label>
-                            <select class="form-select" name="idKhoanThu" style="min-width:180px">
+                            <select class="form-select" name="idKhoanThu" style="min-width:180px"
+                                    onchange="this.form.submit()">
                                 <option value="">Tất cả</option>
                                 <option th:each="kt : ${danhSachKhoanThu}"
                                         th:value="${kt.id}"
