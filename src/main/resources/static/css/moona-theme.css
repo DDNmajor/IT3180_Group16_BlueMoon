@@ -536,16 +536,6 @@
   color: #fff;
 }
 
-/* ─── DASHBOARD HERO ─────────────────────────────────────────── */
-[data-theme="dark"] .dashboard-hero {
-  background: linear-gradient(135deg, #2D1F5E 0%, #150E34 100%) !important;
-  color: var(--moon-text) !important;
-  border: 0 !important;
-  border-top: 2px solid var(--moon-gold) !important;
-  border-radius: 20px !important;
-  box-shadow: 0 16px 45px rgba(167, 125, 255, 0.18) !important;
-}
-
 /* ─── LOGIN PAGE ─────────────────────────────────────────────── */
 [data-theme="dark"] body.login-page {
   background-color: #0B0820 !important;
