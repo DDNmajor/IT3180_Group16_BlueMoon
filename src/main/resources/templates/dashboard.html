@@ -6,20 +6,8 @@
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
 <style>
-    .hero-card {
-        border: 0;
-        border-radius: 24px;
-        background: linear-gradient(135deg, #1d4ed8 0%, #0f172a 100%);
-        color: white;
-        box-shadow: 0 16px 45px rgba(30, 64, 175, .25);
-    }
-    .metric-card {
-        border-radius: 20px;
-    }
     .metric-label { font-size: .86rem; opacity: .75; }
     .metric-value { font-size: 1.55rem; font-weight: 900; }
-    .soft-card { border: 0; border-radius: 20px; }
-    .table thead th { font-size: .82rem; text-transform: uppercase; white-space: nowrap; }
 </style>
 
 <div class="container-fluid">
@@ -27,15 +15,20 @@
         <div th:replace="~{fragments/layout :: sidebar('dashboard')}"></div>
 
         <main class="col-md-10 p-4">
-            <div class="hero-card p-4 mb-4">
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+            <div class="dashboard-hero p-4 mb-4">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h2 class="fw-bold mb-1">Dashboard BlueMoon</h2>
                         <div class="opacity-75">Tổng quan dân cư, khoản thu và tình hình đóng phí tháng này.</div>
                     </div>
                     <div class="d-flex gap-2">
-                        <a th:href="@{/thanh-toan/no-phi}" class="btn btn-light btn-sm">Bảng nợ phí</a>
-                        <a th:href="@{/thanh-toan/thong-ke}" class="btn btn-outline-light btn-sm">Thống kê</a>
+                        <a th:href="@{/thanh-toan/no-phi}" class="btn btn-light btn-sm">
+                            <i class="bi bi-table me-1"></i>Bảng nợ phí
+                        </a>
+                        <a th:href="@{/thanh-toan/thong-ke}" class="btn btn-outline-light btn-sm">
+                            <i class="bi bi-bar-chart-line me-1"></i>Thống kê
+                        </a>
                     </div>
                 </div>
             </div>
@@ -101,7 +94,7 @@
 
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
-                            <thead>
+                            <thead class="table-dark">
                             <tr>
                                 <th>Tên khoản thu</th>
                                 <th>Loại</th>
