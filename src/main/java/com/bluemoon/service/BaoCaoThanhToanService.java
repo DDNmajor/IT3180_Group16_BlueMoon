@@ -135,13 +135,11 @@ public class BaoCaoThanhToanService {
     }
 
     public List<ThongKeKhoanThuDto> getThongKeKhoanDongGop(YearMonth thang, String loaiFilter) {
-        YearMonth ym = thang == null ? YearMonth.now() : thang;
         String filter = loaiFilter == null ? "ALL" : loaiFilter;
 
-        LocalDate from = ym.atDay(1);
-        LocalDate to = ym.atEndOfMonth();
-
-        List<KhoanThu> khoanThus = khoanThuRepository.findByKyThuBetween(from, to);
+        List<KhoanThu> khoanThus = (thang == null)
+                ? khoanThuRepository.findAll()
+                : khoanThuRepository.findByKyThuBetween(thang.atDay(1), thang.atEndOfMonth());
         List<ThanhToan> tatCaThanhToan = thanhToanRepository.findAll();
         long tongSoHo = hoGiaDinhRepository.count();
 
@@ -233,17 +231,12 @@ public class BaoCaoThanhToanService {
     }
 
     public BigDecimal tongTienDaThuThangNay() {
-        YearMonth ym = YearMonth.now();
+        return tongTienDaThuTheoThang(YearMonth.now());
+    }
 
-        return thanhToanRepository.findAll()
-                .stream()
-                .filter(t -> t.getNgayNop() != null)
-                .filter(t -> {
-                    LocalDate ngay = toLocalDate(t.getNgayNop());
-                    return ngay != null && YearMonth.from(ngay).equals(ym);
-                })
-                .map(t -> nz(t.getSoTienDaNop()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    public BigDecimal tongTienDaThuTheoThang(YearMonth ym) {
+        BigDecimal result = thanhToanRepository.sumByNamAndThang(ym.getYear(), ym.getMonthValue());
+        return result != null ? result : BigDecimal.ZERO;
     }
 
     public BigDecimal tongTienNo(List<NoPhiHoDto> list) {

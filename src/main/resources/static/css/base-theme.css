@@ -62,7 +62,7 @@ h1, h2, h3, h4, h5, h6 {
   position: sticky;
   top: var(--navbar-h);
   height: calc(100vh - var(--navbar-h));
-  overflow-y: auto;
+  overflow: hidden;
   align-self: flex-start; /* quan trọng: ngăn flexbox kéo dài sidebar theo row height */
   will-change: transform;  /* pre-composite GPU layer, tránh jitter khi bắt đầu scroll */
   backface-visibility: hidden;
@@ -75,7 +75,8 @@ h1, h2, h3, h4, h5, h6 {
   transition: color 0.2s ease, background-color 0.2s ease, border-left-color 0.2s ease;
   font-family: 'Be Vietnam Pro', sans-serif;
   font-weight: 500;
-  padding-left: 12px;
+  font-size: 0.95rem;
+  padding: 0.38rem 0.75rem 0.38rem 12px;
   margin-right: 4px;
 }
 
@@ -85,11 +86,11 @@ h1, h2, h3, h4, h5, h6 {
 
 .sidebar .nav-section {
   font-family: 'Be Vietnam Pro', sans-serif;
-  font-size: 0.77rem;
+  font-size: 0.74rem;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  padding: 0.5rem 1rem;
-  margin-top: 0.4rem;
+  padding: 0.3rem 1rem 0.2rem;
+  margin-top: 0.5rem;
   font-weight: 700;
 }
 

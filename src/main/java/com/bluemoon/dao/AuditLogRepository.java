@@ -12,4 +12,6 @@ public interface AuditLogRepository extends JpaRepository<AuditLog, Integer>,
 
     @Query("SELECT DISTINCT a.nguoiDung FROM AuditLog a WHERE a.nguoiDung IS NOT NULL ORDER BY a.nguoiDung")
     List<String> findDistinctNguoiDung();
+
+    List<AuditLog> findTop5ByOrderByThoiGianDesc();
 }

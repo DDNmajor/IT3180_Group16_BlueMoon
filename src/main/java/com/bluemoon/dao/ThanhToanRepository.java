@@ -5,6 +5,7 @@ import com.bluemoon.model.ThanhToan;
 import com.bluemoon.model.TrangThaiThanhToan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -31,4 +32,7 @@ public interface ThanhToanRepository extends JpaRepository<ThanhToan, Integer> {
 
     List<ThanhToan> findByHoGiaDinhIdAndKhoanThuLoaiTinhPhiAndKhoanThuKyThuBetween(
             Integer idHoGiaDinh, LoaiTinhPhi loaiTinhPhi, LocalDate from, LocalDate to);
+
+    @Query("SELECT COALESCE(SUM(t.soTienDaNop), 0) FROM ThanhToan t WHERE YEAR(t.ngayNop) = :nam AND MONTH(t.ngayNop) = :thang")
+    BigDecimal sumByNamAndThang(@Param("nam") int nam, @Param("thang") int thang);
 }

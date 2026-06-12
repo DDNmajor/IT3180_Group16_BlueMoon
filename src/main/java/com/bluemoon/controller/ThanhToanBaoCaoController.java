@@ -49,17 +49,29 @@ public class ThanhToanBaoCaoController {
                           @RequestParam(required = false, defaultValue = "ALL") String loai,
                           Model model) {
 
-        YearMonth ym = (thang == null || thang.isBlank()) ? YearMonth.now() : YearMonth.parse(thang);
+        boolean tatCaThang = (thang == null || thang.isBlank());
+        YearMonth ym = tatCaThang ? null : YearMonth.parse(thang);
         List<ThongKeKhoanThuDto> thongKeList = baoCaoThanhToanService.getThongKeKhoanDongGop(ym, loai);
 
-        model.addAttribute("thang", ym.toString());
-        model.addAttribute("loai", loai);
-        model.addAttribute("thongKeList", thongKeList);
+        List<ThongKeKhoanThuDto> dsBatBuoc = thongKeList.stream()
+                .filter(r -> !"Tự nguyện".equals(r.getLoai()))
+                .collect(java.util.stream.Collectors.toList());
+        List<ThongKeKhoanThuDto> dsTuNguyen = thongKeList.stream()
+                .filter(r -> "Tự nguyện".equals(r.getLoai()))
+                .collect(java.util.stream.Collectors.toList());
 
-        model.addAttribute("tongTienYeuCau", baoCaoThanhToanService.tongTienYeuCau(thongKeList));
-        model.addAttribute("tongTienDaThu", baoCaoThanhToanService.tongTienDaThu(thongKeList));
-        model.addAttribute("tongTienConThieu", baoCaoThanhToanService.tongTienConThieu(thongKeList));
-        model.addAttribute("tongSoHoDangNo", baoCaoThanhToanService.tongSoHoDangNoItNhatMotKhoanTrongThongKe(thongKeList));
+        model.addAttribute("tatCaThang", tatCaThang);
+        model.addAttribute("thang", tatCaThang ? "" : ym.toString());
+        model.addAttribute("loai", loai);
+
+        model.addAttribute("dsBatBuoc", dsBatBuoc);
+        model.addAttribute("tongTienYeuCau",  baoCaoThanhToanService.tongTienYeuCau(dsBatBuoc));
+        model.addAttribute("tongTienDaThu",   baoCaoThanhToanService.tongTienDaThu(dsBatBuoc));
+        model.addAttribute("tongTienConThieu",baoCaoThanhToanService.tongTienConThieu(dsBatBuoc));
+        model.addAttribute("tongSoHoDangNo",  baoCaoThanhToanService.tongSoHoDangNoItNhatMotKhoanTrongThongKe(dsBatBuoc));
+
+        model.addAttribute("dsTuNguyen", dsTuNguyen);
+        model.addAttribute("tongDongGopTuNguyen", baoCaoThanhToanService.tongTienDaThu(dsTuNguyen));
 
         return "thanh-toan/thong-ke";
     }

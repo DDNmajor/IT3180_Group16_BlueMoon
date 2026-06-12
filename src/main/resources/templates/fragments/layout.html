@@ -97,6 +97,18 @@
             <i class="bi bi-cash-coin me-2"></i>Thanh toán
         </a>
 
+        <a class="nav-link"
+           th:classappend="${activePage == 'thong-ke'} ? 'active' : ''"
+           th:href="@{/thanh-toan/thong-ke}">
+            <i class="bi bi-bar-chart-line me-2"></i>Thống kê
+        </a>
+
+        <a class="nav-link"
+           th:classappend="${activePage == 'no-phi'} ? 'active' : ''"
+           th:href="@{/thanh-toan/no-phi}">
+            <i class="bi bi-exclamation-circle me-2"></i>Nợ phí
+        </a>
+
         <!-- DÂN CƯ -->
         <span class="nav-section">Dân cư</span>
 

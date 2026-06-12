@@ -68,9 +68,29 @@
                             <div class="col">
                                 <strong th:text="${selectedKhoanThu.tenKhoanThu}"></strong>
                                 <span class="text-muted mx-2">|</span>
-                                <span th:if="${selectedKhoanThu.loaiKhoanThu != null}"
-                                      th:text="${selectedKhoanThu.loaiKhoanThu.tenLoai}"
-                                      th:class="${isTuNguyen} ? 'badge bg-secondary' : 'badge bg-danger'">
+                                <span th:if="${selectedKhoanThu.loaiKhoanThu != null and selectedKhoanThu.loaiKhoanThu.loaiApDung != null}"
+                                      class="d-inline-flex flex-wrap gap-1">
+                                    <span th:if="${selectedKhoanThu.loaiKhoanThu.loaiApDung.name() == 'BAT_BUOC_DINH_KY' or selectedKhoanThu.loaiKhoanThu.loaiApDung.name() == 'BAT_BUOC_DOT_XUAT'}"
+                                          class="fee-tag fee-tag-required">
+                                        <i class="bi bi-exclamation-circle"></i>Bắt buộc
+                                    </span>
+                                    <span th:if="${selectedKhoanThu.loaiKhoanThu.loaiApDung.name() == 'BAT_BUOC_DINH_KY'}"
+                                          class="fee-tag fee-tag-periodic">
+                                        <i class="bi bi-arrow-repeat"></i>Định kỳ
+                                    </span>
+                                    <span th:if="${selectedKhoanThu.loaiKhoanThu.loaiApDung.name() == 'BAT_BUOC_DOT_XUAT'}"
+                                          class="fee-tag fee-tag-unexpected">
+                                        <i class="bi bi-lightning"></i>Đột xuất
+                                    </span>
+                                    <span th:if="${selectedKhoanThu.loaiKhoanThu.loaiApDung.name() == 'TU_NGUYEN'}"
+                                          class="fee-tag fee-tag-voluntary">
+                                        <i class="bi bi-heart"></i>Tự nguyện
+                                    </span>
+                                </span>
+                                <span th:if="${selectedKhoanThu.loaiKhoanThu != null and selectedKhoanThu.loaiKhoanThu.loaiApDung == null}"
+                                      class="fee-tag fee-tag-required">
+                                    <i class="bi bi-tag"></i>
+                                    <span th:text="${selectedKhoanThu.loaiKhoanThu.tenLoai}"></span>
                                 </span>
                                 <span class="ms-2 text-muted"
                                       th:if="${selectedKhoanThu.donGiaPerM2 == null}"

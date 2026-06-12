@@ -10,59 +10,64 @@
     .soft-card { border: 0; border-radius: 18px; }
     .metric-card { border-radius: 18px; }
     .metric-label { font-size: .85rem; opacity: .75; }
-    .metric-value { font-weight: 800; font-size: 1.45rem; }
-    .debt-badge { background: #fee2e2; color: #991b1b; border-radius: 999px; padding: .35rem .75rem; font-weight: 700; }
-    .table thead th { font-size: .85rem; text-transform: uppercase; }
-    .expand-row { background: rgba(0,0,0,.04); }
-    .btn-soft { border-radius: 999px; }
+    .metric-value { font-weight: 800; font-size: 1.35rem; }
+    .table { font-size: .88rem; }
+    .table thead th { font-size: .78rem; text-transform: uppercase; white-space: nowrap; }
+    .detail-table { font-size: .85rem; }
+    .detail-table thead th { font-size: .76rem; text-transform: uppercase; white-space: nowrap; }
+    .expand-row td { padding: 0 !important; }
+    .expand-inner { padding: 0.75rem 1.25rem 0.75rem 2.5rem; }
 </style>
 
 <div class="container-fluid">
     <div class="row">
-        <div th:replace="~{fragments/layout :: sidebar('thanh-toan')}"></div>
+        <div th:replace="~{fragments/layout :: sidebar('no-phi')}"></div>
 
         <main class="col-md-10 p-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h3 class="page-title mb-1">Bảng nợ phí theo hộ</h3>
-                    <div class="text-muted">Mỗi hộ một dòng chính, bấm “Chi tiết” để xem các khoản đang còn nợ.</div>
+                    <div class="text-muted">Mỗi hộ một dòng, bấm Chi tiết để xem các khoản đang còn nợ.</div>
                 </div>
                 <div class="d-flex gap-2">
-                    <a th:href="@{/dashboard}" class="btn btn-outline-secondary btn-sm btn-soft">Dashboard</a>
-                    <a th:href="@{/thanh-toan/thong-ke}" class="btn btn-primary btn-sm btn-soft">Thống kê khoản đóng góp</a>
+                    <a th:href="@{/dashboard}" class="btn btn-outline-secondary btn-sm">Dashboard</a>
+                    <a th:href="@{/thanh-toan/thong-ke}" class="btn btn-primary btn-sm">Thống kê</a>
                 </div>
             </div>
 
+            <!-- Metric cards -->
             <div class="row g-3 mb-4">
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="card metric-card p-3">
                         <div class="metric-label">Tổng số hộ đang nợ</div>
                         <div class="metric-value" th:text="${tongSoHoNo}">0</div>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="card metric-card p-3">
-                        <div class="metric-label">Tổng tiền nợ toàn bộ</div>
-                        <div class="metric-value"
+                        <div class="metric-label">Tổng tiền nợ</div>
+                        <div class="metric-value text-danger"
                              th:text="${#numbers.formatDecimal(tongTienNo, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</div>
                     </div>
                 </div>
             </div>
 
+            <!-- Filter -->
             <div class="card soft-card mb-4">
-                <div class="card-body">
-                    <form th:action="@{/thanh-toan/no-phi}" method="get" class="row g-3 align-items-end">
-                        <div class="col-md-4">
-                            <label class="form-label">Số căn hộ / tên chủ hộ</label>
+                <div class="card-body py-3">
+                    <form th:action="@{/thanh-toan/no-phi}" method="get"
+                          class="d-flex flex-wrap gap-3 align-items-end">
+                        <div>
+                            <label class="form-label mb-1">Số căn hộ / chủ hộ</label>
                             <input type="text" class="form-control" name="keyword"
+                                   style="min-width:210px"
                                    placeholder="VD: A101 hoặc Nguyễn Văn A"
                                    th:value="${keyword}">
                         </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">Khoản thu cụ thể</label>
-                            <select class="form-select" name="idKhoanThu">
-                                <option value="">Tất cả khoản thu</option>
+                        <div>
+                            <label class="form-label mb-1">Khoản thu</label>
+                            <select class="form-select" name="idKhoanThu" style="min-width:180px">
+                                <option value="">Tất cả</option>
                                 <option th:each="kt : ${danhSachKhoanThu}"
                                         th:value="${kt.id}"
                                         th:text="${kt.tenKhoanThu}"
@@ -70,88 +75,90 @@
                                 </option>
                             </select>
                         </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label">Nợ trên</label>
+                        <div>
+                            <label class="form-label mb-1">Nợ từ (đ)</label>
                             <input type="number" class="form-control" name="noTren"
+                                   style="min-width:130px"
                                    placeholder="VD: 100000"
                                    th:value="${noTren}">
                         </div>
-
-                        <div class="col-md-2 d-grid">
-                            <button type="submit" class="btn btn-primary">Lọc</button>
+                        <div>
+                            <button type="submit" class="btn btn-primary px-4">Lọc</button>
+                        </div>
+                        <div class="ms-auto align-self-center" th:if="${keyword != null or idKhoanThu != null or noTren != null}">
+                            <a th:href="@{/thanh-toan/no-phi}" class="btn btn-outline-secondary btn-sm">Xóa bộ lọc</a>
                         </div>
                     </form>
                 </div>
             </div>
 
+            <!-- Bảng chính -->
             <div class="card soft-card">
                 <div class="card-body table-responsive">
                     <table class="table table-hover align-middle">
                         <thead>
                         <tr>
-                            <th style="width: 70px;">#</th>
-                            <th>Số căn hộ</th>
+                            <th style="width:50px">#</th>
+                            <th>Căn hộ</th>
                             <th>Chủ hộ</th>
-                            <th class="text-end">Tổng tiền nợ</th>
-                            <th>Ngày nộp gần nhất</th>
-                            <th class="text-end">Thao tác</th>
+                            <th class="text-end">Tổng nợ</th>
+                            <th>Nộp gần nhất</th>
+                            <th class="text-end"></th>
                         </tr>
                         </thead>
 
                         <tbody>
                         <th:block th:each="row, stat : ${danhSachNoPhi}">
                             <tr>
-                                <td th:text="${stat.count}">1</td>
-                                <td>
-                                    <span class="fw-bold" th:text="${row.soCanHo}">A101</span>
-                                </td>
+                                <td class="text-muted" th:text="${stat.count}">1</td>
+                                <td class="fw-bold" th:text="${row.soCanHo}">A101</td>
                                 <td>
                                     <div class="fw-semibold" th:text="${row.chuHo}">Nguyễn Văn A</div>
                                     <small class="text-muted"
-                                           th:text="${row.email != null && !row.email.isBlank() ? row.email : 'Chưa có email'}"></small>
+                                           th:text="${row.email != null and !row.email.isBlank()} ? ${row.email} : 'Chưa có email'"></small>
                                 </td>
+                                <td class="text-end fw-bold text-danger"
+                                    th:text="${#numbers.formatDecimal(row.tongNo, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
+                                <td th:text="${row.ngayNopGanNhat != null} ? ${#temporals.format(row.ngayNopGanNhat, 'dd/MM/yyyy')} : '--'">--</td>
                                 <td class="text-end">
-                                    <span class="debt-badge"
-                                          th:text="${#numbers.formatDecimal(row.tongNo, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</span>
-                                </td>
-                                <td th:text="${row.ngayNopGanNhat != null ? #temporals.format(row.ngayNopGanNhat, 'dd/MM/yyyy') : '--'}">--</td>
-                                <td class="text-end">
-                                    <button class="btn btn-outline-primary btn-sm btn-soft"
+                                    <button class="btn btn-outline-primary btn-sm"
                                             type="button"
                                             data-bs-toggle="collapse"
                                             th:data-bs-target="'#noPhiDetail' + ${row.idHo}">
-                                        Chi tiết
+                                        <i class="bi bi-chevron-down me-1"></i>Chi tiết
                                     </button>
-                                    <a class="btn btn-outline-danger btn-sm btn-soft"
+                                    <a class="btn btn-outline-secondary btn-sm"
                                        th:href="@{/thanh-toan/no-phi/email/{idHo}(idHo=${row.idHo})}">
-                                        Email
+                                        <i class="bi bi-envelope me-1"></i>Email
                                     </a>
                                 </td>
                             </tr>
 
                             <tr class="expand-row">
-                                <td colspan="6" class="p-0">
+                                <td colspan="6">
                                     <div class="collapse" th:id="'noPhiDetail' + ${row.idHo}">
-                                        <div class="p-3">
-                                            <table class="table table-sm mb-0">
+                                        <div class="expand-inner">
+                                            <table class="table detail-table table-sm mb-0">
                                                 <thead>
                                                 <tr>
-                                                    <th>Tên khoản thu</th>
-                                                    <th class="text-end">Số tiền yêu cầu</th>
+                                                    <th>Khoản thu</th>
+                                                    <th class="text-end">Yêu cầu</th>
                                                     <th class="text-end">Đã nộp</th>
                                                     <th class="text-end">Còn thiếu</th>
-                                                    <th class="text-end">Xem</th>
+                                                    <th class="text-end"></th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
                                                 <tr th:each="ct : ${row.danhSachNo}">
                                                     <td th:text="${ct.tenKhoanThu}">Phí vệ sinh</td>
-                                                    <td class="text-end" th:text="${#numbers.formatDecimal(ct.soTienYeuCau, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
-                                                    <td class="text-end" th:text="${#numbers.formatDecimal(ct.soTienDaNop, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
-                                                    <td class="text-end fw-bold text-danger" th:text="${#numbers.formatDecimal(ct.conThieu, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
+                                                    <td class="text-end"
+                                                        th:text="${#numbers.formatDecimal(ct.soTienYeuCau, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
+                                                    <td class="text-end text-success"
+                                                        th:text="${#numbers.formatDecimal(ct.soTienDaNop, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
+                                                    <td class="text-end fw-bold text-danger"
+                                                        th:text="${#numbers.formatDecimal(ct.conThieu, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
                                                     <td class="text-end">
-                                                        <a class="btn btn-sm btn-light"
+                                                        <a class="btn btn-sm btn-outline-primary"
                                                            th:href="@{/thanh-toan/theo-doi(idKhoanThu=${ct.idKhoanThu})}">
                                                             Theo dõi
                                                         </a>
@@ -175,8 +182,10 @@
                         <tfoot>
                         <tr class="fw-bold">
                             <td colspan="3">Tổng cuối</td>
-                            <td class="text-end" th:text="${#numbers.formatDecimal(tongTienNo, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
-                            <td colspan="2" th:text="'Tổng số hộ đang nợ: ' + ${tongSoHoNo}">Tổng số hộ đang nợ: 0</td>
+                            <td class="text-end text-danger"
+                                th:text="${#numbers.formatDecimal(tongTienNo, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
+                            <td colspan="2" class="text-end"
+                                th:text="'Tổng số hộ nợ: ' + ${tongSoHoNo}"></td>
                         </tr>
                         </tfoot>
                     </table>
