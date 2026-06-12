@@ -30,11 +30,18 @@ public class ThanhToanBaoCaoController {
     private final KhoanThuService khoanThuService;
     private final ExcelExportService excelExportService;
 
-    @GetMapping("/thong-ke/export/{idKhoanThu}")
-    public ResponseEntity<byte[]> exportBaoCao(@PathVariable Integer idKhoanThu) throws IOException {
-        byte[] excelData = excelExportService.exportBaoCaoKhoanThu(idKhoanThu);
-        KhoanThu kt = khoanThuService.findById(idKhoanThu);
-        String fileName = "BaoCao_" + kt.getMaKhoanThu() + ".xlsx";
+    @GetMapping("/thong-ke/export")
+    public ResponseEntity<byte[]> exportBaoCao(@RequestParam(required = false) String thang,
+                                               @RequestParam(required = false, defaultValue = "ALL") String loai) throws IOException {
+        YearMonth ym = (thang == null || thang.isBlank()) ? YearMonth.now() : YearMonth.parse(thang);
+        List<ThongKeKhoanThuDto> thongKeList = baoCaoThanhToanService.getThongKeKhoanDongGop(ym, loai);
+        
+        List<KhoanThu> listKt = thongKeList.stream()
+                .map(dto -> khoanThuService.findById(dto.getIdKhoanThu()))
+                .toList();
+
+        byte[] excelData = excelExportService.exportBaoCaoThongKe(listKt);
+        String fileName = "BaoCao_" + ym.toString() + ".xlsx";
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")

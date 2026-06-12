@@ -71,7 +71,7 @@
                             <input type="month" name="thang" class="form-control" th:value="${thang}">
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="form-label">Loại khoản thu</label>
                             <select name="loai" class="form-select">
                                 <option value="ALL" th:selected="${loai == 'ALL'}">Tất cả</option>
@@ -81,12 +81,11 @@
                             </select>
                         </div>
 
-                        <div class="col-md-2 d-grid">
-                            <button type="submit" class="btn btn-primary">Lọc</button>
-                        </div>
-
-                        <div class="col-md-3 text-md-end">
-                            <small class="text-muted">Mặc định là tháng hiện tại.</small>
+                        <div class="col-md-6 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary px-4">Lọc</button>
+                            <a th:href="@{/thanh-toan/thong-ke/export(thang=${thang}, loai=${loai})}" class="btn btn-success px-4" title="Xuất báo cáo Excel">
+                                <i class="bi bi-file-earmark-excel"></i> Xuất báo cáo
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -132,7 +131,7 @@
                                 </div>
                                 <div class="progress">
                                     <div class="progress-bar"
-                                         th:style="'width:' + (${row.tiLeThuDuoc.compareTo(T(java.math.BigDecimal).valueOf(100)) > 0 ? 100 : row.tiLeThuDuoc}) + '%'">
+                                         th:style="'width:' + (${row.tiLeThuDuoc > 100 ? 100 : row.tiLeThuDuoc}) + '%'">
                                     </div>
                                 </div>
                             </td>
@@ -140,10 +139,6 @@
                                 <a class="btn btn-outline-primary btn-sm"
                                    th:href="@{/thanh-toan/theo-doi(idKhoanThu=${row.idKhoanThu})}">
                                     Xem
-                                </a>
-                                <a class="btn btn-outline-success btn-sm ms-1" title="Xuất báo cáo Excel"
-                                   th:href="@{/thanh-toan/thong-ke/export/{idKhoanThu}(idKhoanThu=${row.idKhoanThu})}">
-                                    <i class="bi bi-file-earmark-excel"></i> Xuất
                                 </a>
                             </td>
                         </tr>
