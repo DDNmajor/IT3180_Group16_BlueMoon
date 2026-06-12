@@ -33,36 +33,26 @@ public class ExcelImportService {
         try (InputStream is = file.getInputStream(); Workbook workbook = WorkbookFactory.create(is)) {
             Sheet sheet = workbook.getSheetAt(0);
 
-            // Bỏ qua dòng tiêu đề (index 0)
+            // Pass 1: Đọc và Validate toàn bộ dữ liệu
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
                 if (row == null) continue;
 
                 String soCanHo = getCellStringValue(row.getCell(0));
                 String chuHo = getCellStringValue(row.getCell(1));
-                String tangKhuVuc = getCellStringValue(row.getCell(2));
                 String dienTichStr = getCellStringValue(row.getCell(3));
                 String email = getCellStringValue(row.getCell(4));
-                String ghiChu = getCellStringValue(row.getCell(5));
 
                 // Bỏ qua dòng trống
-                if (soCanHo.isBlank() && chuHo.isBlank()) {
-                    continue;
-                }
+                if (soCanHo.isBlank() && chuHo.isBlank()) continue;
 
-                // Validation
                 List<String> rowErrors = new ArrayList<>();
-                if (soCanHo.isBlank()) {
-                    rowErrors.add("Số căn hộ không được để trống");
-                }
-                if (chuHo.isBlank()) {
-                    rowErrors.add("Chủ hộ không được để trống");
-                }
+                if (soCanHo.isBlank()) rowErrors.add("Số căn hộ không được để trống");
+                if (chuHo.isBlank()) rowErrors.add("Chủ hộ không được để trống");
                 
-                BigDecimal dienTich = null;
                 try {
                     if (!dienTichStr.isBlank()) {
-                        dienTich = new BigDecimal(dienTichStr);
+                        BigDecimal dienTich = new BigDecimal(dienTichStr);
                         if (dienTich.compareTo(BigDecimal.ZERO) <= 0) {
                             rowErrors.add("Diện tích phải lớn hơn 0");
                         }
@@ -77,14 +67,38 @@ public class ExcelImportService {
 
                 if (!rowErrors.isEmpty()) {
                     errorCount++;
-                    errorMessages.add("Dòng " + (i + 1) + ": " + String.join(", ", rowErrors));
-                    continue;
+                    errorMessages.add("- Dòng " + (i + 1) + ": " + String.join(", ", rowErrors));
+                }
+            }
+
+            // Nếu có lỗi, từ chối import toàn bộ
+            if (!errorMessages.isEmpty()) {
+                throw new RuntimeException("Phát hiện " + errorCount + " dòng lỗi. Từ chối import toàn bộ file:\n<br>" + String.join("\n<br>", errorMessages));
+            }
+
+            // Pass 2: Không có lỗi -> Xử lý Insert / Update
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+                if (row == null) continue;
+
+                String soCanHo = getCellStringValue(row.getCell(0));
+                String chuHo = getCellStringValue(row.getCell(1));
+                String tangKhuVuc = getCellStringValue(row.getCell(2));
+                String dienTichStr = getCellStringValue(row.getCell(3));
+                String email = getCellStringValue(row.getCell(4));
+                String ghiChu = getCellStringValue(row.getCell(5));
+
+                if (soCanHo.isBlank() && chuHo.isBlank()) continue;
+
+                BigDecimal dienTich = null;
+                if (!dienTichStr.isBlank()) {
+                    dienTich = new BigDecimal(dienTichStr);
                 }
 
-                // Xử lý Insert / Update
                 Optional<HoGiaDinh> existing = hoGiaDinhRepository.findBySoCanHo(soCanHo);
                 HoGiaDinh ho = existing.orElseGet(HoGiaDinh::new);
                 boolean isNew = (ho.getId() == null);
+                BigDecimal dienTichCu = ho.getDienTich(); // Lấy diện tích cũ trước khi ghi đè
 
                 ho.setSoCanHo(soCanHo);
                 ho.setChuHo(chuHo);
@@ -98,24 +112,20 @@ public class ExcelImportService {
                 if (isNew) {
                     // Áp dụng tự động các khoản thu bắt buộc cho hộ mới
                     khoanThuService.autoApplyForNewHo(ho);
-                } else if (dienTich != null) {
-                    // Nếu diện tích thay đổi, tính lại các phí PER_M2
-                    khoanThuService.recalculatePerM2ForHo(ho, ho.getDienTich());
+                } else if (dienTich != null && (dienTichCu == null || dienTich.compareTo(dienTichCu) != 0)) {
+                    // Nếu diện tích thay đổi, tính lại các phí PER_M2 bằng cách truyền vào diện tích CŨ
+                    khoanThuService.recalculatePerM2ForHo(ho, dienTichCu);
                 }
 
                 successCount++;
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return "Lỗi đọc file Excel: " + e.getMessage();
+        } catch (Exception e) {
+            return "Lỗi đọc file Excel: Có lỗi hệ thống xảy ra (" + e.getMessage() + ")";
         }
 
-        StringBuilder result = new StringBuilder();
-        result.append("Import hoàn tất. Thành công: ").append(successCount).append(" dòng. Lỗi: ").append(errorCount).append(" dòng.");
-        if (!errorMessages.isEmpty()) {
-            result.append("\nChi tiết lỗi:\n").append(String.join("\n", errorMessages));
-        }
-
-        return result.toString();
+        return "Import hoàn tất. Thành công: " + successCount + " dòng.";
     }
 
     private String getCellStringValue(Cell cell) {
