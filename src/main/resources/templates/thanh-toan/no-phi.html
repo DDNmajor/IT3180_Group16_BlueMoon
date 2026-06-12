@@ -6,20 +6,20 @@
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
 <style>
-    .page-title { font-weight: 800; color: #172554; }
-    .soft-card { border: 0; border-radius: 18px; box-shadow: 0 10px 30px rgba(15, 23, 42, .08); }
-    .metric-card { border-radius: 18px; border: 1px solid #e5e7eb; background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%); }
-    .metric-label { color: #64748b; font-size: .85rem; }
-    .metric-value { font-weight: 800; font-size: 1.45rem; color: #0f172a; }
+    .page-title { font-weight: 800; }
+    .soft-card { border: 0; border-radius: 18px; }
+    .metric-card { border-radius: 18px; }
+    .metric-label { font-size: .85rem; opacity: .75; }
+    .metric-value { font-weight: 800; font-size: 1.45rem; }
     .debt-badge { background: #fee2e2; color: #991b1b; border-radius: 999px; padding: .35rem .75rem; font-weight: 700; }
-    .table thead th { background: #f1f5f9; color: #334155; font-size: .85rem; text-transform: uppercase; }
-    .expand-row { background: #f8fafc; }
+    .table thead th { font-size: .85rem; text-transform: uppercase; }
+    .expand-row { background: rgba(0,0,0,.04); }
     .btn-soft { border-radius: 999px; }
 </style>
 
 <div class="container-fluid">
     <div class="row">
-        <div th:replace="~{fragments/layout :: sidebar}"></div>
+        <div th:replace="~{fragments/layout :: sidebar('thanh-toan')}"></div>
 
         <main class="col-md-10 p-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -35,13 +35,13 @@
 
             <div class="row g-3 mb-4">
                 <div class="col-md-6">
-                    <div class="metric-card p-3">
+                    <div class="card metric-card p-3">
                         <div class="metric-label">Tổng số hộ đang nợ</div>
                         <div class="metric-value" th:text="${tongSoHoNo}">0</div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="metric-card p-3">
+                    <div class="card metric-card p-3">
                         <div class="metric-label">Tổng tiền nợ toàn bộ</div>
                         <div class="metric-value"
                              th:text="${#numbers.formatDecimal(tongTienNo, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</div>
