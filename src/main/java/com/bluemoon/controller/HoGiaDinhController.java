@@ -1,23 +1,21 @@
 package com.bluemoon.controller;
 
 import com.bluemoon.model.HoGiaDinh;
-import com.bluemoon.service.BienDongService;
-import com.bluemoon.service.HoGiaDinhService;
-import com.bluemoon.service.KhoanThuService;
-import com.bluemoon.service.PhuongTienService;
-import com.bluemoon.service.ThanhToanService;
+import com.bluemoon.service.*;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.multipart.MultipartFile;
-import com.bluemoon.service.ExcelImportService;
 
 @Controller
 @RequestMapping("/ho-gia-dinh")
@@ -37,13 +35,28 @@ public class HoGiaDinhController {
             ra.addFlashAttribute("errorMsg", "Vui lòng chọn file Excel để import.");
             return "redirect:/ho-gia-dinh";
         }
-        String result = excelImportService.importHoGiaDinh(file);
-        if (result.contains("Lỗi đọc file Excel")) {
-            ra.addFlashAttribute("errorMsg", result);
+        ExcelImportService.ImportResult result = excelImportService.importHoGiaDinh(file);
+        if (result.hasErrors()) {
+            ra.addFlashAttribute("errorMsg",
+                    "Phát hiện " + result.errors().size() + " lỗi. Không có dữ liệu nào được lưu:\n"
+                    + String.join("\n", result.errors()));
         } else {
-            ra.addFlashAttribute("infoMsg", result.replace("\n", "<br>")); // Hiển thị xuống dòng trên giao diện
+            ra.addFlashAttribute("successMsg",
+                    "Import thành công: " + result.soHoMoi() + " hộ mới, "
+                    + result.soHoCapNhat() + " hộ cập nhật, "
+                    + result.soNkMoi() + " nhân khẩu mới.");
         }
         return "redirect:/ho-gia-dinh";
+    }
+
+    @GetMapping("/import/mau")
+    public ResponseEntity<byte[]> taiFileMau() throws Exception {
+        byte[] data = excelImportService.generateTemplate();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"mau_import_bluemoon.xlsx\"")
+                .contentType(MediaType.parseMediaType(
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(data);
     }
 
     @GetMapping

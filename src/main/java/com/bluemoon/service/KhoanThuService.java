@@ -227,7 +227,7 @@ public class KhoanThuService {
         }
     }
 
-    private BigDecimal tinhSoTienYeuCau(KhoanThu kt, HoGiaDinh ho) {
+    public BigDecimal tinhSoTienYeuCau(KhoanThu kt, HoGiaDinh ho) {
         LoaiTinhPhi ltp = kt.getLoaiTinhPhi() != null ? kt.getLoaiTinhPhi() : LoaiTinhPhi.FIXED;
         if (ltp == LoaiTinhPhi.PER_M2) {
             if (kt.getDonGiaPerM2() != null && ho.getDienTich() != null) {

@@ -109,7 +109,8 @@ public class BaoCaoThanhToanService {
                     tt.getKhoanThu().getTenKhoanThu(),
                     yeuCau,
                     daNop,
-                    conThieu
+                    conThieu,
+                    tt.getKhoanThu().getHanNop()
             );
 
             hoDto.getDanhSachNo().add(chiTiet);
@@ -221,7 +222,9 @@ public class BaoCaoThanhToanService {
                     soConNo,
                     soDongDu,
                     soChuaNop,
-                    tiLe
+                    tiLe,
+                    kt.getMaKhoanThu(),
+                    kt.getKyThu()
             );
 
             result.add(dto);
@@ -303,8 +306,15 @@ public class BaoCaoThanhToanService {
                     .append(", đã nộp ")
                     .append(formatMoney(ct.getSoTienDaNop()))
                     .append(", còn thiếu ")
-                    .append(formatMoney(ct.getConThieu()))
-                    .append("\n");
+                    .append(formatMoney(ct.getConThieu()));
+            if (ct.getHanNop() != null) {
+                sb.append(", hạn nộp ")
+                        .append(ct.getHanNop().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                if (ct.getHanNop().isBefore(LocalDate.now())) {
+                    sb.append(" (ĐÃ QUÁ HẠN)");
+                }
+            }
+            sb.append("\n");
         }
 
         sb.append("\nTổng số tiền còn nợ: ")

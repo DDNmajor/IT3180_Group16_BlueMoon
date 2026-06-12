@@ -136,7 +136,7 @@
                             </tr>
 
                             <tr class="expand-row">
-                                <td colspan="6">
+                                <td colspan="7">
                                     <div class="collapse" th:id="'noPhiDetail' + ${row.idHo}">
                                         <div class="expand-inner">
                                             <table class="table detail-table table-sm mb-0">
@@ -146,6 +146,7 @@
                                                     <th class="text-end">Yêu cầu</th>
                                                     <th class="text-end">Đã nộp</th>
                                                     <th class="text-end">Còn thiếu</th>
+                                                    <th>Hạn nộp</th>
                                                     <th class="text-end"></th>
                                                 </tr>
                                                 </thead>
@@ -158,6 +159,15 @@
                                                         th:text="${#numbers.formatDecimal(ct.soTienDaNop, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
                                                     <td class="text-end fw-bold text-danger"
                                                         th:text="${#numbers.formatDecimal(ct.conThieu, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
+                                                    <td>
+                                                        <span th:if="${ct.hanNop != null and ct.hanNop.isBefore(#temporals.createNow().toLocalDate())}"
+                                                              class="badge bg-danger"
+                                                              th:text="${#temporals.format(ct.hanNop, 'dd/MM/yyyy')} + ' (Quá hạn)'">Quá hạn</span>
+                                                        <span th:if="${ct.hanNop != null and !ct.hanNop.isBefore(#temporals.createNow().toLocalDate())}"
+                                                              class="text-muted"
+                                                              th:text="${#temporals.format(ct.hanNop, 'dd/MM/yyyy')}">--</span>
+                                                        <span th:if="${ct.hanNop == null}" class="text-muted">--</span>
+                                                    </td>
                                                     <td class="text-end">
                                                         <a class="btn btn-sm btn-outline-primary"
                                                            th:href="@{/thanh-toan/theo-doi(idKhoanThu=${ct.idKhoanThu})}">

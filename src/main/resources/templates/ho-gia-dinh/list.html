@@ -102,19 +102,22 @@
                         <label for="excelFile" class="form-label">Chọn file (.xlsx)</label>
                         <input class="form-control" type="file" id="excelFile" name="file" accept=".xlsx" required>
                     </div>
-                    <div class="alert alert-info py-2" style="font-size: 0.9rem">
-                        File mẫu yêu cầu các cột (theo thứ tự):<br>
-                        1. Số căn hộ (bắt buộc)<br>
-                        2. Chủ hộ (bắt buộc)<br>
-                        3. Tầng/khu vực<br>
-                        4. Diện tích (m²)<br>
-                        5. Email<br>
-                        6. Ghi chú<br>
+                    <div class="alert alert-info py-2" style="font-size: 0.85rem">
+                        <strong>Sheet 1 — HoGiaDinh</strong> (cập nhật nếu đã có, thêm mới nếu chưa có)<br>
+                        Cột A: Số căn hộ (*) &nbsp;·&nbsp; B: Chủ hộ (*) &nbsp;·&nbsp; C: Tầng/khu vực<br>
+                        Cột D: Diện tích m² &nbsp;·&nbsp; E: Email &nbsp;·&nbsp; F: Ghi chú
                         <hr class="my-1">
-                        <em>Hệ thống sẽ Cập nhật hộ đã có và Thêm hộ mới.</em>
+                        <strong>Sheet 2 — NhanKhau</strong> (tùy chọn, chỉ thêm mới)<br>
+                        Cột A: Họ tên (*) &nbsp;·&nbsp; B: Ngày sinh (dd/MM/yyyy) &nbsp;·&nbsp; C: Giới tính<br>
+                        Cột D: CCCD &nbsp;·&nbsp; E: Số điện thoại &nbsp;·&nbsp; F: Quan hệ chủ hộ &nbsp;·&nbsp; G: Số căn hộ (*)
+                        <hr class="my-1">
+                        <em>Nếu có bất kỳ lỗi nào, toàn bộ file sẽ bị từ chối.</em>
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <a th:href="@{/ho-gia-dinh/import/mau}" class="btn btn-outline-secondary me-auto">
+                        <i class="bi bi-download me-1"></i>Tải file mẫu
+                    </a>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                     <button type="submit" class="btn btn-success">Import</button>
                 </div>

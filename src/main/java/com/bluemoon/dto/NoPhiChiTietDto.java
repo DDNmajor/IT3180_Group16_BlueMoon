@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -15,4 +16,5 @@ public class NoPhiChiTietDto {
     private BigDecimal soTienYeuCau;
     private BigDecimal soTienDaNop;
     private BigDecimal conThieu;
+    private LocalDate hanNop;
 }

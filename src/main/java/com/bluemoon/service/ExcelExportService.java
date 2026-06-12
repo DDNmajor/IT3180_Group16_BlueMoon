@@ -13,28 +13,29 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ExcelExportService {
 
-    private final KhoanThuRepository khoanThuRepository;
+    private final KhoanThuRepository  khoanThuRepository;
     private final ThanhToanRepository thanhToanRepository;
     private final HoGiaDinhRepository hoGiaDinhRepository;
     private final PhuongTienRepository phuongTienRepository;
+    private final KhoanThuService     khoanThuService;
+
+    private static final DateTimeFormatter DF  = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     public byte[] exportBaoCaoThongKe(List<KhoanThu> listKt) throws IOException {
         try (Workbook workbook = new XSSFWorkbook()) {
-            createSheet1(workbook, listKt);
-            createSheet2(workbook, listKt);
+            CellStyle boldStyle = buildBoldStyle(workbook);
+            createSheet1(workbook, listKt, boldStyle);
+            createSheet2(workbook, listKt, boldStyle);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             workbook.write(out);
@@ -42,18 +43,16 @@ public class ExcelExportService {
         }
     }
 
-    private void createSheet1(Workbook workbook, List<KhoanThu> listKt) {
+    // ── Sheet 1: Tổng hợp khoản thu ──────────────────────────────────────────
+
+    private void createSheet1(Workbook workbook, List<KhoanThu> listKt, CellStyle boldStyle) {
         Sheet sheet = workbook.createSheet("Thông tin Khoản thu");
-        
-        CellStyle boldStyle = workbook.createCellStyle();
-        Font font = workbook.createFont();
-        font.setBold(true);
-        boldStyle.setFont(font);
 
         String[] headers = {
-                "Tên khoản thu", "Mã khoản thu", "Loại áp dụng", "Loại khoản thu",
-                "Số tiền chung", "Đơn giá/m²", "Hạn nộp", "Ngày tạo",
-                "Tổng yêu cầu", "Đã đóng", "Còn thiếu"
+                "Tên khoản thu", "Mã khoản thu", "Kỳ thu", "Loại áp dụng",
+                "Loại tính phí", "Loại khoản thu", "Số tiền chung (đ)",
+                "Đơn giá/m²", "Hạn nộp", "Ngày tạo",
+                "Số hộ áp dụng", "Tổng yêu cầu (đ)", "Đã đóng (đ)", "Còn thiếu (đ)"
         };
 
         Row headerRow = sheet.createRow(0);
@@ -63,34 +62,47 @@ public class ExcelExportService {
             cell.setCellStyle(boldStyle);
         }
 
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
         int rowIndex = 1;
         for (KhoanThu kt : listKt) {
-            Row dataRow = sheet.createRow(rowIndex++);
-            dataRow.createCell(0).setCellValue(kt.getTenKhoanThu());
-            dataRow.createCell(1).setCellValue(kt.getMaKhoanThu());
-            
-            String loaiApDung = kt.getLoaiKhoanThu() != null && kt.getLoaiKhoanThu().getLoaiApDung() != null 
-                    ? kt.getLoaiKhoanThu().getLoaiApDung().name() : "";
-            dataRow.createCell(2).setCellValue(loaiApDung);
-            
-            String tenLoai = kt.getLoaiKhoanThu() != null ? kt.getLoaiKhoanThu().getTenLoai() : "";
-            dataRow.createCell(3).setCellValue(tenLoai);
-            
-            dataRow.createCell(4).setCellValue(kt.getSoTien() != null ? kt.getSoTien().doubleValue() : 0);
-            dataRow.createCell(5).setCellValue(kt.getDonGiaPerM2() != null ? kt.getDonGiaPerM2().doubleValue() : 0);
-            dataRow.createCell(6).setCellValue(kt.getHanNop() != null ? kt.getHanNop().format(df) : "");
-            dataRow.createCell(7).setCellValue(kt.getNgayTao() != null ? kt.getNgayTao().format(dtf) : "");
+            Row row = sheet.createRow(rowIndex++);
+            row.createCell(0).setCellValue(kt.getTenKhoanThu());
+            row.createCell(1).setCellValue(kt.getMaKhoanThu() != null ? kt.getMaKhoanThu() : "");
+            row.createCell(2).setCellValue(kt.getKyThu() != null ? kt.getKyThu().format(DF) : "");
 
-            boolean isTuNguyen = kt.getLoaiKhoanThu() != null && kt.getLoaiKhoanThu().getLoaiApDung() != null && !kt.getLoaiKhoanThu().getLoaiApDung().isBatBuoc();
-            BigDecimal tongYeuCau = BigDecimal.ZERO;
-            BigDecimal daDong = BigDecimal.ZERO;
+            String loaiApDung = "";
+            if (kt.getLoaiKhoanThu() != null && kt.getLoaiKhoanThu().getLoaiApDung() != null) {
+                loaiApDung = kt.getLoaiKhoanThu().getLoaiApDung().getTenHienThi();
+            }
+            row.createCell(3).setCellValue(loaiApDung);
+
+            String loaiTinhPhi = kt.getLoaiTinhPhi() != null ? kt.getLoaiTinhPhi().getTenHienThi() : "Cố định";
+            row.createCell(4).setCellValue(loaiTinhPhi);
+
+            String tenLoai = kt.getLoaiKhoanThu() != null ? kt.getLoaiKhoanThu().getTenLoai() : "";
+            row.createCell(5).setCellValue(tenLoai);
+
+            row.createCell(6).setCellValue(kt.getSoTien() != null ? kt.getSoTien().doubleValue() : 0);
+            row.createCell(7).setCellValue(kt.getDonGiaPerM2() != null ? kt.getDonGiaPerM2().doubleValue() : 0);
+            row.createCell(8).setCellValue(kt.getHanNop() != null ? kt.getHanNop().format(DF) : "");
+            row.createCell(9).setCellValue(kt.getNgayTao() != null ? kt.getNgayTao().format(DTF) : "");
 
             List<ThanhToan> tts = thanhToanRepository.findByKhoanThuIdOrderByNgayNopDesc(kt.getId());
+
+            long soHoApDung = tts.stream()
+                    .filter(t -> t.getHoGiaDinh() != null)
+                    .map(t -> t.getHoGiaDinh().getId())
+                    .distinct()
+                    .count();
+            row.createCell(10).setCellValue(soHoApDung);
+
+            boolean isTuNguyen = kt.getLoaiKhoanThu() != null
+                    && kt.getLoaiKhoanThu().getLoaiApDung() != null
+                    && !kt.getLoaiKhoanThu().getLoaiApDung().isBatBuoc();
+
+            BigDecimal tongYeuCau = BigDecimal.ZERO;
+            BigDecimal daDong     = BigDecimal.ZERO;
             for (ThanhToan t : tts) {
-                if (t.getSoTienYeuCauHieuLuc() != null) {
+                if (!isTuNguyen && t.getSoTienYeuCauHieuLuc() != null) {
                     tongYeuCau = tongYeuCau.add(t.getSoTienYeuCauHieuLuc());
                 }
                 if (t.getSoTienDaNop() != null) {
@@ -98,81 +110,76 @@ public class ExcelExportService {
                 }
             }
 
-            if (isTuNguyen) {
-                tongYeuCau = BigDecimal.ZERO;
-            }
-
             BigDecimal conThieu = tongYeuCau.subtract(daDong);
-            if (conThieu.compareTo(BigDecimal.ZERO) < 0 || isTuNguyen) {
-                conThieu = BigDecimal.ZERO;
-            }
+            if (conThieu.compareTo(BigDecimal.ZERO) < 0) conThieu = BigDecimal.ZERO;
 
-            dataRow.createCell(8).setCellValue(tongYeuCau.doubleValue());
-            dataRow.createCell(9).setCellValue(daDong.doubleValue());
-            dataRow.createCell(10).setCellValue(conThieu.doubleValue());
+            row.createCell(11).setCellValue(tongYeuCau.doubleValue());
+            row.createCell(12).setCellValue(daDong.doubleValue());
+            row.createCell(13).setCellValue(conThieu.doubleValue());
         }
 
-        for (int i = 0; i < headers.length; i++) {
-            sheet.autoSizeColumn(i);
-        }
+        for (int i = 0; i < headers.length; i++) sheet.autoSizeColumn(i);
     }
 
-    private void createSheet2(Workbook workbook, List<KhoanThu> listKt) {
+    // ── Sheet 2: Chi tiết từng hộ ─────────────────────────────────────────────
+
+    private void createSheet2(Workbook workbook, List<KhoanThu> listKt, CellStyle boldStyle) {
         Sheet sheet = workbook.createSheet("Chi tiết từng hộ");
-        
-        CellStyle headerStyle = workbook.createCellStyle();
-        Font font = workbook.createFont();
-        font.setBold(true);
-        headerStyle.setFont(font);
 
         String[] headers = {
-                "Số căn hộ", "Chủ hộ", "Số nhân khẩu", "Diện tích (m²)",
-                "Yêu cầu (Bắt buộc)", "Đã nộp (Bắt buộc)", "Còn thiếu (Bắt buộc)", "Đã nộp (Tự nguyện)",
-                "Trạng thái (Bắt buộc)", "Ngày nộp gần nhất"
+                "Số căn hộ", "Chủ hộ", "Tầng/Khu vực", "Email",
+                "Số nhân khẩu", "Diện tích (m²)", "Xe máy", "Ô tô",
+                "Yêu cầu (Bắt buộc)", "Đã nộp (Bắt buộc)", "Còn thiếu (Bắt buộc)",
+                "Đã nộp (Tự nguyện)", "Trạng thái", "Ngày nộp gần nhất"
         };
 
         Row headerRow = sheet.createRow(0);
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(headers[i]);
-            cell.setCellStyle(headerStyle);
+            cell.setCellStyle(boldStyle);
         }
 
         List<HoGiaDinh> tatCaHo = hoGiaDinhRepository.findAll();
-        
+
+        // Load tất cả ThanhToan cho các KhoanThu trong filter, group theo idHo
         Map<Integer, List<ThanhToan>> ttMapByHo = new HashMap<>();
         for (KhoanThu kt : listKt) {
-            List<ThanhToan> thanhToans = thanhToanRepository.findByKhoanThuIdOrderByNgayNopDesc(kt.getId());
-            for (ThanhToan tt : thanhToans) {
+            for (ThanhToan tt : thanhToanRepository.findByKhoanThuIdOrderByNgayNopDesc(kt.getId())) {
                 if (tt.getHoGiaDinh() != null) {
                     ttMapByHo.computeIfAbsent(tt.getHoGiaDinh().getId(), k -> new ArrayList<>()).add(tt);
                 }
             }
         }
 
-        int rowIndex = 1;
+        // Tạo lookup Set<Integer id KhoanThu> cho từng loại
+        Set<Integer> idsBatBuoc = listKt.stream()
+                .filter(kt -> kt.getLoaiKhoanThu() != null
+                        && kt.getLoaiKhoanThu().getLoaiApDung() != null
+                        && kt.getLoaiKhoanThu().getLoaiApDung().isBatBuoc())
+                .map(KhoanThu::getId).collect(Collectors.toSet());
 
+        int rowIndex = 1;
         long totalHo = tatCaHo.size();
-        long hoDaDong = 0;
-        long hoDongDu = 0;
-        long hoConNo = 0;
-        BigDecimal tongDaThuBatBuoc = BigDecimal.ZERO;
-        BigDecimal tongConThieuBatBuoc = BigDecimal.ZERO;
-        BigDecimal tongDaThuTuNguyen = BigDecimal.ZERO;
+        long hoDaDong = 0, hoDongDu = 0, hoConNo = 0;
+        BigDecimal tongDaThuBB = BigDecimal.ZERO;
+        BigDecimal tongConThieuBB = BigDecimal.ZERO;
+        BigDecimal tongDaThuTN = BigDecimal.ZERO;
 
         for (HoGiaDinh ho : tatCaHo) {
             List<ThanhToan> ttList = ttMapByHo.getOrDefault(ho.getId(), Collections.emptyList());
 
-            BigDecimal yeuCauBatBuoc = BigDecimal.ZERO;
-            BigDecimal daNopBatBuoc = BigDecimal.ZERO;
-            BigDecimal daNopTuNguyen = BigDecimal.ZERO;
+            BigDecimal yeuCauBB = BigDecimal.ZERO;
+            BigDecimal daNopBB  = BigDecimal.ZERO;
+            BigDecimal daNopTN  = BigDecimal.ZERO;
             LocalDate ngayNopGanNhat = null;
 
             for (KhoanThu kt : listKt) {
-                boolean isBatBuoc = kt.getLoaiKhoanThu() != null && kt.getLoaiKhoanThu().getLoaiApDung() != null && kt.getLoaiKhoanThu().getLoaiApDung().isBatBuoc();
-                boolean isTuNguyen = kt.getLoaiKhoanThu() != null && kt.getLoaiKhoanThu().getLoaiApDung() != null && !kt.getLoaiKhoanThu().getLoaiApDung().isBatBuoc();
+                boolean isBB = idsBatBuoc.contains(kt.getId());
 
-                ThanhToan tt = ttList.stream().filter(t -> t.getKhoanThu().getId().equals(kt.getId())).findFirst().orElse(null);
+                ThanhToan tt = ttList.stream()
+                        .filter(t -> t.getKhoanThu().getId().equals(kt.getId()))
+                        .findFirst().orElse(null);
 
                 BigDecimal yc = BigDecimal.ZERO;
                 BigDecimal dn = BigDecimal.ZERO;
@@ -180,92 +187,89 @@ public class ExcelExportService {
                 if (tt != null) {
                     yc = tt.getSoTienYeuCauHieuLuc();
                     dn = tt.getSoTienDaNop() != null ? tt.getSoTienDaNop() : BigDecimal.ZERO;
-                    if (tt.getNgayNop() != null) {
-                        if (ngayNopGanNhat == null || tt.getNgayNop().isAfter(ngayNopGanNhat)) {
-                            ngayNopGanNhat = tt.getNgayNop();
-                        }
+                    if (tt.getNgayNop() != null
+                            && (ngayNopGanNhat == null || tt.getNgayNop().isAfter(ngayNopGanNhat))) {
+                        ngayNopGanNhat = tt.getNgayNop();
                     }
+                } else if (isBB) {
+                    BigDecimal calc = khoanThuService.tinhSoTienYeuCau(kt, ho);
+                    yc = calc != null ? calc : (kt.getSoTien() != null ? kt.getSoTien() : BigDecimal.ZERO);
+                }
+
+                if (isBB) {
+                    yeuCauBB = yeuCauBB.add(yc);
+                    daNopBB  = daNopBB.add(dn);
                 } else {
-                    if (isBatBuoc) {
-                        yc = tinhSoTienYeuCau(kt, ho);
-                    }
-                }
-
-                if (isBatBuoc) {
-                    yeuCauBatBuoc = yeuCauBatBuoc.add(yc);
-                    daNopBatBuoc = daNopBatBuoc.add(dn);
-                } else if (isTuNguyen) {
-                    daNopTuNguyen = daNopTuNguyen.add(dn);
+                    daNopTN = daNopTN.add(dn);
                 }
             }
 
-            BigDecimal conThieuBatBuoc = yeuCauBatBuoc.subtract(daNopBatBuoc);
-            if (conThieuBatBuoc.compareTo(BigDecimal.ZERO) < 0) {
-                conThieuBatBuoc = BigDecimal.ZERO;
-            }
+            BigDecimal conThieuBB = yeuCauBB.subtract(daNopBB);
+            if (conThieuBB.compareTo(BigDecimal.ZERO) < 0) conThieuBB = BigDecimal.ZERO;
 
-            String trangThai = "CHƯA NỘP";
-            if (yeuCauBatBuoc.compareTo(BigDecimal.ZERO) == 0) {
-                trangThai = "KHÔNG CÓ PHÍ";
-            } else if (daNopBatBuoc.compareTo(yeuCauBatBuoc) >= 0) {
-                trangThai = "DA_DONG";
-            } else if (daNopBatBuoc.compareTo(BigDecimal.ZERO) > 0) {
-                trangThai = "DONG_DU";
+            String trangThai;
+            if (yeuCauBB.compareTo(BigDecimal.ZERO) == 0) {
+                trangThai = "Không có phí bắt buộc";
+            } else if (daNopBB.compareTo(yeuCauBB) > 0) {
+                trangThai = "Đóng dư";
+            } else if (daNopBB.compareTo(yeuCauBB) == 0) {
+                trangThai = "Đã đóng đủ";
+            } else if (daNopBB.compareTo(BigDecimal.ZERO) > 0) {
+                trangThai = "Nộp một phần";
             } else {
-                trangThai = "CON_NO";
+                trangThai = "Còn nợ";
             }
+
+            long soXeMay = phuongTienRepository.countByHoGiaDinhIdAndLoaiXe(ho.getId(), LoaiXe.XEMAY);
+            long soOto   = phuongTienRepository.countByHoGiaDinhIdAndLoaiXe(ho.getId(), LoaiXe.OTO);
 
             Row row = sheet.createRow(rowIndex++);
             row.createCell(0).setCellValue(ho.getSoCanHo());
             row.createCell(1).setCellValue(ho.getChuHo());
-            row.createCell(2).setCellValue(ho.getNhanKhaus() != null ? ho.getNhanKhaus().size() : 0);
-            row.createCell(3).setCellValue(ho.getDienTich() != null ? ho.getDienTich().doubleValue() : 0);
-            row.createCell(4).setCellValue(yeuCauBatBuoc.doubleValue());
-            row.createCell(5).setCellValue(daNopBatBuoc.doubleValue());
-            row.createCell(6).setCellValue(conThieuBatBuoc.doubleValue());
-            row.createCell(7).setCellValue(daNopTuNguyen.doubleValue());
-            row.createCell(8).setCellValue(trangThai);
-            row.createCell(9).setCellValue(ngayNopGanNhat != null ? ngayNopGanNhat.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "");
+            row.createCell(2).setCellValue(ho.getTangKhuVuc() != null ? ho.getTangKhuVuc() : "");
+            row.createCell(3).setCellValue(ho.getEmail() != null ? ho.getEmail() : "");
+            row.createCell(4).setCellValue(ho.getNhanKhaus() != null ? ho.getNhanKhaus().size() : 0);
+            row.createCell(5).setCellValue(ho.getDienTich() != null ? ho.getDienTich().doubleValue() : 0);
+            row.createCell(6).setCellValue(soXeMay);
+            row.createCell(7).setCellValue(soOto);
+            row.createCell(8).setCellValue(yeuCauBB.doubleValue());
+            row.createCell(9).setCellValue(daNopBB.doubleValue());
+            row.createCell(10).setCellValue(conThieuBB.doubleValue());
+            row.createCell(11).setCellValue(daNopTN.doubleValue());
+            row.createCell(12).setCellValue(trangThai);
+            row.createCell(13).setCellValue(ngayNopGanNhat != null ? ngayNopGanNhat.format(DF) : "");
 
-            if ("DA_DONG".equals(trangThai)) hoDaDong++;
-            else if ("DONG_DU".equals(trangThai)) hoDongDu++;
-            else if ("CON_NO".equals(trangThai) || "CHƯA NỘP".equals(trangThai)) hoConNo++;
+            if ("Đã đóng đủ".equals(trangThai))         hoDaDong++;
+            else if ("Đóng dư".equals(trangThai))        hoDongDu++;
+            else if ("Còn nợ".equals(trangThai)
+                    || "Nộp một phần".equals(trangThai)) hoConNo++;
 
-            tongDaThuBatBuoc = tongDaThuBatBuoc.add(daNopBatBuoc);
-            tongConThieuBatBuoc = tongConThieuBatBuoc.add(conThieuBatBuoc);
-            tongDaThuTuNguyen = tongDaThuTuNguyen.add(daNopTuNguyen);
+            tongDaThuBB   = tongDaThuBB.add(daNopBB);
+            tongConThieuBB = tongConThieuBB.add(conThieuBB);
+            tongDaThuTN   = tongDaThuTN.add(daNopTN);
         }
 
+        // Dòng tổng cộng
         rowIndex++;
-        Row summaryRow = sheet.createRow(rowIndex);
-        summaryRow.createCell(0).setCellValue("TỔNG CỘNG");
-        summaryRow.getCell(0).setCellStyle(headerStyle);
-        summaryRow.createCell(1).setCellValue(totalHo + " hộ");
-        summaryRow.createCell(4).setCellValue("Đã đóng đủ BB: " + hoDaDong + " | Dư: " + hoDongDu + " | Nợ BB: " + hoConNo);
-        summaryRow.createCell(5).setCellValue("Tổng thu BB: " + tongDaThuBatBuoc.doubleValue());
-        summaryRow.createCell(6).setCellValue("Tổng nợ BB: " + tongConThieuBatBuoc.doubleValue());
-        summaryRow.createCell(7).setCellValue("Tổng thu TN: " + tongDaThuTuNguyen.doubleValue());
+        Row sumRow = sheet.createRow(rowIndex);
+        sumRow.createCell(0).setCellValue("TỔNG CỘNG");
+        sumRow.getCell(0).setCellStyle(boldStyle);
+        sumRow.createCell(1).setCellValue(totalHo);
+        sumRow.createCell(8).setCellValue(tongDaThuBB.add(tongConThieuBB).doubleValue()); // tổng yêu cầu BB
+        sumRow.createCell(9).setCellValue(tongDaThuBB.doubleValue());
+        sumRow.createCell(10).setCellValue(tongConThieuBB.doubleValue());
+        sumRow.createCell(11).setCellValue(tongDaThuTN.doubleValue());
+        sumRow.createCell(12).setCellValue(
+                "Đủ: " + hoDaDong + " | Dư: " + hoDongDu + " | Nợ: " + hoConNo);
 
-        for (int i = 0; i < headers.length; i++) {
-            sheet.autoSizeColumn(i);
-        }
+        for (int i = 0; i < headers.length; i++) sheet.autoSizeColumn(i);
     }
 
-    private BigDecimal tinhSoTienYeuCau(KhoanThu kt, HoGiaDinh ho) {
-        LoaiTinhPhi ltp = kt.getLoaiTinhPhi() != null ? kt.getLoaiTinhPhi() : LoaiTinhPhi.FIXED;
-        if (ltp == LoaiTinhPhi.PER_M2) {
-            if (kt.getDonGiaPerM2() != null && ho.getDienTich() != null) {
-                return ho.getDienTich().multiply(kt.getDonGiaPerM2());
-            }
-            return kt.getSoTien() != null ? kt.getSoTien() : BigDecimal.ZERO;
-        }
-        if (ltp == LoaiTinhPhi.PER_XE) {
-            long soXeMay = phuongTienRepository.countByHoGiaDinhIdAndLoaiXe(ho.getId(), LoaiXe.XEMAY);
-            long soOto   = phuongTienRepository.countByHoGiaDinhIdAndLoaiXe(ho.getId(), LoaiXe.OTO);
-            long giaXeMay = kt.getGiaXeMay() != null ? kt.getGiaXeMay().longValue() : 70_000L;
-            long giaOto   = kt.getGiaOto()   != null ? kt.getGiaOto().longValue()   : 1_200_000L;
-            return BigDecimal.valueOf(soXeMay * giaXeMay + soOto * giaOto);
-        }
-        return kt.getSoTien() != null ? kt.getSoTien() : BigDecimal.ZERO;
+    private CellStyle buildBoldStyle(Workbook workbook) {
+        CellStyle style = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setBold(true);
+        style.setFont(font);
+        return style;
     }
 }
