@@ -4,48 +4,128 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Đăng nhập | BlueMoon</title>
+    <!-- Bootstrap -->
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="true"/>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Cinzel:wght@700&family=Nunito:wght@300;400;500;600&display=swap"/>
+    <!-- Base Theme (sizing, layout, typography) -->
+    <link rel="stylesheet" th:href="@{/css/base-theme.css}"/>
+    <!-- Moona Dark Theme (colors, decorations) -->
+    <link rel="stylesheet" th:href="@{/css/moona-theme.css}"/>
+    <!-- Kanata Light Theme (colors, decorations) -->
+    <link rel="stylesheet" th:href="@{/css/kanata-theme.css}"/>
+    <!-- Anti-FOUC -->
+    <script>
+      (function(){
+        var t = localStorage.getItem('bluemoon-theme') || 'light';
+        document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
 </head>
-<body class="bg-light">
+<body class="login-page">
 
-<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
-    <div class="card shadow" style="width: 400px;">
-        <div class="card-body p-4">
-            <div class="text-center mb-4">
-                <i class="bi bi-moon-stars-fill text-primary" style="font-size: 2.5rem;"></i>
-                <h4 class="mt-2 fw-bold">BlueMoon</h4>
-                <p class="text-muted small">Hệ thống quản lý thu phí chung cư</p>
-            </div>
+<!-- Theme toggle — góc trên phải -->
+<button id="loginThemeToggleBtn"
+        onclick="toggleLoginTheme()"
+        title="Chuyển giao diện sáng/tối"
+        style="position:fixed;top:16px;right:18px;z-index:200;">
+    <i id="loginThemeIcon" class="bi bi-moon-stars"></i>
+</button>
 
-            <div th:if="${errorMsg}" class="alert alert-danger py-2">
-                <i class="bi bi-exclamation-triangle me-1"></i>
-                <span th:text="${errorMsg}"></span>
-            </div>
-            <div th:if="${logoutMsg}" class="alert alert-success py-2">
-                <i class="bi bi-check-circle me-1"></i>
-                <span th:text="${logoutMsg}"></span>
-            </div>
+<div class="card login-card p-0">
+    <div class="card-body p-4 p-sm-5">
 
-            <form th:action="@{/login}" method="post">
-                <div class="mb-3">
-                    <label class="form-label">Tên đăng nhập</label>
-                    <input type="text" name="username" class="form-control" placeholder="Nhập tên đăng nhập" required autofocus/>
-                </div>
-                <div class="mb-4">
-                    <label class="form-label">Mật khẩu</label>
-                    <input type="password" name="password" class="form-control" placeholder="Nhập mật khẩu" required/>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập
-                </button>
-            </form>
+        <!-- Brand -->
+        <div class="text-center mb-4">
+            <i class="bi bi-moon-stars-fill login-moon-icon d-block mb-3"></i>
+            <div class="login-brand mb-1">BlueMoon</div>
+            <p class="login-subtitle mb-0">Hệ thống quản lý thu phí chung cư</p>
         </div>
+
+        <!-- Alerts -->
+        <div id="jsError" class="alert alert-danger py-2 d-none">
+            <i class="bi bi-exclamation-triangle me-1"></i>
+            <span id="jsErrorMsg"></span>
+        </div>
+        <div th:if="${errorMsg}" class="alert alert-danger py-2">
+            <i class="bi bi-exclamation-triangle me-1"></i>
+            <span th:text="${errorMsg}"></span>
+        </div>
+        <div th:if="${logoutMsg}" class="alert alert-success py-2">
+            <i class="bi bi-check-circle me-1"></i>
+            <span th:text="${logoutMsg}"></span>
+        </div>
+
+        <!-- Login form -->
+        <form th:action="@{/login}" method="post" id="loginForm" novalidate>
+            <div class="mb-3">
+                <label class="form-label">Tên đăng nhập</label>
+                <input type="text" name="username" id="username"
+                       class="form-control"
+                       placeholder="Nhập tên đăng nhập"
+                       autofocus/>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Mật khẩu</label>
+                <input type="password" name="password" id="password"
+                       class="form-control"
+                       placeholder="Nhập mật khẩu"/>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập
+            </button>
+        </form>
+
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    /* ── Form validation ── */
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        var u = document.getElementById('username').value.trim();
+        var p = document.getElementById('password').value.trim();
+        if (!u || !p) {
+            e.preventDefault();
+            document.getElementById('jsErrorMsg').textContent = 'Vui lòng nhập đầy đủ thông tin.';
+            document.getElementById('jsError').classList.remove('d-none');
+        }
+    });
+
+    /* ── Theme toggle ── */
+    function updateLoginThemeBtn(theme) {
+        var btn  = document.getElementById('loginThemeToggleBtn');
+        var icon = document.getElementById('loginThemeIcon');
+        if (!btn) return;
+        if (theme === 'light') {
+            icon.className = 'bi bi-moon-stars-fill';
+            btn.title = 'Đang dùng giao diện sáng — bấm để chuyển tối';
+        } else {
+            icon.className = 'bi bi-sun-fill';
+            btn.title = 'Đang dùng giao diện tối — bấm để chuyển sáng';
+        }
+    }
+
+    function toggleLoginTheme() {
+        var current = document.documentElement.getAttribute('data-theme') || 'light';
+        var next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('bluemoon-theme', next);
+        updateLoginThemeBtn(next);
+    }
+
+    /* Init */
+    (function(){
+        var t = localStorage.getItem('bluemoon-theme') || 'light';
+        updateLoginThemeBtn(t);
+    })();
+</script>
 </body>
 </html>

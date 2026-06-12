@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mẫu thu định kỳ')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/layout :: sidebar('mau-khoan-thu')}"></div>
+
+        <main class="col-md-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h4 class="mb-0">Mẫu thu định kỳ</h4>
+                    <div class="text-muted small mt-1">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Hệ thống tự động tạo khoản thu vào <strong>8:00 ngày 28</strong> hàng tháng.
+                    </div>
+                </div>
+                <a th:href="@{/mau-khoan-thu/them}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus-lg me-1"></i>Thêm mẫu
+                </a>
+            </div>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Bảng danh sách -->
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <table class="table table-hover table-bordered mb-0 align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th style="width:40px">#</th>
+                                <th>Tên mẫu</th>
+                                <th style="min-width:155px">Tiền tố mã</th>
+                                <th>Loại</th>
+                                <th class="text-end">Số tiền / Đơn giá</th>
+                                <th class="text-center">Hạn nộp</th>
+                                <th class="text-center">Số kỳ đã tạo</th>
+                                <th class="text-center">Trạng thái</th>
+                                <th class="text-center" style="width:220px">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(danhSach)}">
+                                <td colspan="9" class="text-center text-muted py-4">
+                                    <i class="bi bi-inbox me-1"></i>Chưa có mẫu nào. Tạo mẫu đầu tiên để bắt đầu tự động hóa.
+                                </td>
+                            </tr>
+                            <tr th:each="mau, stat : ${danhSach}">
+                                <td class="text-muted small" th:text="${stat.count}"></td>
+
+                                <!-- Tên mẫu + ghi chú -->
+                                <td>
+                                    <div class="fw-semibold" th:text="${mau.tenMau}"></div>
+                                    <div class="text-muted small" th:if="${mau.ghiChu}" th:text="${mau.ghiChu}"></div>
+                                </td>
+
+                                <!-- Tiền tố -->
+                                <td>
+                                    <code style="font-size: 0.95rem;" th:text="${mau.maMauPrefix}"></code>
+                                    <span class="text-muted small">-yyyy-MM</span>
+                                </td>
+
+                                <!-- Loại -->
+                                <td>
+                                    <span th:if="${mau.loaiKhoanThu != null}"
+                                          th:text="${mau.loaiKhoanThu.tenLoai}"
+                                          class="badge bg-danger"></span>
+                                </td>
+
+                                <!-- Số tiền -->
+                                <td class="text-end">
+                                    <span th:if="${mau.donGiaPerM2 == null}"
+                                          th:with="v=${mau.soTien != null ? mau.soTien : 0}"
+                                          th:text="${#numbers.formatDecimal(v, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                    </span>
+                                    <span th:if="${mau.donGiaPerM2 != null}"
+                                          th:with="v=${mau.donGiaPerM2}"
+                                          th:text="${#numbers.formatDecimal(v, 0, 'COMMA', 0, 'POINT')} + ' đ/m²'">
+                                    </span>
+                                </td>
+
+                                <!-- Hạn nộp -->
+                                <td class="text-center text-muted small">
+                                    <span th:if="${mau.soNgayHanNop != null}"
+                                          th:text="'Ngày ' + ${mau.soNgayHanNop} + ' trong tháng'"></span>
+                                    <span th:if="${mau.soNgayHanNop == null}" class="text-muted">Không có</span>
+                                </td>
+
+                                <!-- Số kỳ đã tạo -->
+                                <td class="text-center">
+                                    <span th:with="kyList=${khoanThuMap[mau.id]}">
+                                        <span th:if="${kyList != null and !#lists.isEmpty(kyList)}"
+                                              class="badge bg-secondary"
+                                              th:text="${#lists.size(kyList)} + ' kỳ'"></span>
+                                        <span th:if="${kyList == null or #lists.isEmpty(kyList)}"
+                                              class="text-muted small">Chưa có</span>
+                                    </span>
+                                    <span th:with="kyList=${khoanThuMap[mau.id]}">
+                                        <div th:if="${kyList != null and !#lists.isEmpty(kyList)}"
+                                             class="text-muted small"
+                                             th:with="lastKy=${kyList[0]}"
+                                             th:text="'Gần nhất: ' + ${#temporals.format(lastKy.kyThu, 'MM/yyyy')}">
+                                        </div>
+                                    </span>
+                                </td>
+
+                                <!-- Trạng thái -->
+                                <td class="text-center">
+                                    <span th:if="${mau.active}" class="badge bg-success">
+                                        <i class="bi bi-play-circle me-1"></i>Đang chạy
+                                    </span>
+                                    <span th:if="${!mau.active}" class="badge bg-secondary">
+                                        <i class="bi bi-pause-circle me-1"></i>Tạm dừng
+                                    </span>
+                                </td>
+
+                                <!-- Thao tác -->
+                                <td class="text-center">
+                                    <div class="d-flex gap-1 justify-content-center flex-wrap">
+                                        <!-- Sửa -->
+                                        <a th:href="@{/mau-khoan-thu/sua/{id}(id=${mau.id})}"
+                                           class="btn btn-warning btn-sm" title="Sửa mẫu">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+
+                                        <!-- Toggle active -->
+                                        <form th:action="@{/mau-khoan-thu/{id}/doi-trang-thai(id=${mau.id})}"
+                                              method="post" class="d-inline">
+                                            <button type="submit"
+                                                    th:class="${mau.active} ? 'btn btn-outline-secondary btn-sm' : 'btn btn-outline-success btn-sm'"
+                                                    th:title="${mau.active} ? 'Tạm dừng tự động' : 'Kích hoạt lại'"
+                                                    th:onclick="${mau.active} ? 'return confirm(\'Tạm dừng mẫu này? Job sẽ không tạo kỳ mới cho tháng tới.\')' : 'return true'">
+                                                <i th:class="${mau.active} ? 'bi bi-pause' : 'bi bi-play'"></i>
+                                            </button>
+                                        </form>
+
+                                        <!-- Tạo kỳ thủ công -->
+                                        <button type="button"
+                                                class="btn btn-outline-primary btn-sm"
+                                                th:data-bs-target="'#modalTaoKy-' + ${mau.id}"
+                                                data-bs-toggle="modal"
+                                                title="Tạo kỳ thủ công">
+                                            <i class="bi bi-calendar-plus"></i>
+                                        </button>
+
+                                        <!-- Xóa -->
+                                        <form th:action="@{/mau-khoan-thu/xoa/{id}(id=${mau.id})}"
+                                              method="post" class="d-inline"
+                                              onsubmit="return confirm('Xóa mẫu này? Các kỳ thu đã tạo vẫn được giữ lại, chỉ mất liên kết với mẫu.')">
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Xóa mẫu">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer text-muted small" th:if="${!#lists.isEmpty(danhSach)}">
+                    Tổng: <strong th:text="${danhSach.size()}"></strong> mẫu
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- ══ Modals Tạo kỳ thủ công ══ -->
+<div th:each="mau : ${danhSach}">
+    <div class="modal fade" th:id="'modalTaoKy-' + ${mau.id}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary bg-opacity-10">
+                    <h5 class="modal-title">
+                        <i class="bi bi-calendar-plus me-2"></i>Tạo kỳ thủ công
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3 p-2 bg-light rounded small">
+                        <div><strong>Mẫu:</strong> <span th:text="${mau.tenMau}"></span></div>
+                        <div class="text-muted">
+                            Mã sẽ được tạo theo dạng:
+                            <code th:text="${mau.maMauPrefix} + '-yyyy-MM'"></code>
+                        </div>
+                    </div>
+                    <form th:action="@{/mau-khoan-thu/{id}/tao-ky(id=${mau.id})}"
+                          method="post"
+                          th:id="'formTaoKy-' + ${mau.id}">
+                        <label class="form-label fw-medium">
+                            Chọn kỳ (tháng/năm) <span class="text-danger">*</span>
+                        </label>
+                        <input type="month" name="thang"
+                               class="form-control"
+                               th:value="${#temporals.format(T(java.time.LocalDate).now(), 'yyyy-MM')}"
+                               required/>
+                        <div class="form-text text-muted mt-1">
+                            Nếu kỳ đã tồn tại, hệ thống sẽ báo lỗi thay vì tạo trùng.
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit"
+                            th:form="'formTaoKy-' + ${mau.id}"
+                            class="btn btn-primary">
+                        <i class="bi bi-check-lg me-1"></i>Tạo kỳ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

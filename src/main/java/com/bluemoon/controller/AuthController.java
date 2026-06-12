@@ -9,11 +9,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class AuthController {
 
     @GetMapping("/login")
-    public String loginPage(@RequestParam(value = "error", required = false) String error,
-                            @RequestParam(value = "logout", required = false) String logout,
+    public String loginPage(@RequestParam(value = "error",    required = false) String error,
+                            @RequestParam(value = "disabled", required = false) String disabled,
+                            @RequestParam(value = "logout",   required = false) String logout,
                             Model model) {
         if (error != null) {
-            model.addAttribute("errorMsg", "Tên đăng nhập hoặc mật khẩu không đúng.");
+            model.addAttribute("errorMsg", "Tên đăng nhập hoặc mật khẩu không chính xác.");
+        }
+        if (disabled != null) {
+            model.addAttribute("errorMsg", "Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.");
         }
         if (logout != null) {
             model.addAttribute("logoutMsg", "Bạn đã đăng xuất thành công.");

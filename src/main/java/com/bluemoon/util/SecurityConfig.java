@@ -4,14 +4,20 @@ import com.bluemoon.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 
 @Configuration
 @EnableWebSecurity
+@EnableAsync
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -30,28 +36,47 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AuthenticationFailureHandler authFailureHandler() {
+        return (request, response, exception) -> {
+            String redirect = (exception instanceof DisabledException)
+                    ? "/login?disabled"
+                    : "/login?error";
+            response.sendRedirect(redirect);
+        };
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler authSuccessHandler() {
+        SavedRequestAwareAuthenticationSuccessHandler handler =
+                new SavedRequestAwareAuthenticationSuccessHandler();
+        handler.setDefaultTargetUrl("/dashboard");
+        handler.setAlwaysUseDefaultTargetUrl(false);
+        return handler;
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
-                // Tài nguyên tĩnh và trang login không cần xác thực
                 .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
-                // Chỉ admin mới vào được quản lý người dùng
-                .requestMatchers("/nguoi-dung/**").hasRole("admin")
-                // Còn lại phải đăng nhập
+                .requestMatchers("/nguoi-dung/**", "/audit-log/**").hasRole("admin")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/dashboard", true)
-                .failureUrl("/login?error")
+                .successHandler(authSuccessHandler())
+                .failureHandler(authFailureHandler())
                 .permitAll()
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
+            )
+            .exceptionHandling(ex -> ex
+                .accessDeniedPage("/error/403")
             );
 
         return http.build();

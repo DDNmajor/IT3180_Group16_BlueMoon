@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/layout :: head('Quản lý người dùng')}"></head>
 <body>
 
@@ -7,7 +8,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div th:replace="~{fragments/layout :: sidebar}"></div>
+        <div th:replace="~{fragments/layout :: sidebar('nguoi-dung')}"></div>
 
         <main class="col-md-10 p-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -28,28 +29,51 @@
                             <th>Tên đăng nhập</th>
                             <th>Họ tên</th>
                             <th>Vai trò</th>
+                            <th class="text-center">Trạng thái</th>
                             <th>Ngày tạo</th>
                             <th class="text-center">Thao tác</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:if="${#lists.isEmpty(danhSach)}">
-                            <td colspan="6" class="text-center text-muted py-3">Chưa có người dùng nào.</td>
+                            <td colspan="7" class="text-center text-muted py-3">Chưa có người dùng nào.</td>
                         </tr>
                         <tr th:each="nd, stat : ${danhSach}">
                             <td th:text="${stat.count}"></td>
-                            <td th:text="${nd.tenDangNhap}"></td>
+                            <td>
+                                <span th:text="${nd.tenDangNhap}"></span>
+                                <span th:if="${nd.doiMatKhauLanDau}"
+                                      class="badge bg-warning text-dark ms-1"
+                                      title="Cần đổi mật khẩu lần đầu">
+                                    <i class="bi bi-key"></i>
+                                </span>
+                            </td>
                             <td th:text="${nd.hoTen}"></td>
                             <td>
                                 <span th:text="${nd.vaiTro}"
                                       th:classappend="${nd.vaiTro.name() == 'admin'} ? 'badge bg-danger' : 'badge bg-secondary'">
                                 </span>
                             </td>
-                            <td th:text="${#temporals.format(nd.ngayTao, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td class="text-center">
+                                <span th:if="${nd.active}" class="badge bg-success">Hoạt động</span>
+                                <span th:unless="${nd.active}" class="badge bg-secondary">Vô hiệu</span>
+                            </td>
+                            <td th:text="${nd.ngayTao != null ? #temporals.format(nd.ngayTao, 'dd/MM/yyyy HH:mm') : '—'}"></td>
                             <td class="text-center">
                                 <a th:href="@{/nguoi-dung/sua/{id}(id=${nd.id})}" class="btn btn-warning btn-sm">
                                     <i class="bi bi-pencil"></i>
                                 </a>
+                                <th:block th:with="isSelf=${#authentication?.name == nd.tenDangNhap}">
+                                    <form th:if="${!isSelf}"
+                                          th:action="@{/nguoi-dung/doi-trang-thai/{id}(id=${nd.id})}" method="post" class="d-inline"
+                                          th:onsubmit="${nd.active} ? 'return confirm(\'Vô hiệu hoá tài khoản ' + nd.tenDangNhap + '?\')' : 'return true'">
+                                        <button type="submit"
+                                                th:class="${nd.active} ? 'btn btn-outline-secondary btn-sm' : 'btn btn-success btn-sm'"
+                                                th:title="${nd.active} ? 'Vô hiệu hoá' : 'Kích hoạt'">
+                                            <i th:class="${nd.active} ? 'bi bi-slash-circle' : 'bi bi-check-circle'"></i>
+                                        </button>
+                                    </form>
+                                </th:block>
                                 <form th:action="@{/nguoi-dung/xoa/{id}(id=${nd.id})}" method="post" class="d-inline"
                                       onsubmit="return confirm('Xác nhận xóa người dùng này?')">
                                     <button type="submit" class="btn btn-danger btn-sm">

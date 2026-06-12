@@ -7,7 +7,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div th:replace="~{fragments/layout :: sidebar}"></div>
+        <div th:replace="~{fragments/layout :: sidebar('nhan-khau')}"></div>
 
         <main class="col-md-10 p-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -23,6 +23,10 @@
             </div>
 
             <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <div th:if="${emptyMsg}" class="alert alert-warning">
+                <i class="bi bi-search me-1"></i><span th:text="${emptyMsg}"></span>
+            </div>
 
             <!-- Tìm kiếm -->
             <form th:action="@{/nhan-khau}" method="get" class="mb-3 d-flex gap-2" style="max-width: 400px;">

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Ghi nhận biến động')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/layout :: sidebar('nhan-khau')}"></div>
+        <main class="col-md-10 p-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <a th:href="@{/ho-gia-dinh/{id}(id=${nhanKhau.hoGiaDinh.id})}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h4 class="mb-0">Ghi nhận biến động — <span th:text="${nhanKhau.hoTen}"></span></h4>
+            </div>
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+            <div class="card shadow-sm" style="max-width: 500px;">
+                <div class="card-body">
+                    <form th:action="@{/nhan-khau/{id}/bien-dong(id=${nhanKhau.id})}"
+                          th:object="${bienDong}" method="post" novalidate>
+
+                        <div class="mb-3">
+                            <label class="form-label">Loại biến động <span class="text-danger">*</span></label>
+                            <select th:field="*{loaiBienDong}" class="form-select" th:errorclass="is-invalid"
+                                    id="loaiBienDong" onchange="toggleNgayKetThuc()">
+                                <option value="">-- Chọn --</option>
+                                <option th:each="lbd : ${T(com.bluemoon.model.LoaiBienDong).values()}"
+                                        th:value="${lbd}" th:text="${lbd.tenHienThi}"></option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('loaiBienDong')}" th:errors="*{loaiBienDong}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Ngày biến động <span class="text-danger">*</span></label>
+                            <input type="date" th:field="*{ngayBienDong}" class="form-control" th:errorclass="is-invalid"/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('ngayBienDong')}" th:errors="*{ngayBienDong}"></div>
+                        </div>
+
+                        <div class="mb-3" id="divNgayKetThuc" style="display:none;">
+                            <label class="form-label">
+                                Ngày kết thúc <span class="text-danger">*</span>
+                            </label>
+                            <input type="date" th:field="*{ngayKetThuc}" class="form-control" th:errorclass="is-invalid"/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('ngayKetThuc')}" th:errors="*{ngayKetThuc}"></div>
+                            <div class="form-text">Sau ngày này nhân khẩu sẽ tự động trở về Thường trú.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Ghi chú</label>
+                            <textarea th:field="*{ghiChu}" class="form-control" rows="2"></textarea>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Lưu</button>
+                            <a th:href="@{/ho-gia-dinh/{id}(id=${nhanKhau.hoGiaDinh.id})}" class="btn btn-outline-secondary">Hủy</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+<script>
+    function toggleNgayKetThuc() {
+        var loai = document.getElementById('loaiBienDong').value;
+        var div  = document.getElementById('divNgayKetThuc');
+        div.style.display = (loai === 'TAM_TRU' || loai === 'TAM_VANG') ? '' : 'none';
+    }
+    // Khởi tạo khi load trang (trường hợp re-render sau lỗi validation)
+    document.addEventListener('DOMContentLoaded', toggleNgayKetThuc);
+</script>
+</body>
+</html>

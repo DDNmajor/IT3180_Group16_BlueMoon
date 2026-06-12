@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Theo dõi thu phí')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/layout :: sidebar('thanh-toan')}"></div>
+
+        <main class="col-md-10 p-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <a th:href="@{/thanh-toan}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h4 class="mb-0">Theo dõi trạng thái thu phí</h4>
+            </div>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Bộ lọc kỳ + khoản thu -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-body py-2">
+                    <form method="get" th:action="@{/thanh-toan/theo-doi}"
+                          class="row g-2 align-items-end">
+                        <div class="col-auto">
+                            <label class="form-label mb-1 small fw-medium">Kỳ (tháng/năm)</label>
+                            <input type="month" name="thang" class="form-control form-control-sm"
+                                   th:value="${thangFilter}"/>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label mb-1 small fw-medium">Khoản thu</label>
+                            <select name="idKhoanThu" class="form-select form-select-sm">
+                                <option value="">-- Chọn khoản thu trong kỳ --</option>
+                                <option th:each="kt : ${khoanThuTrongKy}"
+                                        th:value="${kt.id}"
+                                        th:text="${kt.tenKhoanThu}
+                                                  + ' — '
+                                                  + ${#numbers.formatDecimal(kt.soTien, 0, 'COMMA', 0, 'POINT')}
+                                                  + ' đ'"
+                                        th:selected="${selectedKhoanThu != null and selectedKhoanThu.id == kt.id}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="bi bi-funnel me-1"></i>Xem
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Không có khoản thu trong kỳ -->
+            <div th:if="${#lists.isEmpty(khoanThuTrongKy)}" class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                Chưa có dữ liệu cho kỳ này. Vui lòng chọn kỳ khác hoặc tạo khoản thu mới.
+            </div>
+
+            <!-- Có khoản thu: hiển thị bảng theo dõi -->
+            <div th:if="${selectedKhoanThu != null}">
+
+                <!-- Thông tin khoản thu được chọn -->
+                <div class="card border-0 bg-light mb-3">
+                    <div class="card-body py-2 px-3">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <strong th:text="${selectedKhoanThu.tenKhoanThu}"></strong>
+                                <span class="text-muted mx-2">|</span>
+                                <span th:if="${selectedKhoanThu.loaiKhoanThu != null}"
+                                      th:text="${selectedKhoanThu.loaiKhoanThu.tenLoai}"
+                                      th:class="${isTuNguyen} ? 'badge bg-secondary' : 'badge bg-danger'">
+                                </span>
+                                <span class="ms-2 text-muted"
+                                      th:if="${selectedKhoanThu.donGiaPerM2 == null}"
+                                      th:with="v=${selectedKhoanThu.soTien != null ? selectedKhoanThu.soTien : 0}">
+                                    Số tiền yêu cầu:
+                                    <strong class="text-dark"
+                                            th:text="${#numbers.formatDecimal(v, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                    </strong>
+                                </span>
+                                <span class="ms-2 text-muted"
+                                      th:if="${selectedKhoanThu.donGiaPerM2 != null}"
+                                      th:with="v=${selectedKhoanThu.donGiaPerM2}">
+                                    Đơn giá:
+                                    <strong class="text-dark"
+                                            th:text="${#numbers.formatDecimal(v, 0, 'COMMA', 0, 'POINT')} + ' đ/m²'">
+                                    </strong>
+                                    <span class="badge bg-info text-dark ms-1">Theo diện tích</span>
+                                </span>
+                            </div>
+                            <div class="col-auto d-flex gap-3 small">
+                                <span class="text-success fw-medium">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    Đã đóng: <strong th:text="${soDaDong}"></strong>
+                                </span>
+                                <span class="text-warning fw-medium">
+                                    <i class="bi bi-clock me-1"></i>
+                                    Còn nợ: <strong th:text="${soConNo}"></strong>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ghi chú cho phí tự nguyện -->
+                <div th:if="${isTuNguyen}" class="alert alert-secondary py-2 small mb-3">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Đây là khoản phí <strong>tự nguyện</strong> — hộ chưa đăng ký không bị tính là còn nợ.
+                </div>
+
+                <!-- Bảng danh sách căn hộ -->
+                <div class="card shadow-sm">
+                    <div class="card-body p-0">
+                        <table class="table table-hover table-bordered mb-0 align-middle">
+                            <thead class="table-dark">
+                            <tr>
+                                <th style="width:40px">#</th>
+                                <th>Căn hộ</th>
+                                <th>Chủ hộ</th>
+                                <th th:if="${selectedKhoanThu.donGiaPerM2 != null}" class="text-end">Diện tích</th>
+                                <th class="text-end">Yêu cầu</th>
+                                <th class="text-end">Đã nộp</th>
+                                <th>Ngày nộp</th>
+                                <th>Phương thức</th>
+                                <th class="text-center">Trạng thái</th>
+                                <th class="text-center">Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:if="${#lists.isEmpty(tatCaHo)}">
+                                <td th:colspan="${selectedKhoanThu.donGiaPerM2 != null ? 10 : 9}"
+                                    class="text-center text-muted py-4">
+                                    Chưa có hộ gia đình nào trong hệ thống.
+                                </td>
+                            </tr>
+                            <tr th:each="ho, stat : ${tatCaHo}"
+                                th:with="tt=${paymentMap[ho.id]}">
+                                <td class="text-muted small" th:text="${stat.count}"></td>
+                                <!-- Căn hộ -->
+                                <td>
+                                    <a th:href="@{/thanh-toan(idHo=${ho.id})}"
+                                       class="fw-semibold text-decoration-none"
+                                       th:text="${ho.soCanHo}"></a>
+                                </td>
+                                <td th:text="${ho.chuHo}"></td>
+                                <!-- Diện tích (chỉ hiện khi area-based) -->
+                                <td th:if="${selectedKhoanThu.donGiaPerM2 != null}" class="text-end text-muted small">
+                                    <span th:if="${ho.dienTich != null}" th:text="${ho.dienTich} + ' m²'"></span>
+                                    <span th:if="${ho.dienTich == null}" class="text-warning">Chưa có</span>
+                                </td>
+                                <!-- Yêu cầu -->
+                                <td class="text-end"
+                                    th:with="yc=${tt != null ? tt.soTienYeuCauHieuLuc : (selectedKhoanThu.donGiaPerM2 != null and ho.dienTich != null ? ho.dienTich.multiply(selectedKhoanThu.donGiaPerM2) : selectedKhoanThu.soTien)}">
+                                    <span th:if="${yc != null}"
+                                          th:text="${#numbers.formatDecimal(yc, 0, 'COMMA', 0, 'POINT')} + ' đ'"
+                                          class="text-muted small"></span>
+                                </td>
+                                <!-- Đã nộp -->
+                                <td class="text-end">
+                                    <span th:if="${tt != null}"
+                                          class="fw-semibold text-success"
+                                          th:text="${#numbers.formatDecimal(tt.soTienDaNop, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                    </span>
+                                    <span th:if="${tt == null}" class="text-muted">--</span>
+                                </td>
+                                <!-- Ngày nộp -->
+                                <td>
+                                    <span th:if="${tt != null and tt.ngayNop != null}"
+                                          th:text="${#temporals.format(tt.ngayNop, 'dd/MM/yyyy')}"></span>
+                                    <span th:if="${tt == null or tt.ngayNop == null}" class="text-muted">--</span>
+                                </td>
+                                <!-- Phương thức -->
+                                <td>
+                                    <span th:if="${tt != null and tt.phuongThuc != null}"
+                                          th:text="${tt.phuongThuc.tenHienThi}"></span>
+                                    <span th:if="${tt == null or tt.phuongThuc == null}" class="text-muted">--</span>
+                                </td>
+                                <!-- Trạng thái -->
+                                <td class="text-center">
+                                    <!-- Có bản ghi → hiện trạng thái thật -->
+                                    <span th:if="${tt != null and tt.trangThai == T(com.bluemoon.model.TrangThaiThanhToan).DA_DONG}"
+                                          class="badge bg-success">Đã đóng</span>
+                                    <span th:if="${tt != null and tt.trangThai == T(com.bluemoon.model.TrangThaiThanhToan).DONG_DU}"
+                                          class="badge bg-info text-dark">Đóng dư</span>
+                                    <span th:if="${tt != null and tt.trangThai == T(com.bluemoon.model.TrangThaiThanhToan).CON_NO}"
+                                          class="badge bg-warning text-dark">Còn nợ</span>
+                                    <!-- Không có bản ghi -->
+                                    <span th:if="${tt == null and !isTuNguyen}"
+                                          class="badge bg-secondary">Chưa ghi nhận</span>
+                                    <span th:if="${tt == null and isTuNguyen}"
+                                          class="badge bg-light text-muted border">Chưa đăng ký</span>
+                                </td>
+                                <!-- Thao tác -->
+                                <td class="text-center">
+                                    <a th:if="${tt == null or tt.trangThai == T(com.bluemoon.model.TrangThaiThanhToan).CON_NO}"
+                                       th:href="@{/thanh-toan/them(idHo=${ho.id},idKhoan=${selectedKhoanThu.id})}"
+                                       class="btn btn-success btn-sm">
+                                        <i class="bi bi-cash-coin me-1"></i>Thu phí
+                                    </a>
+                                    <a th:if="${tt != null and (tt.trangThai == T(com.bluemoon.model.TrangThaiThanhToan).DA_DONG or tt.trangThai == T(com.bluemoon.model.TrangThaiThanhToan).DONG_DU)}"
+                                       th:href="@{/thanh-toan(idHo=${ho.id})}"
+                                       class="btn btn-outline-secondary btn-sm">
+                                        <i class="bi bi-eye me-1"></i>Xem
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer text-muted small" th:if="${!#lists.isEmpty(tatCaHo)}">
+                        Tổng: <strong th:text="${tatCaHo.size()}"></strong> căn hộ
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

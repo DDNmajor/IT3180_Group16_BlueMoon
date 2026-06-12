@@ -1,10 +1,7 @@
 package com.bluemoon.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -24,8 +21,13 @@ public class KhoanThu {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotBlank(message = "Mã khoản thu không được để trống")
+    @Size(max = 50, message = "Mã khoản thu không được dài quá 50 ký tự")
+    @Column(name = "ma_khoan_thu", unique = true)
+    private String maKhoanThu;
+
     @NotBlank(message = "Tên khoản thu không được để trống")
-    @Size(max = 200, message = "Tên khoản thu không được vượt quá 200 ký tự")
+    @Size(max = 200, message = "Tên khoản thu không được dài quá 200 ký tự")
     @Column(name = "ten_khoan_thu", nullable = false, length = 200)
     private String tenKhoanThu;
 
@@ -35,9 +37,22 @@ public class KhoanThu {
     private LoaiKhoanThu loaiKhoanThu;
 
     @NotNull(message = "Số tiền không được để trống")
-    @DecimalMin(value = "0.01", message = "Số tiền phải lớn hơn 0")
+    @Min(value = 0, message = "Số tiền không được nhỏ hơn 0")
+    @Max(value = 100000000000L, message = "Số tiền quá lớn (tối đa 100 tỷ)")
     @Column(name = "so_tien", nullable = false, precision = 15, scale = 2)
     private BigDecimal soTien;
+
+    @DecimalMin(value = "0", message = "Đơn giá/m² không được nhỏ hơn 0")
+    @Column(name = "don_gia_per_m2", precision = 15, scale = 2)
+    private BigDecimal donGiaPerM2;
+
+    @DecimalMin(value = "0", message = "Giá xe máy không được nhỏ hơn 0")
+    @Column(name = "gia_xe_may", precision = 15, scale = 2)
+    private BigDecimal giaXeMay;
+
+    @DecimalMin(value = "0", message = "Giá ô tô không được nhỏ hơn 0")
+    @Column(name = "gia_oto", precision = 15, scale = 2)
+    private BigDecimal giaOto;
 
     @Size(max = 50, message = "Đơn vị không được vượt quá 50 ký tự")
     @Column(name = "don_vi", length = 50)
@@ -55,6 +70,14 @@ public class KhoanThu {
 
     @Column(name = "ngay_tao", updatable = false)
     private LocalDateTime ngayTao;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "loai_tinh_phi", length = 20)
+    private LoaiTinhPhi loaiTinhPhi = LoaiTinhPhi.FIXED;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_mau")
+    private MauKhoanThu mauKhoanThu;
 
     @OneToMany(mappedBy = "khoanThu")
     private List<ThanhToan> thanhToans;

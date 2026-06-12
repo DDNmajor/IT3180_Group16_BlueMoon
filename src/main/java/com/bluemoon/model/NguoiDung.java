@@ -25,8 +25,8 @@ public class NguoiDung {
     @Column(name = "ten_dang_nhap", nullable = false, unique = true)
     private String tenDangNhap;
 
-    @NotBlank(message = "Mật khẩu không được để trống")
-    @Size(min = 6, max = 100, message = "Mật khẩu phải từ 6 đến 100 ký tự")
+    // bỏ trống = giữ hash cũ; @NotBlank cố ý bỏ để cho phép update không đổi mật khẩu
+    @Size(max = 100, message = "Mật khẩu không được vượt quá 100 ký tự")
     @Column(name = "mat_khau", nullable = false)
     private String matKhau;
 
@@ -39,6 +39,12 @@ public class NguoiDung {
     @Enumerated(EnumType.STRING)
     @Column(name = "vai_tro")
     private VaiTro vaiTro;
+
+    @Column(name = "active")
+    private Boolean active = true;
+
+    @Column(name = "doi_mat_khau_lan_dau")
+    private Boolean doiMatKhauLanDau = false;
 
     @Column(name = "ngay_tao")
     private LocalDateTime ngayTao;

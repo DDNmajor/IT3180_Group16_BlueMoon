@@ -24,6 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .username(nd.getTenDangNhap())
                 .password(nd.getMatKhau())
                 .roles(nd.getVaiTro().name())
+                .disabled(Boolean.FALSE.equals(nd.getActive()))
                 .build();
     }
 }

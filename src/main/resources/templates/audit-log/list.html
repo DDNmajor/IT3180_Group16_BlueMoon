@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Nhật ký hoạt động')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/layout :: sidebar('audit-log')}"></div>
+
+        <main class="col-md-10 p-4">
+            <div class="d-flex align-items-center mb-3">
+                <h4 class="mb-0"><i class="bi bi-journal-text me-2"></i>Nhật ký hoạt động</h4>
+            </div>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Bộ lọc -->
+            <form method="get" th:action="@{/audit-log}" class="card shadow-sm mb-3">
+                <div class="card-body py-2">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-2">
+                            <label class="form-label small mb-1">Loại đối tượng</label>
+                            <select name="loaiDoiTuong" class="form-select form-select-sm">
+                                <option value="">-- Tất cả --</option>
+                                <option th:each="loai : ${loaiDoiTuongList}"
+                                        th:value="${loai}" th:text="${loai}"
+                                        th:selected="${loai == filterLoai}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small mb-1">Người thực hiện</label>
+                            <select name="nguoiDung" class="form-select form-select-sm">
+                                <option value="">-- Tất cả --</option>
+                                <option th:each="nd : ${danhSachNguoiDung}"
+                                        th:value="${nd}" th:text="${nd}"
+                                        th:selected="${nd == filterNguoiDung}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small mb-1">Từ ngày</label>
+                            <input type="date" name="tuNgay" class="form-control form-control-sm"
+                                   th:value="${filterTuNgay}"/>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small mb-1">Đến ngày</label>
+                            <input type="date" name="denNgay" class="form-control form-control-sm"
+                                   th:value="${filterDenNgay}"/>
+                        </div>
+                        <div class="col-md-auto d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="bi bi-funnel me-1"></i>Lọc
+                            </button>
+                            <a th:href="@{/audit-log}" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-x-lg me-1"></i>Xóa lọc
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Bảng log -->
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <table class="table table-hover table-bordered mb-0 align-middle"
+                           style="font-size: 0.82rem; table-layout: fixed; width: 100%;">
+                        <colgroup>
+                            <col style="width: 40px"/>
+                            <col style="width: 185px"/>
+                            <col style="width: 120px"/>
+                            <col style="width: 110px"/>
+                            <col/>
+                            <col style="width: 140px"/>
+                        </colgroup>
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Thời gian</th>
+                                <th>Hành động</th>
+                                <th>Đối tượng</th>
+                                <th>Chi tiết</th>
+                                <th>Người thực hiện</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(danhSach)}">
+                                <td colspan="6" class="text-center text-muted py-4">
+                                    <i class="bi bi-inbox me-1"></i>Không có bản ghi nào.
+                                </td>
+                            </tr>
+                            <tr th:each="entry, stat : ${danhSach}">
+                                <td class="text-muted" style="white-space: nowrap;"
+                                    th:text="${stat.count}"></td>
+                                <td style="white-space: nowrap; font-size: 0.9rem;"
+                                    th:text="${#temporals.format(entry.thoiGian, 'dd/MM/yyyy HH:mm:ss')}"></td>
+                                <td style="white-space: nowrap;">
+                                    <span th:with="hd=${entry.hanhDong}"
+                                          th:class="${hd == 'Xóa'}    ? 'badge bg-danger'              :
+                                                     (${hd == 'Tạo'}   ? 'badge bg-success'             :
+                                                     (${hd == 'Sửa'}   ? 'badge bg-warning text-dark'   :
+                                                     (${hd == 'Hết hạn' or hd == 'Auto-apply'} ? 'badge bg-secondary' :
+                                                      'badge bg-primary')))"
+                                          th:text="${entry.hanhDong}"></span>
+                                </td>
+                                <td style="white-space: nowrap;">
+                                    <span class="text-muted" th:text="${entry.loaiDoiTuong} ?: '--'"></span>
+                                </td>
+                                <td style="white-space: normal; word-break: break-word;"
+                                    th:text="${entry.chiTiet} ?: '--'"></td>
+                                <td style="white-space: nowrap;">
+                                    <i class="bi bi-person me-1 text-muted"></i>
+                                    <span th:text="${entry.nguoiDung} ?: 'system'"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer text-muted small" th:if="${!#lists.isEmpty(danhSach)}">
+                    Tổng: <strong th:text="${danhSach.size()}"></strong> bản ghi
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
