@@ -12,9 +12,14 @@
         <main class="col-md-10 p-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4 class="mb-0">Hộ gia đình</h4>
-                <a th:href="@{/ho-gia-dinh/them}" class="btn btn-primary btn-sm">
-                    <i class="bi bi-plus-lg me-1"></i>Thêm hộ
-                </a>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#importModal">
+                        <i class="bi bi-file-earmark-arrow-up me-1"></i>Import Excel
+                    </button>
+                    <a th:href="@{/ho-gia-dinh/them}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-lg me-1"></i>Thêm hộ
+                    </a>
+                </div>
             </div>
 
             <div th:replace="~{fragments/layout :: alerts}"></div>
@@ -80,6 +85,41 @@
                 </div>
             </div>
         </main>
+    </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form th:action="@{/ho-gia-dinh/import}" method="post" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importModalLabel">Import Hộ gia đình từ Excel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="excelFile" class="form-label">Chọn file (.xlsx)</label>
+                        <input class="form-control" type="file" id="excelFile" name="file" accept=".xlsx" required>
+                    </div>
+                    <div class="alert alert-info py-2" style="font-size: 0.9rem">
+                        File mẫu yêu cầu các cột (theo thứ tự):<br>
+                        1. Số căn hộ (bắt buộc)<br>
+                        2. Chủ hộ (bắt buộc)<br>
+                        3. Tầng/khu vực<br>
+                        4. Diện tích (m²)<br>
+                        5. Email<br>
+                        6. Ghi chú<br>
+                        <hr class="my-1">
+                        <em>Hệ thống sẽ Cập nhật hộ đã có và Thêm hộ mới.</em>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-success">Import</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 

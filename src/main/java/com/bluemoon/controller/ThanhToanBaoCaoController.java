@@ -8,7 +8,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import com.bluemoon.service.ExcelExportService;
+import com.bluemoon.model.KhoanThu;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -22,6 +28,26 @@ public class ThanhToanBaoCaoController {
 
     private final BaoCaoThanhToanService baoCaoThanhToanService;
     private final KhoanThuService khoanThuService;
+    private final ExcelExportService excelExportService;
+
+    @GetMapping("/thong-ke/export")
+    public ResponseEntity<byte[]> exportBaoCao(@RequestParam(required = false) String thang,
+                                               @RequestParam(required = false, defaultValue = "ALL") String loai) throws IOException {
+        YearMonth ym = (thang == null || thang.isBlank()) ? YearMonth.now() : YearMonth.parse(thang);
+        List<ThongKeKhoanThuDto> thongKeList = baoCaoThanhToanService.getThongKeKhoanDongGop(ym, loai);
+        
+        List<KhoanThu> listKt = thongKeList.stream()
+                .map(dto -> khoanThuService.findById(dto.getIdKhoanThu()))
+                .toList();
+
+        byte[] excelData = excelExportService.exportBaoCaoThongKe(listKt);
+        String fileName = "BaoCao_" + ym.toString() + ".xlsx";
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(excelData);
+    }
 
     @GetMapping("/no-phi")
     public String noPhi(@RequestParam(required = false) String keyword,
