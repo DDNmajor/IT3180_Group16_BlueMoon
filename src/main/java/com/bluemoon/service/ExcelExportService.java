@@ -141,8 +141,8 @@ public class ExcelExportService {
             LocalDate ngayNopGanNhat = null;
 
             for (KhoanThu kt : listKt) {
-                boolean isBatBuoc = kt.getLoaiKhoanThu() != null && "BAT_BUOC".equals(kt.getLoaiKhoanThu().getLoaiApDung().name());
-                boolean isTuNguyen = kt.getLoaiKhoanThu() != null && "TU_NGUYEN".equals(kt.getLoaiKhoanThu().getLoaiApDung().name());
+                boolean isBatBuoc = kt.getLoaiKhoanThu() != null && kt.getLoaiKhoanThu().getLoaiApDung() != null && kt.getLoaiKhoanThu().getLoaiApDung().isBatBuoc();
+                boolean isTuNguyen = kt.getLoaiKhoanThu() != null && kt.getLoaiKhoanThu().getLoaiApDung() != null && !kt.getLoaiKhoanThu().getLoaiApDung().isBatBuoc();
 
                 ThanhToan tt = ttList.stream().filter(t -> t.getKhoanThu().getId().equals(kt.getId())).findFirst().orElse(null);
 
