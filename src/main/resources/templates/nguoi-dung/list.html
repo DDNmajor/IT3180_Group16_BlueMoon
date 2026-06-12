@@ -60,26 +60,46 @@
                             </td>
                             <td th:text="${nd.ngayTao != null ? #temporals.format(nd.ngayTao, 'dd/MM/yyyy HH:mm') : '—'}"></td>
                             <td class="text-center">
-                                <a th:href="@{/nguoi-dung/sua/{id}(id=${nd.id})}" class="btn btn-warning btn-sm">
-                                    <i class="bi bi-pencil"></i>
+                                <a th:href="@{/nguoi-dung/sua/{id}(id=${nd.id})}"
+                                   class="btn btn-warning btn-sm"
+                                   th:aria-label="'Sửa người dùng ' + ${nd.tenDangNhap}">
+                                    <i class="bi bi-pencil" aria-hidden="true"></i>
                                 </a>
                                 <th:block th:with="isSelf=${#authentication?.name == nd.tenDangNhap}">
-                                    <form th:if="${!isSelf}"
-                                          th:action="@{/nguoi-dung/doi-trang-thai/{id}(id=${nd.id})}" method="post" class="d-inline"
-                                          th:onsubmit="${nd.active} ? 'return confirm(\'Vô hiệu hoá tài khoản ' + nd.tenDangNhap + '?\')' : 'return true'">
-                                        <button type="submit"
-                                                th:class="${nd.active} ? 'btn btn-outline-secondary btn-sm' : 'btn btn-success btn-sm'"
-                                                th:title="${nd.active} ? 'Vô hiệu hoá' : 'Kích hoạt'">
-                                            <i th:class="${nd.active} ? 'bi bi-slash-circle' : 'bi bi-check-circle'"></i>
+                                    <!-- Active → cần confirm trước khi vô hiệu hoá -->
+                                    <button th:if="${!isSelf and nd.active}"
+                                            type="button" class="btn btn-outline-secondary btn-sm"
+                                            data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                                            th:data-confirm-url="@{/nguoi-dung/doi-trang-thai/{id}(id=${nd.id})}"
+                                            th:data-confirm-title="'Vô hiệu hoá tài khoản'"
+                                            th:data-confirm-message="'Tài khoản ' + ${nd.tenDangNhap} + ' sẽ không thể đăng nhập.'"
+                                            data-confirm-btn-class="btn-warning"
+                                            data-confirm-btn-text="Vô hiệu hoá"
+                                            th:aria-label="'Vô hiệu hoá ' + ${nd.tenDangNhap}"
+                                            title="Vô hiệu hoá">
+                                        <i class="bi bi-slash-circle" aria-hidden="true"></i>
+                                    </button>
+                                    <!-- Inactive → kích hoạt trực tiếp (hành động an toàn) -->
+                                    <form th:if="${!isSelf and !nd.active}"
+                                          th:action="@{/nguoi-dung/doi-trang-thai/{id}(id=${nd.id})}" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-success btn-sm"
+                                                th:aria-label="'Kích hoạt ' + ${nd.tenDangNhap}"
+                                                title="Kích hoạt">
+                                            <i class="bi bi-check-circle" aria-hidden="true"></i>
                                         </button>
                                     </form>
                                 </th:block>
-                                <form th:action="@{/nguoi-dung/xoa/{id}(id=${nd.id})}" method="post" class="d-inline"
-                                      onsubmit="return confirm('Xác nhận xóa người dùng này?')">
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
+                                <button type="button" class="btn btn-danger btn-sm"
+                                        data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                                        th:data-confirm-url="@{/nguoi-dung/xoa/{id}(id=${nd.id})}"
+                                        th:data-item-name="${nd.tenDangNhap}"
+                                        data-confirm-title="Xóa người dùng"
+                                        data-confirm-sub="Không thể hoàn tác."
+                                        data-confirm-btn-class="btn-danger"
+                                        data-confirm-btn-text="Xóa"
+                                        th:aria-label="'Xóa người dùng ' + ${nd.tenDangNhap}">
+                                    <i class="bi bi-trash" aria-hidden="true"></i>
+                                </button>
                             </td>
                         </tr>
                         </tbody>
@@ -90,6 +110,7 @@
     </div>
 </div>
 
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

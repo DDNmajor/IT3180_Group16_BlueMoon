@@ -22,7 +22,7 @@
             <!-- ══ BƯỚC 1: Chọn hộ gia đình (chưa chọn hộ) ══════════════ -->
             <div th:if="${thanhToan.hoGiaDinh == null}">
                 <div class="card shadow-sm mb-3" style="max-width: 580px;">
-                    <div class="card-header fw-semibold bg-light">
+                    <div class="card-header fw-semibold">
                         <i class="bi bi-search me-1"></i>Bước 1 — Tìm hộ gia đình
                     </div>
                     <div class="card-body">
@@ -73,14 +73,18 @@
                             <hr class="my-2"/>
                             <p class="text-muted small mb-1">Hoặc chọn trực tiếp từ danh sách:</p>
                             <form method="get" th:action="@{/thanh-toan/them}">
-                                <select name="idHo" class="form-select"
-                                        onchange="if(this.value) this.form.submit()">
-                                    <option value="">-- Chọn căn hộ --</option>
-                                    <option th:each="hgd : ${danhSachHo}"
-                                            th:value="${hgd.id}"
-                                            th:text="${hgd.soCanHo} + ' — ' + ${hgd.chuHo}">
-                                    </option>
-                                </select>
+                                <div class="input-group">
+                                    <select name="idHo" class="form-select">
+                                        <option value="">-- Chọn căn hộ --</option>
+                                        <option th:each="hgd : ${danhSachHo}"
+                                                th:value="${hgd.id}"
+                                                th:text="${hgd.soCanHo} + ' — ' + ${hgd.chuHo}">
+                                        </option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary" aria-label="Chọn căn hộ">
+                                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                                    </button>
+                                </div>
                             </form>
                         </div>
 
@@ -113,7 +117,7 @@
 
                 <!-- Form thanh toán -->
                 <div class="card shadow-sm" style="max-width: 580px;">
-                    <div class="card-header fw-semibold bg-light">
+                    <div class="card-header fw-semibold">
                         <i class="bi bi-cash-coin me-1"></i>Bước 2 — Thông tin thanh toán
                     </div>
                     <div class="card-body">
@@ -126,7 +130,7 @@
                         </div>
 
                         <form th:unless="${#lists.isEmpty(danhSachKhoan)}"
-                              th:action="@{/thanh-toan/them}" th:object="${thanhToan}" method="post">
+                              th:action="@{/thanh-toan/them}" th:object="${thanhToan}" method="post" class="form-submit-once">
 
                             <input type="hidden" name="hoGiaDinh.id"
                                    th:value="${thanhToan.hoGiaDinh.id}"/>

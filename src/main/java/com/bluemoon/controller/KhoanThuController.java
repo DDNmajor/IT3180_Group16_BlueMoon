@@ -127,7 +127,9 @@ public class KhoanThuController {
     public String xoa(@PathVariable Integer id, RedirectAttributes ra) {
         try {
             khoanThuService.delete(id);
-            ra.addFlashAttribute("successMsg", "Xóa khoản thu thành công.");
+            ra.addFlashAttribute("undoMsg",
+                    "Đã chuyển khoản thu vào thùng rác. " +
+                    "<a href='/thung-rac?tab=khoan' class='alert-link'>Xem thùng rác</a> để khôi phục.");
         } catch (IllegalStateException e) {
             ra.addFlashAttribute("errorMsg", e.getMessage());
         }

@@ -43,7 +43,8 @@ CREATE TABLE ho_gia_dinh (
     tang_khu_vuc  VARCHAR(50)   NULL,
     ghi_chu       TEXT          NULL,
     email         VARCHAR(255)  NULL            COMMENT 'Gửi thông báo khoản thu',
-    ngay_tao      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ngay_tao      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at    DATETIME      NULL DEFAULT NULL COMMENT 'Soft delete — NULL = active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- nhan_khau — Nhân khẩu
@@ -113,6 +114,7 @@ CREATE TABLE khoan_thu (
     ghi_chu        TEXT          NULL,
     ngay_tao       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     id_mau         INT           NULL     COMMENT 'NULL = tạo thủ công',
+    deleted_at     DATETIME      NULL DEFAULT NULL COMMENT 'Soft delete — NULL = active',
     CONSTRAINT fk_kt_loai FOREIGN KEY (id_loai)
         REFERENCES loai_khoan_thu(id),
     CONSTRAINT fk_kt_mau  FOREIGN KEY (id_mau)

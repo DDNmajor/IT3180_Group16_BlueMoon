@@ -156,7 +156,9 @@ public class HoGiaDinhController {
     public String xoa(@PathVariable Integer id, RedirectAttributes ra) {
         try {
             hoGiaDinhService.delete(id);
-            ra.addFlashAttribute("successMsg", "Xóa hộ gia đình thành công.");
+            ra.addFlashAttribute("undoMsg",
+                    "Đã chuyển hộ gia đình vào thùng rác. " +
+                    "<a href='/thung-rac' class='alert-link'>Xem thùng rác</a> để khôi phục.");
         } catch (IllegalStateException e) {
             ra.addFlashAttribute("errorMsg", e.getMessage());
         } catch (Exception e) {

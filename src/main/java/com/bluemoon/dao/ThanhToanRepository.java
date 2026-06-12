@@ -4,6 +4,7 @@ import com.bluemoon.model.LoaiTinhPhi;
 import com.bluemoon.model.ThanhToan;
 import com.bluemoon.model.TrangThaiThanhToan;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -35,4 +36,13 @@ public interface ThanhToanRepository extends JpaRepository<ThanhToan, Integer> {
 
     @Query("SELECT COALESCE(SUM(t.soTienDaNop), 0) FROM ThanhToan t WHERE YEAR(t.ngayNop) = :nam AND MONTH(t.ngayNop) = :thang")
     BigDecimal sumByNamAndThang(@Param("nam") int nam, @Param("thang") int thang);
+
+    // Dùng khi xóa vĩnh viễn từ thùng rác — bypass @SQLRestriction trên entity tham chiếu
+    @Modifying
+    @Query(value = "DELETE FROM thanh_toan WHERE id_khoan_thu = :khoanThuId", nativeQuery = true)
+    void hardDeleteByKhoanThuId(@Param("khoanThuId") Integer khoanThuId);
+
+    @Modifying
+    @Query(value = "DELETE FROM thanh_toan WHERE id_ho_gia_dinh = :hoGiaDinhId", nativeQuery = true)
+    void hardDeleteByHoGiaDinhId(@Param("hoGiaDinhId") Integer hoGiaDinhId);
 }

@@ -20,7 +20,7 @@
             <div th:replace="~{fragments/layout :: alerts}"></div>
 
             <!-- Bộ lọc -->
-            <form method="get" th:action="@{/khoan-thu}" class="row g-2 mb-3 align-items-end">
+            <form method="get" th:action="@{/khoan-thu}" class="row g-2 mb-3 align-items-end form-submit-once">
                 <div class="col-auto">
                     <label class="form-label mb-1 small">Tháng</label>
                     <div class="d-flex gap-1">
@@ -63,6 +63,7 @@
 
             <div class="card shadow-sm">
                 <div class="card-body p-0">
+                    <div class="table-responsive">
                     <table class="table table-hover table-bordered mb-0">
                         <thead class="table-dark">
                         <tr>
@@ -80,7 +81,14 @@
                         </thead>
                         <tbody>
                         <tr th:if="${#lists.isEmpty(danhSach)}">
-                            <td colspan="10" class="text-center text-muted py-3">Không có dữ liệu.</td>
+                            <td colspan="10" class="text-center py-5">
+                                <i class="bi bi-receipt display-5 text-muted d-block mb-3" aria-hidden="true"></i>
+                                <div class="fw-semibold mb-1">Không có khoản thu nào</div>
+                                <div class="text-muted small mb-3">Thêm khoản thu mới hoặc thay đổi bộ lọc</div>
+                                <a href="/khoan-thu/them" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-plus-lg me-1"></i>Thêm khoản thu
+                                </a>
+                            </td>
                         </tr>
                         <tr th:each="kt, stat : ${danhSach}"
                             th:with="today=${T(java.time.LocalDate).now()},
@@ -153,25 +161,34 @@
                                 <span th:if="${kt.hanNop != null && !isQuaHan}" class="badge bg-success">Còn hạn</span>
                             </td>
                             <td class="text-center">
-                                <a th:href="@{/khoan-thu/sua/{id}(id=${kt.id})}" class="btn btn-warning btn-sm">
-                                    <i class="bi bi-pencil"></i>
+                                <a th:href="@{/khoan-thu/sua/{id}(id=${kt.id})}"
+                                   class="btn btn-warning btn-sm"
+                                   th:aria-label="'Sửa khoản thu ' + ${kt.tenKhoanThu}">
+                                    <i class="bi bi-pencil" aria-hidden="true"></i>
                                 </a>
-                                <form th:action="@{/khoan-thu/xoa/{id}(id=${kt.id})}" method="post" class="d-inline"
-                                      onsubmit="return confirm('Xác nhận xóa khoản thu này?')">
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
+                                <button type="button" class="btn btn-danger btn-sm"
+                                        data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                                        th:data-confirm-url="@{/khoan-thu/xoa/{id}(id=${kt.id})}"
+                                        th:data-item-name="${kt.tenKhoanThu}"
+                                        data-confirm-title="Xóa khoản thu"
+                                        data-confirm-sub="Không thể hoàn tác. Chỉ xóa được nếu chưa có thanh toán."
+                                        data-confirm-btn-class="btn-danger"
+                                        data-confirm-btn-text="Xóa"
+                                        th:aria-label="'Xóa khoản thu ' + ${kt.tenKhoanThu}">
+                                    <i class="bi bi-trash" aria-hidden="true"></i>
+                                </button>
                             </td>
                         </tr>
                         </tbody>
                     </table>
+                    </div><!-- /table-responsive -->
                 </div>
             </div>
         </main>
     </div>
 </div>
 
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

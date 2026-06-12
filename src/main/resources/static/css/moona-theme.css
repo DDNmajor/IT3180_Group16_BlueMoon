@@ -573,6 +573,7 @@
 }
 
 /* ─── HEADING DECORATORS (dark colors) ───────────────────────── */
+[data-theme="dark"] h3::before,
 [data-theme="dark"] h4::before,
 [data-theme="dark"] h5::before,
 [data-theme="dark"] .modal-title::before {
@@ -584,6 +585,9 @@
   color: var(--moon-gold);
   opacity: 0.55;
 }
+
+/* ─── REPORT PROGRESS BAR (dark mode) ───────────────────────── */
+[data-theme="dark"] .report-progress .progress-bar { background: var(--moon-purple) !important; }
 
 /* ─── FEE TAGS (dark colors) ─────────────────────────────────── */
 [data-theme="dark"] .fee-tag-required   { background: rgba(251,191,36,0.15);  color: #fde047; }
@@ -610,4 +614,44 @@
 @keyframes moon-sparkle-appear {
   0%, 100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
   50%       { opacity: 1; transform: scale(1) rotate(45deg); }
+}
+
+/* ─── MOBILE OFFCANVAS SIDEBAR ───────────────────────────────── */
+[data-theme="dark"] .moon-offcanvas-sidebar {
+  background: linear-gradient(180deg, #150E34 0%, #100C2C 100%) !important;
+  border-right: 1px solid var(--moon-border) !important;
+  color: var(--moon-text) !important;
+}
+[data-theme="dark"] .moon-offcanvas-sidebar .offcanvas-header {
+  background: linear-gradient(135deg, rgba(167,125,255,0.14) 0%, rgba(109,63,212,0.08) 100%) !important;
+  border-bottom: 1px solid var(--moon-border) !important;
+}
+[data-theme="dark"] .moon-offcanvas-sidebar .offcanvas-title {
+  background: linear-gradient(135deg, var(--moon-gold) 0%, var(--moon-gold-light) 55%, var(--moon-lavender) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+[data-theme="dark"] .moon-offcanvas-sidebar .btn-close {
+  filter: invert(1) brightness(0.75) !important;
+}
+[data-theme="dark"] .sidebar-offcanvas-nav .nav-link         { color: var(--moon-text-muted) !important; }
+[data-theme="dark"] .sidebar-offcanvas-nav .nav-link:hover {
+  color:             var(--moon-lavender) !important;
+  background-color:  rgba(167, 125, 255, 0.08) !important;
+  border-left-color: rgba(167, 125, 255, 0.30) !important;
+}
+[data-theme="dark"] .sidebar-offcanvas-nav .nav-link.active {
+  color:       var(--moon-gold-light) !important;
+  background:  linear-gradient(90deg, rgba(167,125,255,0.18) 0%, rgba(167,125,255,0.04) 100%) !important;
+  border-left: 3px solid var(--moon-lavender) !important;
+}
+[data-theme="dark"] .sidebar-offcanvas-nav .nav-section           { color: var(--moon-gold) !important; opacity: 0.88; }
+[data-theme="dark"] .sidebar-offcanvas-nav .nav-section::before   { color: var(--moon-gold); opacity: 0.55; }
+
+/* ─── SKIP LINK ───────────────────────────────────────────────── */
+[data-theme="dark"] .skip-to-main {
+  background: var(--moon-surface);
+  color: var(--moon-gold);
+  border: 1px solid var(--moon-border-lit);
 }

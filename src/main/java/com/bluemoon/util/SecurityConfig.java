@@ -60,7 +60,7 @@ public class SecurityConfig {
             .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
-                .requestMatchers("/nguoi-dung/**", "/audit-log/**").hasRole("admin")
+                .requestMatchers("/nguoi-dung/**", "/audit-log/**", "/thung-rac/**").hasRole("admin")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

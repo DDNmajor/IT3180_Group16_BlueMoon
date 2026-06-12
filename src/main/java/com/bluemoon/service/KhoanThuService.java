@@ -129,13 +129,42 @@ public class KhoanThuService {
                     "Không thể xóa khoản thu \"" + kt.getTenKhoanThu()
                     + "\" vì đã có hộ gia đình nộp tiền.");
         }
-        // xóa ThanhToan tự động (soTienDaNop=0) trước để tránh FK violation
-        thanhToanRepository.deleteByKhoanThuId(id);
-        khoanThuRepository.deleteById(id);
+        kt.setDeletedAt(LocalDateTime.now());
+        khoanThuRepository.save(kt);
         String user = currentUser();
-        log.info("[AUDIT] Xóa khoản thu: id={}, ma={}, ten={}, user={}",
+        log.info("[AUDIT] Chuyển vào thùng rác — khoản thu: id={}, ma={}, ten={}, user={}",
                 id, kt.getMaKhoanThu(), kt.getTenKhoanThu(), user);
         auditLogService.log("Xóa", "Khoản thu",
+                "id=" + id + ", ma=" + kt.getMaKhoanThu() + ", ten=" + kt.getTenKhoanThu() + " (thùng rác)", user);
+    }
+
+    public List<KhoanThu> findAllDeleted() {
+        return khoanThuRepository.findAllDeleted();
+    }
+
+    @Transactional
+    public void restore(Integer id) {
+        KhoanThu kt = khoanThuRepository.findDeletedById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy trong thùng rác id=" + id));
+        khoanThuRepository.restoreById(id);
+        String user = currentUser();
+        log.info("[AUDIT] Khôi phục khoản thu: id={}, ma={}, ten={}, user={}",
+                id, kt.getMaKhoanThu(), kt.getTenKhoanThu(), user);
+        auditLogService.log("Khôi phục", "Khoản thu",
+                "id=" + id + ", ma=" + kt.getMaKhoanThu() + ", ten=" + kt.getTenKhoanThu(), user);
+    }
+
+    @Transactional
+    public void permanentDelete(Integer id) {
+        KhoanThu kt = khoanThuRepository.findDeletedById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy trong thùng rác id=" + id));
+        // native query vì KhoanThu đang bị ẩn bởi @SQLRestriction
+        thanhToanRepository.hardDeleteByKhoanThuId(id);
+        khoanThuRepository.permanentDeleteById(id);
+        String user = currentUser();
+        log.info("[AUDIT] Xóa vĩnh viễn khoản thu: id={}, ma={}, ten={}, user={}",
+                id, kt.getMaKhoanThu(), kt.getTenKhoanThu(), user);
+        auditLogService.log("Xóa vĩnh viễn", "Khoản thu",
                 "id=" + id + ", ma=" + kt.getMaKhoanThu() + ", ten=" + kt.getTenKhoanThu(), user);
     }
 

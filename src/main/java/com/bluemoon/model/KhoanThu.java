@@ -3,6 +3,7 @@ package com.bluemoon.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "khoan_thu")
+@SQLRestriction("deleted_at IS NULL")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -70,6 +72,9 @@ public class KhoanThu {
 
     @Column(name = "ngay_tao", updatable = false)
     private LocalDateTime ngayTao;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "loai_tinh_phi", length = 20)

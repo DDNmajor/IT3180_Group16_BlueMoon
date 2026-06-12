@@ -35,121 +35,226 @@
 
 <!-- ── NAVBAR ────────────────────────────────────────────────── -->
 <nav th:fragment="navbar"
-     class="navbar navbar-dark moon-navbar px-3">
-    <a class="navbar-brand" href="/dashboard">
-        <i class="bi bi-moon-stars-fill me-2"></i>BlueMoon
-    </a>
+     class="navbar navbar-dark moon-navbar px-3"
+     role="navigation" aria-label="Thanh điều hướng chính">
+    <!-- Skip-to-main — chỉ hiện khi Tab focus -->
+    <a href="#main-content" class="skip-to-main visually-hidden-focusable">Bỏ qua điều hướng</a>
+
+    <div class="d-flex align-items-center gap-2">
+        <!-- Hamburger — chỉ hiện trên mobile -->
+        <button class="btn btn-outline-light btn-sm d-md-none p-1 px-2"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#mobileSidebar"
+                aria-controls="mobileSidebar"
+                aria-label="Mở menu điều hướng">
+            <i class="bi bi-list fs-5" aria-hidden="true"></i>
+        </button>
+        <a class="navbar-brand" href="/dashboard">
+            <i class="bi bi-moon-stars-fill me-2"></i>BlueMoon
+        </a>
+    </div>
+
     <div class="d-flex align-items-center gap-3">
-        <span class="nav-user-name">
+        <span class="nav-user-name d-none d-sm-inline">
             <i class="bi bi-person-circle me-1"></i>
             <span th:text="${#authentication?.name}">Người dùng</span>
         </span>
         <button id="themeToggleBtn"
                 onclick="toggleKanataTheme()"
                 class="btn btn-sm btn-outline-light ms-2"
-                title="Chuyển giao diện sáng/tối">
-            <i class="bi bi-moon-stars"></i>
+                title="Chuyển giao diện sáng/tối"
+                aria-label="Chuyển giao diện sáng tối">
+            <i class="bi bi-moon-stars" aria-hidden="true"></i>
         </button>
         <form th:action="@{/logout}" method="post" class="m-0">
             <button type="submit" class="btn btn-outline-light btn-sm">
-                <i class="bi bi-box-arrow-right me-1"></i>Đăng xuất
+                <i class="bi bi-box-arrow-right me-1" aria-hidden="true"></i>
+                <span class="d-none d-sm-inline">Đăng xuất</span>
             </button>
         </form>
     </div>
 </nav>
 
 <!-- ── SIDEBAR ────────────────────────────────────────────────── -->
-<div th:fragment="sidebar(activePage)" class="col-md-2 sidebar pt-3"
-     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-    <nav class="nav flex-column px-2 gap-1">
-        <span class="nav-section">Tổng quan</span>
-        <a class="nav-link" th:classappend="${activePage == 'dashboard'} ? 'active' : ''" th:href="@{/dashboard}">
-            <i class="bi bi-speedometer2 me-2"></i>Dashboard
-        </a>
+<th:block th:fragment="sidebar(activePage)"
+          xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-        <!-- DANH MỤC -->
-        <span class="nav-section">Danh mục</span>
-
-        <a class="nav-link"
-           th:classappend="${activePage == 'loai-khoan-thu'} ? 'active' : ''"
-           th:href="@{/loai-khoan-thu}">
-            <i class="bi bi-tags me-2"></i>Loại khoản thu
-        </a>
-
-        <a class="nav-link"
-           th:classappend="${activePage == 'mau-khoan-thu'} ? 'active' : ''"
-           th:href="@{/mau-khoan-thu}">
-            <i class="bi bi-arrow-repeat me-2"></i>Mẫu thu định kỳ
-        </a>
-
-        <!-- QUẢN LÝ THU PHÍ -->
-        <span class="nav-section">Quản lý thu phí</span>
-
-        <a class="nav-link"
-           th:classappend="${activePage == 'khoan-thu'} ? 'active' : ''"
-           th:href="@{/khoan-thu}">
-            <i class="bi bi-receipt me-2"></i>Khoản thu
-        </a>
-
-        <a class="nav-link"
-           th:classappend="${activePage == 'thanh-toan'} ? 'active' : ''"
-           th:href="@{/thanh-toan}">
-            <i class="bi bi-cash-coin me-2"></i>Thanh toán
-        </a>
-
-        <a class="nav-link"
-           th:classappend="${activePage == 'thong-ke'} ? 'active' : ''"
-           th:href="@{/thanh-toan/thong-ke}">
-            <i class="bi bi-bar-chart-line me-2"></i>Thống kê
-        </a>
-
-        <a class="nav-link"
-           th:classappend="${activePage == 'no-phi'} ? 'active' : ''"
-           th:href="@{/thanh-toan/no-phi}">
-            <i class="bi bi-exclamation-circle me-2"></i>Nợ phí
-        </a>
-
-        <!-- DÂN CƯ -->
-        <span class="nav-section">Dân cư</span>
-
-        <a class="nav-link"
-           th:classappend="${activePage == 'ho-gia-dinh'} ? 'active' : ''"
-           th:href="@{/ho-gia-dinh}">
-            <i class="bi bi-house me-2"></i>Hộ gia đình
-        </a>
-
-        <a class="nav-link"
-           th:classappend="${activePage == 'nhan-khau'} ? 'active' : ''"
-           th:href="@{/nhan-khau}">
-            <i class="bi bi-person me-2"></i>Nhân khẩu
-        </a>
-
-        <div sec:authorize="hasRole('admin')">
-            <!-- tiêu đề mục -->
-            <span class="nav-section">Hệ thống</span>
-
-            <!-- link người dùng -->
-            <a th:href="@{/nguoi-dung}"
-               class="nav-link"
-               th:classappend="${activePage == 'nguoi-dung'} ? 'active' : ''">
-                <i class="bi bi-people me-2"></i>Người dùng
+    <!-- Desktop sidebar — ẩn trên mobile -->
+    <div class="col-md-2 sidebar pt-3 d-none d-md-block">
+        <nav class="nav flex-column px-2 gap-1">
+            <span class="nav-section">Tổng quan</span>
+            <a class="nav-link" th:classappend="${activePage == 'dashboard'} ? 'active' : ''"
+               th:href="@{/dashboard}">
+                <i class="bi bi-speedometer2 me-2"></i>Dashboard
             </a>
 
-            <!-- link nhật ký -->
-            <a th:href="@{/audit-log}"
-               class="nav-link"
-               th:classappend="${activePage == 'audit-log'} ? 'active' : ''">
-                <i class="bi bi-journal-text me-2"></i>Nhật ký hoạt động
+            <span class="nav-section">Danh mục</span>
+            <a class="nav-link"
+               th:classappend="${activePage == 'loai-khoan-thu'} ? 'active' : ''"
+               th:href="@{/loai-khoan-thu}"
+               title="Phân nhóm khoản thu: bắt buộc, tự nguyện, đột xuất">
+                <i class="bi bi-tags me-2"></i>Loại khoản thu
             </a>
+            <a class="nav-link"
+               th:classappend="${activePage == 'mau-khoan-thu'} ? 'active' : ''"
+               th:href="@{/mau-khoan-thu}"
+               title="Khoản thu tự động tạo mỗi tháng theo mẫu">
+                <i class="bi bi-arrow-repeat me-2"></i>Mẫu thu định kỳ
+            </a>
+
+            <span class="nav-section">Quản lý thu phí</span>
+            <a class="nav-link"
+               th:classappend="${activePage == 'khoan-thu'} ? 'active' : ''"
+               th:href="@{/khoan-thu}"
+               title="Danh sách từng khoản thu theo kỳ">
+                <i class="bi bi-receipt me-2"></i>Khoản thu
+            </a>
+            <a class="nav-link"
+               th:classappend="${activePage == 'thanh-toan'} ? 'active' : ''"
+               th:href="@{/thanh-toan}">
+                <i class="bi bi-cash-coin me-2"></i>Thanh toán
+            </a>
+            <a class="nav-link"
+               th:classappend="${activePage == 'thong-ke'} ? 'active' : ''"
+               th:href="@{/thanh-toan/thong-ke}">
+                <i class="bi bi-bar-chart-line me-2"></i>Thống kê
+            </a>
+            <a class="nav-link"
+               th:classappend="${activePage == 'no-phi'} ? 'active' : ''"
+               th:href="@{/thanh-toan/no-phi}">
+                <i class="bi bi-exclamation-circle me-2"></i>Nợ phí
+            </a>
+
+            <span class="nav-section">Dân cư</span>
+            <a class="nav-link"
+               th:classappend="${activePage == 'ho-gia-dinh'} ? 'active' : ''"
+               th:href="@{/ho-gia-dinh}">
+                <i class="bi bi-house me-2"></i>Hộ gia đình
+            </a>
+            <a class="nav-link"
+               th:classappend="${activePage == 'nhan-khau'} ? 'active' : ''"
+               th:href="@{/nhan-khau}">
+                <i class="bi bi-person me-2"></i>Nhân khẩu
+            </a>
+
+            <div sec:authorize="hasRole('admin')">
+                <span class="nav-section">Hệ thống</span>
+                <a th:href="@{/nguoi-dung}" class="nav-link"
+                   th:classappend="${activePage == 'nguoi-dung'} ? 'active' : ''">
+                    <i class="bi bi-people me-2"></i>Người dùng
+                </a>
+                <a th:href="@{/audit-log}" class="nav-link"
+                   th:classappend="${activePage == 'audit-log'} ? 'active' : ''">
+                    <i class="bi bi-journal-text me-2"></i>Nhật ký hoạt động
+                </a>
+                <a th:href="@{/thung-rac}" class="nav-link"
+                   th:classappend="${activePage == 'thung-rac'} ? 'active' : ''">
+                    <i class="bi bi-trash me-2"></i>Thùng rác
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Mobile offcanvas sidebar — kích hoạt bởi hamburger button -->
+    <div class="offcanvas offcanvas-start moon-offcanvas-sidebar"
+         id="mobileSidebar" tabindex="-1"
+         aria-labelledby="mobileSidebarTitle">
+        <div class="offcanvas-header">
+            <span class="offcanvas-title" id="mobileSidebarTitle">
+                <i class="bi bi-moon-stars-fill me-2" aria-hidden="true"></i>BlueMoon
+            </span>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Đóng"></button>
         </div>
-    </nav>
-</div>
+        <div class="offcanvas-body p-0 pt-2">
+            <nav class="nav flex-column px-2 gap-1 sidebar-offcanvas-nav">
+                <span class="nav-section">Tổng quan</span>
+                <a class="nav-link" th:classappend="${activePage == 'dashboard'} ? 'active' : ''"
+                   th:href="@{/dashboard}" data-bs-dismiss="offcanvas">
+                    <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                </a>
+
+                <span class="nav-section">Danh mục</span>
+                <a class="nav-link"
+                   th:classappend="${activePage == 'loai-khoan-thu'} ? 'active' : ''"
+                   th:href="@{/loai-khoan-thu}" data-bs-dismiss="offcanvas">
+                    <i class="bi bi-tags me-2"></i>Loại khoản thu
+                </a>
+                <a class="nav-link"
+                   th:classappend="${activePage == 'mau-khoan-thu'} ? 'active' : ''"
+                   th:href="@{/mau-khoan-thu}" data-bs-dismiss="offcanvas">
+                    <i class="bi bi-arrow-repeat me-2"></i>Mẫu thu định kỳ
+                </a>
+
+                <span class="nav-section">Quản lý thu phí</span>
+                <a class="nav-link"
+                   th:classappend="${activePage == 'khoan-thu'} ? 'active' : ''"
+                   th:href="@{/khoan-thu}" data-bs-dismiss="offcanvas">
+                    <i class="bi bi-receipt me-2"></i>Khoản thu
+                </a>
+                <a class="nav-link"
+                   th:classappend="${activePage == 'thanh-toan'} ? 'active' : ''"
+                   th:href="@{/thanh-toan}" data-bs-dismiss="offcanvas">
+                    <i class="bi bi-cash-coin me-2"></i>Thanh toán
+                </a>
+                <a class="nav-link"
+                   th:classappend="${activePage == 'thong-ke'} ? 'active' : ''"
+                   th:href="@{/thanh-toan/thong-ke}" data-bs-dismiss="offcanvas">
+                    <i class="bi bi-bar-chart-line me-2"></i>Thống kê
+                </a>
+                <a class="nav-link"
+                   th:classappend="${activePage == 'no-phi'} ? 'active' : ''"
+                   th:href="@{/thanh-toan/no-phi}" data-bs-dismiss="offcanvas">
+                    <i class="bi bi-exclamation-circle me-2"></i>Nợ phí
+                </a>
+
+                <span class="nav-section">Dân cư</span>
+                <a class="nav-link"
+                   th:classappend="${activePage == 'ho-gia-dinh'} ? 'active' : ''"
+                   th:href="@{/ho-gia-dinh}" data-bs-dismiss="offcanvas">
+                    <i class="bi bi-house me-2"></i>Hộ gia đình
+                </a>
+                <a class="nav-link"
+                   th:classappend="${activePage == 'nhan-khau'} ? 'active' : ''"
+                   th:href="@{/nhan-khau}" data-bs-dismiss="offcanvas">
+                    <i class="bi bi-person me-2"></i>Nhân khẩu
+                </a>
+
+                <div sec:authorize="hasRole('admin')">
+                    <span class="nav-section">Hệ thống</span>
+                    <a th:href="@{/nguoi-dung}" class="nav-link"
+                       th:classappend="${activePage == 'nguoi-dung'} ? 'active' : ''"
+                       data-bs-dismiss="offcanvas">
+                        <i class="bi bi-people me-2"></i>Người dùng
+                    </a>
+                    <a th:href="@{/audit-log}" class="nav-link"
+                       th:classappend="${activePage == 'audit-log'} ? 'active' : ''"
+                       data-bs-dismiss="offcanvas">
+                        <i class="bi bi-journal-text me-2"></i>Nhật ký hoạt động
+                    </a>
+                    <a th:href="@{/thung-rac}" class="nav-link"
+                       th:classappend="${activePage == 'thung-rac'} ? 'active' : ''"
+                       data-bs-dismiss="offcanvas">
+                        <i class="bi bi-trash me-2"></i>Thùng rác
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+</th:block>
 
 <!-- ── FLASH MESSAGES ─────────────────────────────────────────── -->
 <div th:fragment="alerts">
+    <a id="main-content" tabindex="-1" aria-hidden="true" style="display:block;height:0;"></a>
     <div th:if="${successMsg}" class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="bi bi-check-circle me-2"></i>
         <span th:text="${successMsg}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${undoMsg}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>
+        <span th:utext="${undoMsg}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     <div th:if="${errorMsg}" class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -161,6 +266,32 @@
         <i class="bi bi-exclamation-circle me-2"></i>
         <span th:text="${warnMsg}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+</div>
+
+<!-- ── CONFIRM ACTION MODAL (dùng chung cho xóa / vô hiệu hoá) ── -->
+<div th:fragment="confirmModal"
+     class="modal fade" id="confirmActionModal" tabindex="-1" aria-labelledby="confirmActionTitle" aria-modal="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-1">
+                <h6 class="modal-title" id="confirmActionTitle">
+                    <i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i>Xác nhận
+                </h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body pt-1 pb-2">
+                <p class="mb-1" id="confirmActionMessage">Bạn có chắc chắn?</p>
+                <small class="text-muted" id="confirmActionSub"></small>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Hủy</button>
+                <form id="confirmActionForm" method="post" class="d-inline">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-sm" id="confirmActionBtn">Xác nhận</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -566,6 +697,67 @@
         });
       }).observe(document.documentElement, { attributes: true });
     })();
+    </script>
+    <script>
+    /* ── CONFIRM ACTION MODAL ──────────────────────────────────── */
+    (function() {
+      var modal = document.getElementById('confirmActionModal');
+      if (!modal) return;
+      modal.addEventListener('show.bs.modal', function(e) {
+        var btn = e.relatedTarget;
+        if (!btn) return;
+        var title   = btn.dataset.confirmTitle   || 'Xác nhận';
+        var message = btn.dataset.confirmMessage || (btn.dataset.itemName ? ('Thực hiện với "' + btn.dataset.itemName + '"?') : 'Bạn có chắc chắn?');
+        var sub     = btn.dataset.confirmSub     || '';
+        var btnCls  = btn.dataset.confirmBtnClass  || 'btn-primary';
+        var btnText = btn.dataset.confirmBtnText   || 'Xác nhận';
+        var url     = btn.dataset.confirmUrl || '';
+
+        document.getElementById('confirmActionTitle').innerHTML =
+          '<i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i>' + title;
+        document.getElementById('confirmActionMessage').textContent = message;
+        document.getElementById('confirmActionSub').textContent = sub;
+
+        var actionBtn = document.getElementById('confirmActionBtn');
+        actionBtn.className = 'btn btn-sm ' + btnCls;
+        actionBtn.textContent = btnText;
+
+        document.getElementById('confirmActionForm').action = url;
+      });
+    })();
+
+    /* ── TOOLTIP INIT ──────────────────────────────────────────── */
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function(el) {
+      new bootstrap.Tooltip(el, { trigger: 'hover focus' });
+    });
+
+    /* ── LOADING STATE (form.form-submit-once) ─────────────────── */
+    document.querySelectorAll('form.form-submit-once').forEach(function(form) {
+      form.addEventListener('submit', function() {
+        var btn = form.querySelector('[type=submit]:not([data-no-loading])');
+        if (btn && !btn.disabled) {
+          btn.disabled = true;
+          btn.dataset.originalHtml = btn.innerHTML;
+          btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Đang xử lý...';
+        }
+      });
+    });
+
+    /* ── CHEVRON TOGGLE (collapse expand/collapse icon) ────────── */
+    document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(function(btn) {
+      var targetSel = btn.getAttribute('data-bs-target');
+      if (!targetSel) return;
+      var target = document.querySelector(targetSel);
+      if (!target) return;
+      target.addEventListener('show.bs.collapse', function() {
+        var icon = btn.querySelector('.bi-chevron-down');
+        if (icon) { icon.classList.replace('bi-chevron-down', 'bi-chevron-up'); }
+      });
+      target.addEventListener('hide.bs.collapse', function() {
+        var icon = btn.querySelector('.bi-chevron-up');
+        if (icon) { icon.classList.replace('bi-chevron-up', 'bi-chevron-down'); }
+      });
+    });
     </script>
 </div>
 

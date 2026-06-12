@@ -5,20 +5,6 @@
 
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<style>
-    .page-title { font-weight: 800; }
-    .soft-card { border: 0; border-radius: 18px; }
-    .metric-card { border-radius: 18px; }
-    .metric-label { font-size: .85rem; opacity: .75; }
-    .metric-value { font-weight: 800; font-size: 1.35rem; }
-    .table { font-size: .88rem; }
-    .table thead th { font-size: .78rem; text-transform: uppercase; white-space: nowrap; }
-    .col-tien { min-width: 100px; }
-    .col-tile { min-width: 110px; }
-    .progress { height: 8px; border-radius: 999px; }
-    .progress-bar { background: #2563eb; }
-</style>
-
 <div class="container-fluid">
     <div class="row">
         <div th:replace="~{fragments/layout :: sidebar('thong-ke')}"></div>
@@ -31,7 +17,9 @@
                 </div>
                 <div class="d-flex gap-2">
                     <a th:href="@{/dashboard}" class="btn btn-outline-secondary btn-sm">Dashboard</a>
-                    <a th:href="@{/thanh-toan/no-phi}" class="btn btn-danger btn-sm">Bảng nợ phí</a>
+                    <a th:href="@{/thanh-toan/no-phi}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-table me-1"></i>Bảng nợ phí
+                    </a>
                 </div>
             </div>
 
@@ -62,17 +50,21 @@
                 </div>
             </div>
 
-            <div class="card soft-card mb-4">
+            <div class="card mb-4">
                 <div class="card-body py-3">
                     <form th:action="@{/thanh-toan/thong-ke}" method="get"
-                          class="d-flex flex-wrap gap-3 align-items-end">
+                          class="d-flex flex-wrap gap-3 align-items-end form-submit-once">
                         <div>
-                            <label class="form-label mb-1">Tháng/Năm</label>
+                            <label class="form-label mb-1">
+                                Tháng/Năm
+                                <i class="bi bi-question-circle text-muted ms-1"
+                                   data-bs-toggle="tooltip"
+                                   title="Lọc theo tháng cụ thể. Tick 'Tất cả tháng' để xem toàn bộ lịch sử."></i>
+                            </label>
                             <input type="month" id="inputThang" name="thang"
                                    class="form-control" style="min-width:170px"
                                    th:value="${thang}"
-                                   th:disabled="${tatCaThang}"
-                                   onchange="if(!this.disabled) this.form.submit()">
+                                   th:disabled="${tatCaThang}">
                         </div>
                         <div class="align-self-end pb-1">
                             <div class="form-check mb-0">
@@ -84,8 +76,7 @@
                         </div>
                         <div>
                             <label class="form-label mb-1">Loại khoản thu</label>
-                            <select name="loai" class="form-select" style="min-width:160px"
-                                    onchange="this.form.submit()">
+                            <select name="loai" class="form-select" style="min-width:160px">
                                 <option value="ALL"       th:selected="${loai == 'ALL'}">Tất cả</option>
                                 <option value="BAT_BUOC"  th:selected="${loai == 'BAT_BUOC'}">Bắt buộc</option>
                                 <option value="DOT_XUAT"  th:selected="${loai == 'DOT_XUAT'}">Đột xuất</option>
@@ -103,30 +94,14 @@
                 </div>
             </div>
 
-            <script>
-                function toggleTatCaThang(chk) {
-                    var input = document.getElementById('inputThang');
-                    if (chk.checked) {
-                        input.disabled = true;
-                        input.value = '';
-                    } else {
-                        input.disabled = false;
-                        var now = new Date();
-                        var mm = String(now.getMonth() + 1).padStart(2, '0');
-                        input.value = now.getFullYear() + '-' + mm;
-                    }
-                    chk.form.submit();
-                }
-            </script>
-
             <!-- Bảng 1: Khoản bắt buộc & đột xuất -->
-            <div class="card soft-card mb-4">
+            <div class="card mb-4">
                 <div class="card-body table-responsive">
                     <h6 class="fw-bold mb-3 text-muted" style="font-size:.78rem;text-transform:uppercase;letter-spacing:1px;">
                         Khoản bắt buộc &amp; đột xuất
                     </h6>
                     <table class="table table-hover align-middle">
-                        <thead>
+                        <thead class="table-dark">
                         <tr>
                             <th>Tên khoản thu</th>
                             <th>Loại</th>
@@ -135,8 +110,7 @@
                             <th class="text-end col-tien">Còn thiếu</th>
                             <th class="text-center">Đã đóng</th>
                             <th class="text-center">Còn nợ</th>
-                            <th class="text-center">Đóng dư</th>
-                            <th class="text-center">Chưa nộp</th>
+                            <th class="text-center d-none d-xl-table-cell">Đóng dư</th>
                             <th class="col-tile">Tỉ lệ</th>
                             <th class="text-end"></th>
                         </tr>
@@ -157,13 +131,12 @@
                             <td class="text-end text-danger fw-semibold" th:text="${#numbers.formatDecimal(row.conThieu, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
                             <td class="text-center" th:text="${row.soHoDaDong}">0</td>
                             <td class="text-center text-danger fw-semibold" th:text="${row.soHoConNo}">0</td>
-                            <td class="text-center" th:text="${row.soHoDongDu}">0</td>
-                            <td class="text-center" th:text="${row.soHoChuaNop}">0</td>
+                            <td class="text-center d-none d-xl-table-cell" th:text="${row.soHoDongDu}">0</td>
                             <td>
                                 <div class="d-flex justify-content-between">
                                     <small th:text="${row.tiLeThuDuoc} + '%'">0%</small>
                                 </div>
-                                <div class="progress">
+                                <div class="report-progress">
                                     <div class="progress-bar"
                                          th:style="|width: ${row.tiLeThuDuoc.doubleValue() > 100 ? 100 : row.tiLeThuDuoc}%|">
                                     </div>
@@ -175,7 +148,7 @@
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(dsBatBuoc)}">
-                            <td colspan="11" class="text-center text-muted py-4">
+                            <td colspan="10" class="text-center text-muted py-4">
                                 Không có khoản bắt buộc/đột xuất nào trong tháng/bộ lọc này.
                             </td>
                         </tr>
@@ -196,18 +169,18 @@
             </div>
 
             <!-- Bảng 2: Khoản tự nguyện -->
-            <div class="card soft-card" th:if="${!#lists.isEmpty(dsTuNguyen)}">
+            <div class="card" th:if="${!#lists.isEmpty(dsTuNguyen)}">
                 <div class="card-body table-responsive">
                     <h6 class="fw-bold mb-3 text-muted" style="font-size:.78rem;text-transform:uppercase;letter-spacing:1px;">
                         Khoản tự nguyện
                     </h6>
                     <table class="table table-hover align-middle">
-                        <thead>
+                        <thead class="table-dark">
                         <tr>
                             <th>Tên khoản thu</th>
                             <th class="text-end col-tien">Tổng đóng góp</th>
                             <th class="text-center">Hộ tham gia</th>
-                            <th class="text-center">Đóng dư</th>
+                            <th class="text-center d-none d-xl-table-cell">Đóng dư</th>
                             <th class="text-center">Chưa đăng ký</th>
                             <th class="col-tile">Tỉ lệ tham gia</th>
                             <th class="text-end"></th>
@@ -219,13 +192,13 @@
                             <td class="text-end text-success fw-semibold"
                                 th:text="${#numbers.formatDecimal(row.tongTienDaThu, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
                             <td class="text-center" th:text="${row.soHoDaDong}">0</td>
-                            <td class="text-center" th:text="${row.soHoDongDu}">0</td>
+                            <td class="text-center d-none d-xl-table-cell" th:text="${row.soHoDongDu}">0</td>
                             <td class="text-center" th:text="${row.soHoChuaNop}">0</td>
                             <td>
                                 <div class="d-flex justify-content-between">
                                     <small th:text="${row.tiLeThuDuoc} + '%'">0%</small>
                                 </div>
-                                <div class="progress">
+                                <div class="report-progress">
                                     <div class="progress-bar" style="background:#10b981;"
                                          th:style="|background:#10b981;width: ${row.tiLeThuDuoc.doubleValue() > 100 ? 100 : row.tiLeThuDuoc}%|">
                                     </div>
@@ -252,6 +225,21 @@
     </div>
 </div>
 
+<script>
+function toggleTatCaThang(chk) {
+    var input = document.getElementById('inputThang');
+    if (chk.checked) {
+        input.disabled = true;
+        input.value = '';
+    } else {
+        input.disabled = false;
+        var now = new Date();
+        var mm = String(now.getMonth() + 1).padStart(2, '0');
+        input.value = now.getFullYear() + '-' + mm;
+    }
+    /* Không auto-submit — user nhấn nút Lọc để áp dụng */
+}
+</script>
 <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

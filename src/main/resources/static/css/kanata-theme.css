@@ -116,6 +116,7 @@
 }
 
 /* Star decorator — indigo */
+[data-theme="light"] h3::before,
 [data-theme="light"] h4::before,
 [data-theme="light"] h5::before,
 [data-theme="light"] .modal-title::before {
@@ -424,7 +425,7 @@
 [data-theme="light"] .badge.bg-warning {
   background-color: #fef3c7 !important;
   border: 1px solid rgba(180, 83, 9, 0.35) !important;
-  color: #b45309 !important;
+  color: #92400e !important; /* tăng contrast đạt WCAG AA cho text nhỏ */
 }
 
 /* DONG_DU (bg-info) → blue */
@@ -943,6 +944,53 @@
   box-shadow: 0 4px 20px rgba(79,70,229,0.40), 0 1px 6px rgba(79,70,229,0.25) !important;
 }
 
+/* ─── REPORT PROGRESS BAR (light mode) ──────────────────────── */
+[data-theme="light"] .report-progress .progress-bar { background: var(--k-primary) !important; }
+
+/* ─── MOBILE OFFCANVAS SIDEBAR ───────────────────────────────── */
+[data-theme="light"] .moon-offcanvas-sidebar {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-right: 1px solid rgba(167, 139, 250, 0.22) !important;
+}
+[data-theme="light"] .moon-offcanvas-sidebar .offcanvas-header {
+  background: linear-gradient(90deg, #4f46e5 0%, #6366f1 100%) !important;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.18) !important;
+}
+[data-theme="light"] .moon-offcanvas-sidebar .offcanvas-title {
+  -webkit-text-fill-color: #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+[data-theme="light"] .moon-offcanvas-sidebar .btn-close {
+  filter: invert(1) brightness(2) !important;
+}
+[data-theme="light"] .sidebar-offcanvas-nav .nav-link {
+  color:        var(--k-text-muted) !important;
+  border-left:  3px solid transparent !important;
+  border-radius: 0 8px 8px 0 !important;
+}
+[data-theme="light"] .sidebar-offcanvas-nav .nav-link:hover {
+  color:             var(--k-primary) !important;
+  background:        rgba(99, 102, 241, 0.07) !important;
+  border-left-color: var(--k-secondary) !important;
+}
+[data-theme="light"] .sidebar-offcanvas-nav .nav-link.active {
+  color:       var(--k-primary-hover) !important;
+  background:  rgba(99, 102, 241, 0.12) !important;
+  border-left: 3px solid var(--k-primary) !important;
+  font-weight: 600;
+  box-shadow:  0 2px 12px rgba(99,102,241,0.22), inset 0 0 8px rgba(99,102,241,0.08) !important;
+}
+[data-theme="light"] .sidebar-offcanvas-nav .nav-section           { color: var(--k-primary) !important; }
+[data-theme="light"] .sidebar-offcanvas-nav .nav-section::before   { color: var(--k-primary); opacity: 0.50; }
+
+/* ─── SKIP LINK ───────────────────────────────────────────────── */
+[data-theme="light"] .skip-to-main {
+  background: #ffffff;
+  color: var(--k-primary);
+  border: 1px solid var(--k-border-solid);
+  box-shadow: 0 2px 10px rgba(99,102,241,0.15);
+}
+
 /* ─── JS-INJECTED LIGHT DECORATION HELPERS ──────────────────── */
 .kanata-sparkle,
 .kanata-sidebar-sparkle,
@@ -953,9 +1001,9 @@
 }
 
 /* Decorations phải dưới text sidebar — z-index thấp hơn nav-link */
-[data-theme="light"] .kanata-wings           { z-index: 0 !important; opacity: 0.28 !important; }
-[data-theme="light"] .kanata-cloud           { z-index: 0 !important; opacity: 0.30 !important; }
-[data-theme="light"] .kanata-sidebar-sparkle { z-index: 0 !important; opacity: 0.38 !important; }
+[data-theme="light"] .kanata-wings           { z-index: 0 !important; opacity: 0.12 !important; }
+[data-theme="light"] .kanata-cloud           { z-index: 0 !important; opacity: 0.10 !important; }
+[data-theme="light"] .kanata-sidebar-sparkle { z-index: 0 !important; opacity: 0.16 !important; }
 
 /* Nav items nổi lên trên decoration */
 [data-theme="light"] .sidebar .nav-link,

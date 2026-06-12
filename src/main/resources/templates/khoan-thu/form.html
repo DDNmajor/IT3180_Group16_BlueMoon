@@ -22,7 +22,7 @@
             <div class="card shadow-sm" style="max-width: 600px;">
                 <div class="card-body">
                     <form th:action="${khoanThu.id == null} ? @{/khoan-thu/them} : @{/khoan-thu/sua/{id}(id=${khoanThu.id})}"
-                          th:object="${khoanThu}" method="post" novalidate>
+                          th:object="${khoanThu}" method="post" novalidate class="form-submit-once">
 
                         <div class="mb-3">
                             <label class="form-label">Mã khoản thu <span class="text-danger">*</span></label>
@@ -51,7 +51,12 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Cách tính phí <span class="text-danger">*</span></label>
+                            <label class="form-label">
+                                Cách tính phí <span class="text-danger">*</span>
+                                <i class="bi bi-question-circle text-muted ms-1"
+                                   data-bs-toggle="tooltip"
+                                   title="FIXED: số tiền cố định mỗi hộ. Per m²: tính theo diện tích × đơn giá. Per xe: tính theo (số xe máy × giá) + (số ô tô × giá)."></i>
+                            </label>
                             <select id="loaiTinhPhi" th:field="*{loaiTinhPhi}" class="form-select">
                                 <option th:each="ltp : ${loaiTinhPhiValues}"
                                         th:value="${ltp.name()}"

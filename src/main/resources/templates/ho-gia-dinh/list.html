@@ -13,7 +13,7 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4 class="mb-0">Hộ gia đình</h4>
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#importModal">
+                    <button type="button" class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#importModal">
                         <i class="bi bi-file-earmark-arrow-up me-1"></i>Import Excel
                     </button>
                     <a th:href="@{/ho-gia-dinh/them}" class="btn btn-primary btn-sm">
@@ -42,6 +42,7 @@
 
             <div class="card shadow-sm">
                 <div class="card-body p-0">
+                    <div class="table-responsive">
                     <table class="table table-hover table-bordered mb-0">
                         <thead class="table-dark">
                         <tr>
@@ -55,7 +56,17 @@
                         </thead>
                         <tbody>
                         <tr th:if="${#lists.isEmpty(danhSach)}">
-                            <td colspan="6" class="text-center text-muted py-3">Chưa có hộ gia đình nào.</td>
+                            <td colspan="6" class="text-center py-5">
+                                <i class="bi bi-house-x display-5 text-muted d-block mb-3" aria-hidden="true"></i>
+                                <div class="fw-semibold mb-1">Chưa có hộ gia đình nào</div>
+                                <div class="text-muted small mb-3">Thêm hộ mới hoặc import từ file Excel</div>
+                                <a href="/ho-gia-dinh/them" class="btn btn-primary btn-sm me-2">
+                                    <i class="bi bi-plus-lg me-1"></i>Thêm hộ
+                                </a>
+                                <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#importModal">
+                                    <i class="bi bi-file-earmark-arrow-up me-1"></i>Import Excel
+                                </button>
+                            </td>
                         </tr>
                         <tr th:each="hgd, stat : ${danhSach}">
                             <td th:text="${stat.count}"></td>
@@ -66,22 +77,32 @@
                             <td th:text="${hgd.dienTich}"></td>
                             <td th:text="${hgd.soDienThoai}"></td>
                             <td class="text-center">
-                                <a th:href="@{/ho-gia-dinh/{id}(id=${hgd.id})}" class="btn btn-info btn-sm text-white">
-                                    <i class="bi bi-eye"></i>
+                                <a th:href="@{/ho-gia-dinh/{id}(id=${hgd.id})}"
+                                   class="btn btn-info btn-sm text-white"
+                                   th:aria-label="'Xem chi tiết hộ ' + ${hgd.soCanHo}">
+                                    <i class="bi bi-eye" aria-hidden="true"></i>
                                 </a>
-                                <a th:href="@{/ho-gia-dinh/sua/{id}(id=${hgd.id})}" class="btn btn-warning btn-sm">
-                                    <i class="bi bi-pencil"></i>
+                                <a th:href="@{/ho-gia-dinh/sua/{id}(id=${hgd.id})}"
+                                   class="btn btn-warning btn-sm"
+                                   th:aria-label="'Sửa hộ ' + ${hgd.soCanHo}">
+                                    <i class="bi bi-pencil" aria-hidden="true"></i>
                                 </a>
-                                <form th:action="@{/ho-gia-dinh/xoa/{id}(id=${hgd.id})}" method="post" class="d-inline"
-                                      onsubmit="return confirm('Xác nhận xóa hộ gia đình này?')">
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
+                                <button type="button" class="btn btn-danger btn-sm"
+                                        data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                                        th:data-confirm-url="@{/ho-gia-dinh/xoa/{id}(id=${hgd.id})}"
+                                        th:data-item-name="'Hộ ' + ${hgd.soCanHo} + ' — ' + ${hgd.chuHo}"
+                                        data-confirm-title="Xóa hộ gia đình"
+                                        data-confirm-sub="Toàn bộ nhân khẩu và lịch sử thanh toán sẽ bị ảnh hưởng. Không thể hoàn tác."
+                                        data-confirm-btn-class="btn-danger"
+                                        data-confirm-btn-text="Xóa"
+                                        th:aria-label="'Xóa hộ ' + ${hgd.soCanHo}">
+                                    <i class="bi bi-trash" aria-hidden="true"></i>
+                                </button>
                             </td>
                         </tr>
                         </tbody>
                     </table>
+                    </div><!-- /table-responsive -->
                 </div>
             </div>
         </main>
@@ -92,7 +113,7 @@
 <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form th:action="@{/ho-gia-dinh/import}" method="post" enctype="multipart/form-data">
+            <form th:action="@{/ho-gia-dinh/import}" method="post" enctype="multipart/form-data" class="form-submit-once">
                 <div class="modal-header">
                     <h5 class="modal-title" id="importModalLabel">Import Hộ gia đình từ Excel</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -126,6 +147,7 @@
     </div>
 </div>
 
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

@@ -5,19 +5,6 @@
 
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<style>
-    .page-title { font-weight: 800; }
-    .soft-card { border: 0; border-radius: 18px; }
-    .metric-card { border-radius: 18px; }
-    .metric-label { font-size: .85rem; opacity: .75; }
-    .metric-value { font-weight: 800; font-size: 1.35rem; }
-    .table { font-size: .88rem; }
-    .table thead th { font-size: .78rem; text-transform: uppercase; white-space: nowrap; }
-    .detail-table { font-size: .85rem; }
-    .detail-table thead th { font-size: .76rem; text-transform: uppercase; white-space: nowrap; }
-    .expand-row td { padding: 0 !important; }
-    .expand-inner { padding: 0.75rem 1.25rem 0.75rem 2.5rem; }
-</style>
 
 <div class="container-fluid">
     <div class="row">
@@ -53,10 +40,10 @@
             </div>
 
             <!-- Filter -->
-            <div class="card soft-card mb-4">
+            <div class="card mb-4">
                 <div class="card-body py-3">
                     <form th:action="@{/thanh-toan/no-phi}" method="get"
-                          class="d-flex flex-wrap gap-3 align-items-end">
+                          class="d-flex flex-wrap gap-3 align-items-end form-submit-once">
                         <div>
                             <label class="form-label mb-1">Số căn hộ / chủ hộ</label>
                             <input type="text" class="form-control" name="keyword"
@@ -66,8 +53,7 @@
                         </div>
                         <div>
                             <label class="form-label mb-1">Khoản thu</label>
-                            <select class="form-select" name="idKhoanThu" style="min-width:180px"
-                                    onchange="this.form.submit()">
+                            <select class="form-select" name="idKhoanThu" style="min-width:180px">
                                 <option value="">Tất cả</option>
                                 <option th:each="kt : ${danhSachKhoanThu}"
                                         th:value="${kt.id}"
@@ -94,10 +80,10 @@
             </div>
 
             <!-- Bảng chính -->
-            <div class="card soft-card">
-                <div class="card-body table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead>
+            <div class="card">
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-dark">
                         <tr>
                             <th style="width:50px">#</th>
                             <th>Căn hộ</th>

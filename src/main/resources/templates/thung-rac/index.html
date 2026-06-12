@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Thùng rác')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/layout :: sidebar('thung-rac')}"></div>
+
+        <main class="col-md-10 p-4" id="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="page-title mb-1">Thùng rác</h3>
+                    <div class="text-muted">Khôi phục hoặc xóa vĩnh viễn các mục đã xóa.</div>
+                </div>
+            </div>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Tabs -->
+            <ul class="nav nav-tabs mb-4">
+                <li class="nav-item">
+                    <a class="nav-link"
+                       th:classappend="${tab == 'ho'} ? 'active' : ''"
+                       th:href="@{/thung-rac(tab='ho')}">
+                        <i class="bi bi-house me-1"></i>Hộ gia đình
+                        <span class="badge bg-secondary ms-1"
+                              th:text="${danhSachHoXoa.size()}">0</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       th:classappend="${tab == 'khoan'} ? 'active' : ''"
+                       th:href="@{/thung-rac(tab='khoan')}">
+                        <i class="bi bi-receipt me-1"></i>Khoản thu
+                        <span class="badge bg-secondary ms-1"
+                              th:text="${danhSachKhoanXoa.size()}">0</span>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Tab: Hộ gia đình -->
+            <div th:if="${tab == 'ho'}">
+                <div th:if="${#lists.isEmpty(danhSachHoXoa)}" class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>Thùng rác trống — không có hộ gia đình nào đã xóa.
+                </div>
+                <div th:unless="${#lists.isEmpty(danhSachHoXoa)}" class="card">
+                    <div class="card-body table-responsive p-0">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-dark">
+                            <tr>
+                                <th class="ps-3" style="width:40px">#</th>
+                                <th>Căn hộ</th>
+                                <th>Chủ hộ</th>
+                                <th>Tầng/Khu vực</th>
+                                <th>Diện tích</th>
+                                <th>Ngày tạo</th>
+                                <th>Ngày xóa</th>
+                                <th class="text-center pe-3">Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="ho, stat : ${danhSachHoXoa}">
+                                <td class="text-muted ps-3" th:text="${stat.count}"></td>
+                                <td class="fw-bold" th:text="${ho.soCanHo}"></td>
+                                <td th:text="${ho.chuHo}"></td>
+                                <td th:text="${ho.tangKhuVuc ?: '--'}"></td>
+                                <td>
+                                    <span th:if="${ho.dienTich != null}"
+                                          th:text="${ho.dienTich} + ' m²'"></span>
+                                    <span th:if="${ho.dienTich == null}" class="text-muted">--</span>
+                                </td>
+                                <td>
+                                    <span th:if="${ho.ngayTao != null}"
+                                          th:text="${#temporals.format(ho.ngayTao, 'dd/MM/yyyy')}"></span>
+                                </td>
+                                <td>
+                                    <span class="text-danger small"
+                                          th:if="${ho.deletedAt != null}"
+                                          th:text="${#temporals.format(ho.deletedAt, 'dd/MM/yyyy HH:mm')}"></span>
+                                </td>
+                                <td class="text-center pe-3">
+                                    <form th:action="@{/thung-rac/ho-gia-dinh/{id}/khoi-phuc(id=${ho.id})}"
+                                          method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-success btn-sm"
+                                                title="Khôi phục hộ gia đình này">
+                                            <i class="bi bi-arrow-counterclockwise me-1"></i>Khôi phục
+                                        </button>
+                                    </form>
+                                    <button type="button" class="btn btn-danger btn-sm"
+                                            data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                                            th:data-confirm-url="@{/thung-rac/ho-gia-dinh/{id}/xoa-vinh-vien(id=${ho.id})}"
+                                            th:data-item-name="${ho.soCanHo} + ' — ' + ${ho.chuHo}"
+                                            data-confirm-title="Xóa vĩnh viễn"
+                                            data-confirm-sub="Dữ liệu sẽ bị xóa hoàn toàn và không thể khôi phục."
+                                            data-confirm-btn-class="btn-danger"
+                                            data-confirm-btn-text="Xóa vĩnh viễn">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer text-muted small">
+                        <span th:text="${danhSachHoXoa.size()} + ' hộ trong thùng rác'"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Khoản thu -->
+            <div th:if="${tab == 'khoan'}">
+                <div th:if="${#lists.isEmpty(danhSachKhoanXoa)}" class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>Thùng rác trống — không có khoản thu nào đã xóa.
+                </div>
+                <div th:unless="${#lists.isEmpty(danhSachKhoanXoa)}" class="card">
+                    <div class="card-body table-responsive p-0">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-dark">
+                            <tr>
+                                <th class="ps-3" style="width:40px">#</th>
+                                <th>Mã</th>
+                                <th>Tên khoản thu</th>
+                                <th>Kỳ thu</th>
+                                <th>Hạn nộp</th>
+                                <th>Ngày xóa</th>
+                                <th class="text-center pe-3">Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="kt, stat : ${danhSachKhoanXoa}">
+                                <td class="text-muted ps-3" th:text="${stat.count}"></td>
+                                <td><code th:text="${kt.maKhoanThu}"></code></td>
+                                <td class="fw-semibold" th:text="${kt.tenKhoanThu}"></td>
+                                <td th:text="${#temporals.format(kt.kyThu, 'MM/yyyy')}"></td>
+                                <td th:text="${kt.hanNop != null} ? ${#temporals.format(kt.hanNop, 'dd/MM/yyyy')} : '--'"></td>
+                                <td>
+                                    <span class="text-danger small"
+                                          th:if="${kt.deletedAt != null}"
+                                          th:text="${#temporals.format(kt.deletedAt, 'dd/MM/yyyy HH:mm')}"></span>
+                                </td>
+                                <td class="text-center pe-3">
+                                    <form th:action="@{/thung-rac/khoan-thu/{id}/khoi-phuc(id=${kt.id})}"
+                                          method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-success btn-sm"
+                                                title="Khôi phục khoản thu này">
+                                            <i class="bi bi-arrow-counterclockwise me-1"></i>Khôi phục
+                                        </button>
+                                    </form>
+                                    <button type="button" class="btn btn-danger btn-sm"
+                                            data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                                            th:data-confirm-url="@{/thung-rac/khoan-thu/{id}/xoa-vinh-vien(id=${kt.id})}"
+                                            th:data-item-name="${kt.maKhoanThu} + ' — ' + ${kt.tenKhoanThu}"
+                                            data-confirm-title="Xóa vĩnh viễn"
+                                            data-confirm-sub="Dữ liệu sẽ bị xóa hoàn toàn và không thể khôi phục."
+                                            data-confirm-btn-class="btn-danger"
+                                            data-confirm-btn-text="Xóa vĩnh viễn">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer text-muted small">
+                        <span th:text="${danhSachKhoanXoa.size()} + ' khoản thu trong thùng rác'"></span>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

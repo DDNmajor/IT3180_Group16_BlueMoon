@@ -97,10 +97,37 @@ public class HoGiaDinhService {
                     + "\" vì còn khoản phí chưa thanh toán.");
         }
 
-        hoGiaDinhRepository.deleteById(id);
+        ho.setDeletedAt(LocalDateTime.now());
+        hoGiaDinhRepository.save(ho);
         String user = currentUser();
-        log.info("[AUDIT] Xóa hộ gia đình: id={}, canHo={}, user={}", id, ho.getSoCanHo(), user);
-        auditLogService.log("Xóa", "Hộ gia đình", "id=" + id + ", canHo=" + ho.getSoCanHo(), user);
+        log.info("[AUDIT] Chuyển vào thùng rác — hộ gia đình: id={}, canHo={}, user={}", id, ho.getSoCanHo(), user);
+        auditLogService.log("Xóa", "Hộ gia đình", "id=" + id + ", canHo=" + ho.getSoCanHo() + " (thùng rác)", user);
+    }
+
+    public List<HoGiaDinh> findAllDeleted() {
+        return hoGiaDinhRepository.findAllDeleted();
+    }
+
+    @Transactional
+    public void restore(Integer id) {
+        HoGiaDinh ho = hoGiaDinhRepository.findDeletedById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy trong thùng rác id=" + id));
+        hoGiaDinhRepository.restoreById(id);
+        String user = currentUser();
+        log.info("[AUDIT] Khôi phục hộ gia đình: id={}, canHo={}, user={}", id, ho.getSoCanHo(), user);
+        auditLogService.log("Khôi phục", "Hộ gia đình", "id=" + id + ", canHo=" + ho.getSoCanHo(), user);
+    }
+
+    @Transactional
+    public void permanentDelete(Integer id) {
+        HoGiaDinh ho = hoGiaDinhRepository.findDeletedById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy trong thùng rác id=" + id));
+        // xóa ThanhToan trước để tránh FK violation (fk_tt_ho không có CASCADE)
+        thanhToanRepository.hardDeleteByHoGiaDinhId(id);
+        hoGiaDinhRepository.permanentDeleteById(id);
+        String user = currentUser();
+        log.info("[AUDIT] Xóa vĩnh viễn hộ gia đình: id={}, canHo={}, user={}", id, ho.getSoCanHo(), user);
+        auditLogService.log("Xóa vĩnh viễn", "Hộ gia đình", "id=" + id + ", canHo=" + ho.getSoCanHo(), user);
     }
 
     private String currentUser() {

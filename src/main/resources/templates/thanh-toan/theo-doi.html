@@ -5,16 +5,6 @@
 
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<style>
-    .page-title { font-weight: 800; }
-    .soft-card { border: 0; border-radius: 18px; }
-    .metric-label { font-size: .85rem; opacity: .75; }
-    .metric-value { font-weight: 800; font-size: 1.35rem; }
-    .table { font-size: .88rem; }
-    .table thead th { font-size: .78rem; text-transform: uppercase; white-space: nowrap; }
-    .progress { height: 8px; border-radius: 999px; overflow: hidden; }
-    .progress-bar { background: #2563eb; border-radius: 999px; transition: width .4s ease; }
-</style>
 
 <div class="container-fluid">
     <div class="row">
@@ -36,20 +26,18 @@
             <div th:replace="~{fragments/layout :: alerts}"></div>
 
             <!-- Filter -->
-            <div class="card soft-card mb-4">
+            <div class="card mb-4">
                 <div class="card-body py-3">
                     <form method="get" th:action="@{/thanh-toan/theo-doi}"
-                          class="d-flex flex-wrap gap-3 align-items-end">
+                          class="d-flex flex-wrap gap-3 align-items-end form-submit-once">
                         <div>
                             <label class="form-label mb-1">Kỳ (tháng/năm)</label>
                             <input type="month" name="thang" class="form-control" style="min-width:170px"
-                                   th:value="${thangFilter}"
-                                   onchange="this.form.submit()"/>
+                                   th:value="${thangFilter}"/>
                         </div>
                         <div>
                             <label class="form-label mb-1">Khoản thu</label>
-                            <select name="idKhoanThu" class="form-select" style="min-width:260px"
-                                    onchange="this.form.submit()">
+                            <select name="idKhoanThu" class="form-select" style="min-width:260px">
                                 <option value="">-- Chọn khoản thu trong kỳ --</option>
                                 <option th:each="kt : ${khoanThuTrongKy}"
                                         th:value="${kt.id}"
@@ -77,7 +65,7 @@
             <div th:if="${selectedKhoanThu != null}">
 
                 <!-- Info card -->
-                <div class="card soft-card p-3 mb-4"
+                <div class="card p-3 mb-4"
                      th:with="tongHo=${tatCaHo.size()}, tiLeThu=${tatCaHo.size() > 0 ? (soDaDong * 100 / tatCaHo.size()) : 0}">
 
                     <!-- Dòng 1: tên khoản thu + tags + đơn giá -->
@@ -109,7 +97,7 @@
                         <small class="text-muted">Tỷ lệ thu</small>
                         <small class="fw-semibold" th:text="${tiLeThu} + '%'">0%</small>
                     </div>
-                    <div class="progress mb-3">
+                    <div class="report-progress mb-3">
                         <div class="progress-bar"
                              th:style="|width: ${tiLeThu > 100 ? 100 : tiLeThu}%|"></div>
                     </div>
@@ -144,10 +132,10 @@
                 </div>
 
                 <!-- Bảng -->
-                <div class="card soft-card">
+                <div class="card">
                     <div class="card-body table-responsive p-0">
                         <table class="table table-hover align-middle mb-0">
-                            <thead>
+                            <thead class="table-dark">
                             <tr>
                                 <th class="ps-3" style="width:40px">#</th>
                                 <th>Căn hộ</th>

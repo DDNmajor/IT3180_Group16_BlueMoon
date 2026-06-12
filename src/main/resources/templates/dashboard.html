@@ -6,14 +6,6 @@
 
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<style>
-    .metric-label { font-size: .83rem; opacity: .72; letter-spacing: .3px; }
-    .metric-value { font-size: 1.55rem; font-weight: 900; line-height: 1.2; }
-    .delta-line   { font-size: .78rem; margin-top: 4px; }
-    .panel-item + .panel-item { border-top: 1px solid rgba(128,128,128,.15); }
-    .panel-item { padding: 6px 0; }
-</style>
-
 <div class="container-fluid">
     <div class="row">
         <div th:replace="~{fragments/layout :: sidebar('dashboard')}"></div>
@@ -29,10 +21,10 @@
                         <div class="text-muted">Tổng quan dân cư, khoản thu và tình hình đóng phí tháng này.</div>
                     </div>
                     <div class="d-flex gap-2">
-                        <a th:href="@{/thanh-toan/no-phi}" class="btn btn-primary btn-sm">
-                            <i class="bi bi-table me-1"></i>Bảng nợ phí
+                        <a th:href="@{/thanh-toan/no-phi}" class="btn btn-danger btn-sm">
+                            <i class="bi bi-exclamation-triangle me-1"></i>Bảng nợ phí
                         </a>
-                        <a th:href="@{/thanh-toan/thong-ke}" class="btn btn-primary btn-sm">
+                        <a th:href="@{/thanh-toan/thong-ke}" class="btn btn-outline-secondary btn-sm">
                             <i class="bi bi-bar-chart-line me-1"></i>Thống kê
                         </a>
                     </div>
@@ -73,7 +65,7 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="card p-3">
+                    <div class="card p-3 border-start border-success border-3">
                         <div class="metric-label"><i class="bi bi-cash-coin me-1"></i>Đã thu tháng này</div>
                         <div class="metric-value text-success"
                              th:text="${#numbers.formatDecimal(tongTienThangNay, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</div>
@@ -107,10 +99,15 @@
                             <div class="metric-value"
                                  th:text="${#numbers.formatDecimal(tongTienYeuCau, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</div>
                         </div>
-                        <div class="card p-3 flex-fill">
+                        <div class="card p-3 flex-fill border-start border-danger border-3">
                             <div class="metric-label"><i class="bi bi-exclamation-circle me-1"></i>Còn thiếu tháng này</div>
                             <div class="metric-value text-danger"
                                  th:text="${#numbers.formatDecimal(tongTienConThieu, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</div>
+                            <div class="delta-line mt-2">
+                                <a th:href="@{/thanh-toan/no-phi}" class="small text-danger">
+                                    <i class="bi bi-arrow-right me-1"></i>Xem bảng nợ
+                                </a>
+                            </div>
                         </div>
                         <div class="card p-3 flex-fill">
                             <div class="metric-label"><i class="bi bi-house-exclamation me-1"></i>Hộ đang nợ ít nhất 1 khoản</div>
@@ -317,53 +314,67 @@
 (function () {
     const labels = /*[[${chartLabels}]]*/ [];
     const values = /*[[${chartValues}]]*/ [];
+    let chart = null;
 
-    const dark        = document.documentElement.getAttribute('data-theme') === 'dark';
-    const barColor    = dark ? 'rgba(167,125,255,0.72)' : 'rgba(99,102,241,0.72)';
-    const borderColor = dark ? '#A77DFF' : '#6366f1';
-    const textColor   = dark ? '#B8B2D8'  : '#6b7280';
-    const gridColor   = dark ? 'rgba(215,180,255,0.07)' : 'rgba(99,102,241,0.09)';
+    function getThemeColors() {
+        const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        return {
+            barColor:    dark ? 'rgba(167,125,255,0.72)' : 'rgba(99,102,241,0.72)',
+            borderColor: dark ? '#A77DFF'                : '#6366f1',
+            textColor:   dark ? '#B8B2D8'                : '#6b7280',
+            gridColor:   dark ? 'rgba(215,180,255,0.07)' : 'rgba(99,102,241,0.09)'
+        };
+    }
 
-    const ctx = document.getElementById('doanhThuChart');
-    if (!ctx) return;
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                data: values,
-                backgroundColor: barColor,
-                borderColor: borderColor,
-                borderWidth: 2,
-                borderRadius: 6
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: c => new Intl.NumberFormat('vi-VN').format(c.raw) + ' đ'
+    function renderChart() {
+        const ctx = document.getElementById('doanhThuChart');
+        if (!ctx) return;
+        const c = getThemeColors();
+        if (chart) chart.destroy();
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: c.barColor,
+                    borderColor: c.borderColor,
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: d => new Intl.NumberFormat('vi-VN').format(d.raw) + ' đ'
+                        }
+                    }
+                },
+                scales: {
+                    x: { ticks: { color: c.textColor }, grid: { color: c.gridColor } },
+                    y: {
+                        ticks: {
+                            color: c.textColor,
+                            callback: v => new Intl.NumberFormat('vi-VN', {
+                                notation: 'compact', compactDisplay: 'short'
+                            }).format(v)
+                        },
+                        grid: { color: c.gridColor }
                     }
                 }
-            },
-            scales: {
-                x: { ticks: { color: textColor }, grid: { color: gridColor } },
-                y: {
-                    ticks: {
-                        color: textColor,
-                        callback: v => new Intl.NumberFormat('vi-VN', {
-                            notation: 'compact', compactDisplay: 'short'
-                        }).format(v)
-                    },
-                    grid: { color: gridColor }
-                }
             }
-        }
-    });
+        });
+    }
+
+    renderChart();
+
+    /* Re-render khi người dùng đổi theme */
+    new MutationObserver(function () { renderChart(); })
+        .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 })();
 /*]]>*/
 </script>

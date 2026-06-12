@@ -86,7 +86,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .sidebar .nav-section {
   font-family: 'Be Vietnam Pro', sans-serif;
-  font-size: 0.74rem;
+  font-size: 0.82rem;
   letter-spacing: 1.5px;
   text-transform: uppercase;
   padding: 0.3rem 1rem 0.2rem;
@@ -121,7 +121,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight:    700 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.8px !important;
-  font-size:      0.77rem !important;
+  font-size:      0.82rem !important;
 }
 
 .table-dark th::before {
@@ -219,6 +219,7 @@ body.login-page {
 }
 
 /* ─── HEADING DECORATORS (structure only) ────────────────────── */
+h3::before,
 h4::before,
 h5::before,
 .modal-title::before {
@@ -260,6 +261,84 @@ h5::before,
 .kanata-cloud {
   pointer-events: none !important;
   user-select:    none !important;
+}
+
+/* ─── REPORT PAGE SHARED STYLES ─────────────────────────────── */
+.page-title { font-weight: 800; }
+.metric-label { font-size: .85rem; opacity: .75; }
+.metric-value { font-weight: 800; font-size: 1.35rem; }
+.report-table { font-size: .88rem; }
+.report-table thead th { font-size: .82rem; text-transform: uppercase; white-space: nowrap; }
+.detail-table { font-size: .85rem; }
+.detail-table thead th { font-size: .80rem; text-transform: uppercase; white-space: nowrap; }
+.report-progress { height: 8px; border-radius: 999px; overflow: hidden; }
+.report-progress .progress-bar { border-radius: 999px; transition: width .4s ease; }
+.expand-row td { padding: 0 !important; }
+.expand-inner { padding: 0.75rem 1.25rem 0.75rem 2.5rem; }
+
+/* ─── SKIP TO MAIN (keyboard accessibility) ──────────────────── */
+.skip-to-main {
+  position: fixed;
+  top: -100%;
+  left: 12px;
+  z-index: 9999;
+  padding: 8px 16px;
+  border-radius: 0 0 8px 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+.skip-to-main:focus {
+  top: 0;
+  outline: 3px solid #6366f1;
+  outline-offset: 2px;
+}
+
+/* ─── DASHBOARD DELTA / PANEL (consolidated from inline) ─────── */
+.delta-line   { font-size: .78rem; margin-top: 4px; }
+.panel-item + .panel-item { border-top: 1px solid rgba(128,128,128,.15); }
+.panel-item   { padding: 6px 0; }
+
+/* ─── THONG KE TABLE COLUMNS (consolidated from inline) ──────── */
+.col-tien { min-width: 100px; }
+.col-tile { min-width: 110px; }
+
+/* ─── OFFCANVAS SIDEBAR (mobile nav) ─────────────────────────── */
+.moon-offcanvas-sidebar {
+  width: 270px !important;
+}
+.moon-offcanvas-sidebar .offcanvas-title {
+  font-family:    'Cinzel', 'Be Vietnam Pro', sans-serif;
+  font-weight:    700;
+  font-size:      1.25rem;
+  letter-spacing: 1.5px;
+}
+.sidebar-offcanvas-nav .nav-link {
+  border-left:   3px solid transparent;
+  border-radius: 0 8px 8px 0;
+  transition:    color 0.2s ease, background-color 0.2s ease, border-left-color 0.2s ease;
+  font-family:   'Be Vietnam Pro', sans-serif;
+  font-weight:   500;
+  font-size:     0.95rem;
+  padding:       0.38rem 0.75rem 0.38rem 12px;
+  margin-right:  4px;
+}
+.sidebar-offcanvas-nav .nav-link.active { font-weight: 600; }
+.sidebar-offcanvas-nav .nav-section {
+  font-family:    'Be Vietnam Pro', sans-serif;
+  font-size:      0.82rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding:        0.3rem 1rem 0.2rem;
+  margin-top:     0.5rem;
+  font-weight:    700;
+}
+.sidebar-offcanvas-nav .nav-section::before {
+  content:      "✦";
+  font-size:    0.75em;
+  margin-right: 0.35em;
+  font-family:  sans-serif;
 }
 
 /* ─── LOGIN THEME TOGGLE BUTTON ──────────────────────────────── */
