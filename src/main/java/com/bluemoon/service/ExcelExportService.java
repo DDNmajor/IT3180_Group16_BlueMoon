@@ -52,7 +52,8 @@ public class ExcelExportService {
 
         String[] headers = {
                 "Tên khoản thu", "Mã khoản thu", "Loại áp dụng", "Loại khoản thu",
-                "Số tiền chung", "Đơn giá/m²", "Hạn nộp", "Ngày tạo"
+                "Số tiền chung", "Đơn giá/m²", "Hạn nộp", "Ngày tạo",
+                "Tổng yêu cầu", "Đã đóng", "Còn thiếu"
         };
 
         Row headerRow = sheet.createRow(0);
@@ -82,6 +83,33 @@ public class ExcelExportService {
             dataRow.createCell(5).setCellValue(kt.getDonGiaPerM2() != null ? kt.getDonGiaPerM2().doubleValue() : 0);
             dataRow.createCell(6).setCellValue(kt.getHanNop() != null ? kt.getHanNop().format(df) : "");
             dataRow.createCell(7).setCellValue(kt.getNgayTao() != null ? kt.getNgayTao().format(dtf) : "");
+
+            boolean isTuNguyen = kt.getLoaiKhoanThu() != null && kt.getLoaiKhoanThu().getLoaiApDung() != null && !kt.getLoaiKhoanThu().getLoaiApDung().isBatBuoc();
+            BigDecimal tongYeuCau = BigDecimal.ZERO;
+            BigDecimal daDong = BigDecimal.ZERO;
+
+            List<ThanhToan> tts = thanhToanRepository.findByKhoanThuIdOrderByNgayNopDesc(kt.getId());
+            for (ThanhToan t : tts) {
+                if (t.getSoTienYeuCauHieuLuc() != null) {
+                    tongYeuCau = tongYeuCau.add(t.getSoTienYeuCauHieuLuc());
+                }
+                if (t.getSoTienDaNop() != null) {
+                    daDong = daDong.add(t.getSoTienDaNop());
+                }
+            }
+
+            if (isTuNguyen) {
+                tongYeuCau = BigDecimal.ZERO;
+            }
+
+            BigDecimal conThieu = tongYeuCau.subtract(daDong);
+            if (conThieu.compareTo(BigDecimal.ZERO) < 0 || isTuNguyen) {
+                conThieu = BigDecimal.ZERO;
+            }
+
+            dataRow.createCell(8).setCellValue(tongYeuCau.doubleValue());
+            dataRow.createCell(9).setCellValue(daDong.doubleValue());
+            dataRow.createCell(10).setCellValue(conThieu.doubleValue());
         }
 
         for (int i = 0; i < headers.length; i++) {
