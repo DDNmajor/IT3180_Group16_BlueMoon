@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Thống kê khoản đóng góp')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<style>
+    .page-title { font-weight: 800; color: #172554; }
+    .soft-card { border: 0; border-radius: 18px; box-shadow: 0 10px 30px rgba(15, 23, 42, .08); }
+    .metric-card { border-radius: 18px; border: 1px solid #e5e7eb; background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%); }
+    .metric-label { color: #64748b; font-size: .85rem; }
+    .metric-value { font-weight: 800; font-size: 1.35rem; color: #0f172a; }
+    .table thead th { background: #f1f5f9; color: #334155; font-size: .82rem; text-transform: uppercase; white-space: nowrap; }
+    .badge-type { border-radius: 999px; padding: .35rem .7rem; font-weight: 700; }
+    .type-bat-buoc { background: #dbeafe; color: #1d4ed8; }
+    .type-dot-xuat { background: #fef3c7; color: #92400e; }
+    .type-tu-nguyen { background: #dcfce7; color: #166534; }
+    .progress { height: 8px; border-radius: 999px; background: #e5e7eb; }
+    .progress-bar { background: #2563eb; }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/layout :: sidebar}"></div>
+
+        <main class="col-md-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="page-title mb-1">Thống kê khoản đóng góp</h3>
+                    <div class="text-muted">Theo dõi tổng yêu cầu, đã thu, còn thiếu và trạng thái từng khoản thu.</div>
+                </div>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/dashboard}" class="btn btn-outline-secondary btn-sm">Dashboard</a>
+                    <a th:href="@{/thanh-toan/no-phi}" class="btn btn-danger btn-sm">Bảng nợ phí</a>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="metric-card p-3">
+                        <div class="metric-label">Tổng tiền yêu cầu</div>
+                        <div class="metric-value" th:text="${#numbers.formatDecimal(tongTienYeuCau, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card p-3">
+                        <div class="metric-label">Tổng tiền đã thu</div>
+                        <div class="metric-value text-success" th:text="${#numbers.formatDecimal(tongTienDaThu, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card p-3">
+                        <div class="metric-label">Tổng tiền còn thiếu</div>
+                        <div class="metric-value text-danger" th:text="${#numbers.formatDecimal(tongTienConThieu, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card p-3">
+                        <div class="metric-label">Hộ đang nợ ít nhất 1 khoản</div>
+                        <div class="metric-value" th:text="${tongSoHoDangNo}">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card soft-card mb-4">
+                <div class="card-body">
+                    <form th:action="@{/thanh-toan/thong-ke}" method="get" class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label">Tháng/Năm</label>
+                            <input type="month" name="thang" class="form-control" th:value="${thang}">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Loại khoản thu</label>
+                            <select name="loai" class="form-select">
+                                <option value="ALL" th:selected="${loai == 'ALL'}">Tất cả</option>
+                                <option value="BAT_BUOC" th:selected="${loai == 'BAT_BUOC'}">Bắt buộc</option>
+                                <option value="DOT_XUAT" th:selected="${loai == 'DOT_XUAT'}">Đột xuất</option>
+                                <option value="TU_NGUYEN" th:selected="${loai == 'TU_NGUYEN'}">Tự nguyện</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 d-grid">
+                            <button type="submit" class="btn btn-primary">Lọc</button>
+                        </div>
+
+                        <div class="col-md-3 text-md-end">
+                            <small class="text-muted">Mặc định là tháng hiện tại.</small>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card soft-card">
+                <div class="card-body table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                        <tr>
+                            <th>Tên khoản thu</th>
+                            <th>Loại</th>
+                            <th class="text-end">Tổng yêu cầu</th>
+                            <th class="text-end">Đã thu</th>
+                            <th class="text-end">Còn thiếu</th>
+                            <th class="text-center">Đã đóng</th>
+                            <th class="text-center">Còn nợ</th>
+                            <th class="text-center">Đóng dư</th>
+                            <th class="text-center">Chưa nộp</th>
+                            <th style="min-width: 130px;">Tỉ lệ</th>
+                            <th class="text-end">Chi tiết</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:each="row : ${thongKeList}">
+                            <td class="fw-semibold" th:text="${row.tenKhoanThu}">Phí vệ sinh</td>
+                            <td>
+                                <span class="badge-type"
+                                      th:classappend="${row.loai == 'Bắt buộc'} ? ' type-bat-buoc' : (${row.loai == 'Đột xuất'} ? ' type-dot-xuat' : ' type-tu-nguyen')"
+                                      th:text="${row.loai}">Bắt buộc</span>
+                            </td>
+                            <td class="text-end" th:text="${#numbers.formatDecimal(row.tongTienYeuCau, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
+                            <td class="text-end text-success fw-semibold" th:text="${#numbers.formatDecimal(row.tongTienDaThu, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
+                            <td class="text-end text-danger fw-semibold" th:text="${#numbers.formatDecimal(row.conThieu, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
+                            <td class="text-center" th:text="${row.soHoDaDong}">0</td>
+                            <td class="text-center text-danger fw-semibold" th:text="${row.soHoConNo}">0</td>
+                            <td class="text-center" th:text="${row.soHoDongDu}">0</td>
+                            <td class="text-center" th:text="${row.soHoChuaNop}">0</td>
+                            <td>
+                                <div class="d-flex justify-content-between">
+                                    <small th:text="${row.tiLeThuDuoc} + '%'">0%</small>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar"
+                                         th:style="'width:' + (${row.tiLeThuDuoc.compareTo(T(java.math.BigDecimal).valueOf(100)) > 0 ? 100 : row.tiLeThuDuoc}) + '%'">
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <a class="btn btn-outline-primary btn-sm"
+                                   th:href="@{/thanh-toan/theo-doi(idKhoanThu=${row.idKhoanThu})}">
+                                    Xem
+                                </a>
+                            </td>
+                        </tr>
+
+                        <tr th:if="${#lists.isEmpty(thongKeList)}">
+                            <td colspan="11" class="text-center text-muted py-4">
+                                Không có khoản thu nào trong tháng/bộ lọc này.
+                            </td>
+                        </tr>
+                        </tbody>
+
+                        <tfoot>
+                        <tr class="fw-bold">
+                            <td colspan="2">Tổng cuối</td>
+                            <td class="text-end" th:text="${#numbers.formatDecimal(tongTienYeuCau, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
+                            <td class="text-end" th:text="${#numbers.formatDecimal(tongTienDaThu, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
+                            <td class="text-end" th:text="${#numbers.formatDecimal(tongTienConThieu, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</td>
+                            <td colspan="6" class="text-end" th:text="'Tổng số hộ đang nợ ít nhất 1 khoản: ' + ${tongSoHoDangNo}">
+                                Tổng số hộ đang nợ ít nhất 1 khoản: 0
+                            </td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

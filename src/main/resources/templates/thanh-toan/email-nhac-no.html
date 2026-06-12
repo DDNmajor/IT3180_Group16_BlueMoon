@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Email nhắc nợ')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<style>
+    .soft-card { border: 0; border-radius: 18px; box-shadow: 0 10px 30px rgba(15, 23, 42, .08); }
+    .email-box { white-space: pre-wrap; background: #f8fafc; border-radius: 14px; border: 1px solid #e5e7eb; padding: 16px; }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/layout :: sidebar}"></div>
+
+        <main class="col-md-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold mb-1">Email nhắc thanh toán</h3>
+                    <div class="text-muted">
+                        Căn hộ <b th:text="${noPhi.soCanHo}">A101</b> —
+                        Chủ hộ <b th:text="${noPhi.chuHo}">Nguyễn Văn A</b>
+                    </div>
+                </div>
+                <a th:href="@{/thanh-toan/no-phi}" class="btn btn-outline-secondary">Quay lại bảng nợ</a>
+            </div>
+
+            <div class="card soft-card">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Email người nhận</label>
+                        <input class="form-control" th:value="${noPhi.email}" readonly>
+                        <small class="text-danger" th:if="${noPhi.email == null || noPhi.email.isBlank()}">
+                            Hộ này chưa có email trong hồ sơ. Cần cập nhật email ở mục Hộ gia đình.
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tiêu đề</label>
+                        <input class="form-control" th:value="${subject}" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nội dung</label>
+                        <div class="email-box" th:text="${body}">Nội dung email</div>
+                    </div>
+
+                    <a class="btn btn-danger"
+                       th:if="${noPhi.email != null && !noPhi.email.isBlank()}"
+                       th:href="'mailto:' + ${noPhi.email} + '?subject=' + ${subjectEncoded} + '&body=' + ${bodyEncoded}">
+                        Mở email để gửi
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
