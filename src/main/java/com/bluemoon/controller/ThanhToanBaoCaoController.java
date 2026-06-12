@@ -8,7 +8,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import com.bluemoon.service.ExcelExportService;
+import com.bluemoon.model.KhoanThu;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -22,6 +28,19 @@ public class ThanhToanBaoCaoController {
 
     private final BaoCaoThanhToanService baoCaoThanhToanService;
     private final KhoanThuService khoanThuService;
+    private final ExcelExportService excelExportService;
+
+    @GetMapping("/thong-ke/export/{idKhoanThu}")
+    public ResponseEntity<byte[]> exportBaoCao(@PathVariable Integer idKhoanThu) throws IOException {
+        byte[] excelData = excelExportService.exportBaoCaoKhoanThu(idKhoanThu);
+        KhoanThu kt = khoanThuService.findById(idKhoanThu);
+        String fileName = "BaoCao_" + kt.getMaKhoanThu() + ".xlsx";
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(excelData);
+    }
 
     @GetMapping("/no-phi")
     public String noPhi(@RequestParam(required = false) String keyword,

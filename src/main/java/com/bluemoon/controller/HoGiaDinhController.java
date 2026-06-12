@@ -16,6 +16,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.multipart.MultipartFile;
+import com.bluemoon.service.ExcelImportService;
 
 @Controller
 @RequestMapping("/ho-gia-dinh")
@@ -27,6 +29,22 @@ public class HoGiaDinhController {
     private final BienDongService   bienDongService;
     private final PhuongTienService phuongTienService;
     private final KhoanThuService   khoanThuService;
+    private final ExcelImportService excelImportService;
+
+    @PostMapping("/import")
+    public String importExcel(@RequestParam("file") MultipartFile file, RedirectAttributes ra) {
+        if (file.isEmpty()) {
+            ra.addFlashAttribute("errorMsg", "Vui lòng chọn file Excel để import.");
+            return "redirect:/ho-gia-dinh";
+        }
+        String result = excelImportService.importHoGiaDinh(file);
+        if (result.contains("Lỗi đọc file Excel")) {
+            ra.addFlashAttribute("errorMsg", result);
+        } else {
+            ra.addFlashAttribute("infoMsg", result.replace("\n", "<br>")); // Hiển thị xuống dòng trên giao diện
+        }
+        return "redirect:/ho-gia-dinh";
+    }
 
     @GetMapping
     public String list(@RequestParam(required = false) String search, Model model) {

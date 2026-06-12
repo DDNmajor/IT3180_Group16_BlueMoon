@@ -141,6 +141,10 @@
                                    th:href="@{/thanh-toan/theo-doi(idKhoanThu=${row.idKhoanThu})}">
                                     Xem
                                 </a>
+                                <a class="btn btn-outline-success btn-sm ms-1" title="Xuất báo cáo Excel"
+                                   th:href="@{/thanh-toan/thong-ke/export/{idKhoanThu}(idKhoanThu=${row.idKhoanThu})}">
+                                    <i class="bi bi-file-earmark-excel"></i> Xuất
+                                </a>
                             </td>
                         </tr>
 
