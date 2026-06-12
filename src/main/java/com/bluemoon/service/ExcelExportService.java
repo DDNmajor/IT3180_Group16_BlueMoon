@@ -16,6 +16,10 @@ import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.time.LocalDate;
 import java.util.stream.Collectors;
 
 @Service
@@ -94,9 +98,9 @@ public class ExcelExportService {
         headerStyle.setFont(font);
 
         String[] headers = {
-                "Tên khoản thu", "Số căn hộ", "Chủ hộ", "Số nhân khẩu", "Diện tích (m²)",
-                "Số tiền yêu cầu", "Số tiền đã nộp", "Còn thiếu",
-                "Trạng thái", "Phương thức", "Người thu", "Ngày nộp gần nhất"
+                "Số căn hộ", "Chủ hộ", "Số nhân khẩu", "Diện tích (m²)",
+                "Yêu cầu (Bắt buộc)", "Đã nộp (Bắt buộc)", "Còn thiếu (Bắt buộc)", "Đã nộp (Tự nguyện)",
+                "Trạng thái (Bắt buộc)", "Ngày nộp gần nhất"
         };
 
         Row headerRow = sheet.createRow(0);
@@ -107,95 +111,112 @@ public class ExcelExportService {
         }
 
         List<HoGiaDinh> tatCaHo = hoGiaDinhRepository.findAll();
-        int rowIndex = 1;
-
-        long totalHo = 0;
-        long hoDaDong = 0;
-        long hoDongDu = 0;
-        long hoConNo = 0;
-        BigDecimal tongDaThu = BigDecimal.ZERO;
-        BigDecimal tongConThieu = BigDecimal.ZERO;
-
+        
+        Map<Integer, List<ThanhToan>> ttMapByHo = new HashMap<>();
         for (KhoanThu kt : listKt) {
             List<ThanhToan> thanhToans = thanhToanRepository.findByKhoanThuIdOrderByNgayNopDesc(kt.getId());
-            Map<Integer, ThanhToan> ttMap = thanhToans.stream()
-                    .filter(t -> t.getHoGiaDinh() != null)
-                    .collect(Collectors.toMap(
-                            t -> t.getHoGiaDinh().getId(),
-                            t -> t,
-                            (t1, t2) -> t1
-                    ));
-
-            boolean isTuNguyen = kt.getLoaiKhoanThu() != null 
-                    && kt.getLoaiKhoanThu().getLoaiApDung() != null 
-                    && kt.getLoaiKhoanThu().getLoaiApDung().name().contains("TU_NGUYEN");
-
-            for (HoGiaDinh ho : tatCaHo) {
-                ThanhToan tt = ttMap.get(ho.getId());
-                
-                if (isTuNguyen && tt == null) {
-                    continue; // Skip hộ tự nguyện chưa đóng
+            for (ThanhToan tt : thanhToans) {
+                if (tt.getHoGiaDinh() != null) {
+                    ttMapByHo.computeIfAbsent(tt.getHoGiaDinh().getId(), k -> new ArrayList<>()).add(tt);
                 }
-
-                totalHo++;
-                Row row = sheet.createRow(rowIndex++);
-                
-                row.createCell(0).setCellValue(kt.getTenKhoanThu());
-                row.createCell(1).setCellValue(ho.getSoCanHo());
-                row.createCell(2).setCellValue(ho.getChuHo());
-                row.createCell(3).setCellValue(ho.getNhanKhaus() != null ? ho.getNhanKhaus().size() : 0);
-                row.createCell(4).setCellValue(ho.getDienTich() != null ? ho.getDienTich().doubleValue() : 0);
-
-                BigDecimal soTienYeuCau;
-                BigDecimal soTienDaNop = BigDecimal.ZERO;
-                String trangThai = "CHƯA NỘP";
-                String phuongThuc = "";
-                String nguoiThu = "";
-                String ngayNop = "";
-
-                if (tt != null) {
-                    soTienYeuCau = tt.getSoTienYeuCauHieuLuc();
-                    soTienDaNop = tt.getSoTienDaNop() != null ? tt.getSoTienDaNop() : BigDecimal.ZERO;
-                    trangThai = tt.getTrangThai() != null ? tt.getTrangThai().name() : "";
-                    phuongThuc = tt.getPhuongThuc() != null ? tt.getPhuongThuc().name() : "";
-                    nguoiThu = tt.getNguoiThu() != null ? tt.getNguoiThu().getHoTen() : "";
-                    ngayNop = tt.getNgayNop() != null ? tt.getNgayNop().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "";
-                } else {
-                    soTienYeuCau = tinhSoTienYeuCau(kt, ho);
-                    trangThai = "CON_NO";
-                }
-
-                BigDecimal conThieu = soTienYeuCau.subtract(soTienDaNop);
-                if (conThieu.compareTo(BigDecimal.ZERO) < 0) {
-                    conThieu = BigDecimal.ZERO;
-                }
-
-                row.createCell(5).setCellValue(soTienYeuCau.doubleValue());
-                row.createCell(6).setCellValue(soTienDaNop.doubleValue());
-                row.createCell(7).setCellValue(conThieu.doubleValue());
-                row.createCell(8).setCellValue(trangThai);
-                row.createCell(9).setCellValue(phuongThuc);
-                row.createCell(10).setCellValue(nguoiThu);
-                row.createCell(11).setCellValue(ngayNop);
-
-                if ("DA_DONG".equals(trangThai)) hoDaDong++;
-                else if ("DONG_DU".equals(trangThai)) hoDongDu++;
-                else if ("CON_NO".equals(trangThai) || "CHƯA NỘP".equals(trangThai)) hoConNo++;
-
-                tongDaThu = tongDaThu.add(soTienDaNop);
-                tongConThieu = tongConThieu.add(conThieu);
             }
         }
 
-        // Dòng tổng kết
+        int rowIndex = 1;
+
+        long totalHo = tatCaHo.size();
+        long hoDaDong = 0;
+        long hoDongDu = 0;
+        long hoConNo = 0;
+        BigDecimal tongDaThuBatBuoc = BigDecimal.ZERO;
+        BigDecimal tongConThieuBatBuoc = BigDecimal.ZERO;
+        BigDecimal tongDaThuTuNguyen = BigDecimal.ZERO;
+
+        for (HoGiaDinh ho : tatCaHo) {
+            List<ThanhToan> ttList = ttMapByHo.getOrDefault(ho.getId(), Collections.emptyList());
+
+            BigDecimal yeuCauBatBuoc = BigDecimal.ZERO;
+            BigDecimal daNopBatBuoc = BigDecimal.ZERO;
+            BigDecimal daNopTuNguyen = BigDecimal.ZERO;
+            LocalDate ngayNopGanNhat = null;
+
+            for (KhoanThu kt : listKt) {
+                boolean isBatBuoc = kt.getLoaiKhoanThu() != null && "BAT_BUOC".equals(kt.getLoaiKhoanThu().getLoaiApDung().name());
+                boolean isTuNguyen = kt.getLoaiKhoanThu() != null && "TU_NGUYEN".equals(kt.getLoaiKhoanThu().getLoaiApDung().name());
+
+                ThanhToan tt = ttList.stream().filter(t -> t.getKhoanThu().getId().equals(kt.getId())).findFirst().orElse(null);
+
+                BigDecimal yc = BigDecimal.ZERO;
+                BigDecimal dn = BigDecimal.ZERO;
+
+                if (tt != null) {
+                    yc = tt.getSoTienYeuCauHieuLuc();
+                    dn = tt.getSoTienDaNop() != null ? tt.getSoTienDaNop() : BigDecimal.ZERO;
+                    if (tt.getNgayNop() != null) {
+                        if (ngayNopGanNhat == null || tt.getNgayNop().isAfter(ngayNopGanNhat)) {
+                            ngayNopGanNhat = tt.getNgayNop();
+                        }
+                    }
+                } else {
+                    if (isBatBuoc) {
+                        yc = tinhSoTienYeuCau(kt, ho);
+                    }
+                }
+
+                if (isBatBuoc) {
+                    yeuCauBatBuoc = yeuCauBatBuoc.add(yc);
+                    daNopBatBuoc = daNopBatBuoc.add(dn);
+                } else if (isTuNguyen) {
+                    daNopTuNguyen = daNopTuNguyen.add(dn);
+                }
+            }
+
+            BigDecimal conThieuBatBuoc = yeuCauBatBuoc.subtract(daNopBatBuoc);
+            if (conThieuBatBuoc.compareTo(BigDecimal.ZERO) < 0) {
+                conThieuBatBuoc = BigDecimal.ZERO;
+            }
+
+            String trangThai = "CHƯA NỘP";
+            if (yeuCauBatBuoc.compareTo(BigDecimal.ZERO) == 0) {
+                trangThai = "KHÔNG CÓ PHÍ";
+            } else if (daNopBatBuoc.compareTo(yeuCauBatBuoc) >= 0) {
+                trangThai = "DA_DONG";
+            } else if (daNopBatBuoc.compareTo(BigDecimal.ZERO) > 0) {
+                trangThai = "DONG_DU";
+            } else {
+                trangThai = "CON_NO";
+            }
+
+            Row row = sheet.createRow(rowIndex++);
+            row.createCell(0).setCellValue(ho.getSoCanHo());
+            row.createCell(1).setCellValue(ho.getChuHo());
+            row.createCell(2).setCellValue(ho.getNhanKhaus() != null ? ho.getNhanKhaus().size() : 0);
+            row.createCell(3).setCellValue(ho.getDienTich() != null ? ho.getDienTich().doubleValue() : 0);
+            row.createCell(4).setCellValue(yeuCauBatBuoc.doubleValue());
+            row.createCell(5).setCellValue(daNopBatBuoc.doubleValue());
+            row.createCell(6).setCellValue(conThieuBatBuoc.doubleValue());
+            row.createCell(7).setCellValue(daNopTuNguyen.doubleValue());
+            row.createCell(8).setCellValue(trangThai);
+            row.createCell(9).setCellValue(ngayNopGanNhat != null ? ngayNopGanNhat.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "");
+
+            if ("DA_DONG".equals(trangThai)) hoDaDong++;
+            else if ("DONG_DU".equals(trangThai)) hoDongDu++;
+            else if ("CON_NO".equals(trangThai) || "CHƯA NỘP".equals(trangThai)) hoConNo++;
+
+            tongDaThuBatBuoc = tongDaThuBatBuoc.add(daNopBatBuoc);
+            tongConThieuBatBuoc = tongConThieuBatBuoc.add(conThieuBatBuoc);
+            tongDaThuTuNguyen = tongDaThuTuNguyen.add(daNopTuNguyen);
+        }
+
         rowIndex++;
         Row summaryRow = sheet.createRow(rowIndex);
         summaryRow.createCell(0).setCellValue("TỔNG CỘNG");
         summaryRow.getCell(0).setCellStyle(headerStyle);
-        summaryRow.createCell(1).setCellValue(totalHo + " lượt");
-        summaryRow.createCell(5).setCellValue("Đã đóng: " + hoDaDong + " | Dư: " + hoDongDu + " | Nợ: " + hoConNo);
-        summaryRow.createCell(6).setCellValue("Tổng thu: " + tongDaThu.doubleValue());
-        summaryRow.createCell(7).setCellValue("Tổng nợ: " + tongConThieu.doubleValue());
+        summaryRow.createCell(1).setCellValue(totalHo + " hộ");
+        summaryRow.createCell(4).setCellValue("Đã đóng đủ BB: " + hoDaDong + " | Dư: " + hoDongDu + " | Nợ BB: " + hoConNo);
+        summaryRow.createCell(5).setCellValue("Tổng thu BB: " + tongDaThuBatBuoc.doubleValue());
+        summaryRow.createCell(6).setCellValue("Tổng nợ BB: " + tongConThieuBatBuoc.doubleValue());
+        summaryRow.createCell(7).setCellValue("Tổng thu TN: " + tongDaThuTuNguyen.doubleValue());
 
         for (int i = 0; i < headers.length; i++) {
             sheet.autoSizeColumn(i);
