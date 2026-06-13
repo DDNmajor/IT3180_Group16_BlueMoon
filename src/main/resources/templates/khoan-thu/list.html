@@ -141,6 +141,8 @@
                                           th:with="v=${oto}"
                                           th:text="${#numbers.formatDecimal(v, 0, 'COMMA', 0, 'POINT')}"></span>
                                 </span>
+                                <span th:if="${kt.loaiTinhPhi != null and kt.loaiTinhPhi.name() == 'THU_HO'}"
+                                      class="text-muted fst-italic small">Theo hộ</span>
                             </td>
                             <td>
                                 <span th:if="${kt.loaiTinhPhi == null or kt.loaiTinhPhi.name() == 'FIXED'}"
@@ -152,6 +154,8 @@
                                     <span>đ/xe máy/hộ</span>
                                     <span>đ/ô tô/hộ</span>
                                 </span>
+                                <span th:if="${kt.loaiTinhPhi != null and kt.loaiTinhPhi.name() == 'THU_HO'}"
+                                      class="badge bg-primary">Thu hộ</span>
                             </td>
                             <td th:text="${#temporals.format(kt.kyThu, 'MM/yyyy')}"></td>
                             <td th:text="${kt.hanNop != null} ? ${#temporals.format(kt.hanNop, 'dd/MM/yyyy')} : '--'"></td>
@@ -161,6 +165,13 @@
                                 <span th:if="${kt.hanNop != null && !isQuaHan}" class="badge bg-success">Còn hạn</span>
                             </td>
                             <td class="text-center">
+                                <a th:if="${kt.loaiTinhPhi != null and kt.loaiTinhPhi.name() == 'THU_HO'}"
+                                   th:href="@{/thanh-toan/nhap-thu-ho/{id}(id=${kt.id})}"
+                                   class="btn btn-info text-white btn-sm"
+                                   th:aria-label="'Nhập tiền thu hộ ' + ${kt.tenKhoanThu}"
+                                   title="Nhập tiền từng hộ">
+                                    <i class="bi bi-input-cursor-text" aria-hidden="true"></i>
+                                </a>
                                 <a th:href="@{/khoan-thu/sua/{id}(id=${kt.id})}"
                                    class="btn btn-warning btn-sm"
                                    th:aria-label="'Sửa khoản thu ' + ${kt.tenKhoanThu}">
@@ -171,7 +182,7 @@
                                         th:data-confirm-url="@{/khoan-thu/xoa/{id}(id=${kt.id})}"
                                         th:data-item-name="${kt.tenKhoanThu}"
                                         data-confirm-title="Xóa khoản thu"
-                                        data-confirm-sub="Không thể hoàn tác. Chỉ xóa được nếu chưa có thanh toán."
+                                        data-confirm-sub="Khoản thu vào thùng rác và CÓ THỂ KHÔI PHỤC từ Thùng rác. Chỉ xóa được nếu chưa có tiền nộp."
                                         data-confirm-btn-class="btn-danger"
                                         data-confirm-btn-text="Xóa"
                                         th:aria-label="'Xóa khoản thu ' + ${kt.tenKhoanThu}">

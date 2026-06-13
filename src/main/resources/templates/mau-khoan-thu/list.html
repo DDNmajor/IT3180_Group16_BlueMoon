@@ -72,11 +72,13 @@
 
                                 <!-- Số tiền -->
                                 <td class="text-end">
-                                    <span th:if="${mau.donGiaPerM2 == null}"
+                                    <span th:if="${mau.loaiTinhPhi?.name() == 'THU_HO'}"
+                                          class="text-muted fst-italic small">Theo hộ</span>
+                                    <span th:if="${mau.loaiTinhPhi?.name() != 'THU_HO' and mau.donGiaPerM2 == null}"
                                           th:with="v=${mau.soTien != null ? mau.soTien : 0}"
                                           th:text="${#numbers.formatDecimal(v, 0, 'COMMA', 0, 'POINT')} + ' đ'">
                                     </span>
-                                    <span th:if="${mau.donGiaPerM2 != null}"
+                                    <span th:if="${mau.loaiTinhPhi?.name() != 'THU_HO' and mau.donGiaPerM2 != null}"
                                           th:with="v=${mau.donGiaPerM2}"
                                           th:text="${#numbers.formatDecimal(v, 0, 'COMMA', 0, 'POINT')} + ' đ/m²'">
                                     </span>
@@ -101,8 +103,14 @@
                                     <span th:with="kyList=${khoanThuMap[mau.id]}">
                                         <div th:if="${kyList != null and !#lists.isEmpty(kyList)}"
                                              class="text-muted small"
-                                             th:with="lastKy=${kyList[0]}"
-                                             th:text="'Gần nhất: ' + ${#temporals.format(lastKy.kyThu, 'MM/yyyy')}">
+                                             th:with="lastKy=${kyList[0]}">
+                                            <span th:text="'Gần nhất: ' + ${#temporals.format(lastKy.kyThu, 'MM/yyyy')}"></span>
+                                            <a th:if="${mau.loaiTinhPhi?.name() == 'THU_HO'}"
+                                               th:href="@{/thanh-toan/nhap-thu-ho/{id}(id=${lastKy.id})}"
+                                               class="btn btn-info btn-sm ms-1 py-0 px-1"
+                                               title="Nhập tiền từng hộ">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
                                         </div>
                                     </span>
                                 </td>
@@ -147,13 +155,17 @@
                                         </button>
 
                                         <!-- Xóa -->
-                                        <form th:action="@{/mau-khoan-thu/xoa/{id}(id=${mau.id})}"
-                                              method="post" class="d-inline"
-                                              onsubmit="return confirm('Xóa mẫu này? Các kỳ thu đã tạo vẫn được giữ lại, chỉ mất liên kết với mẫu.')">
-                                            <button type="submit" class="btn btn-danger btn-sm" title="Xóa mẫu">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
+                                        <button type="button" class="btn btn-danger btn-sm"
+                                                data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                                                th:data-confirm-url="@{/mau-khoan-thu/xoa/{id}(id=${mau.id})}"
+                                                th:data-item-name="${mau.tenMau}"
+                                                data-confirm-title="Xóa mẫu khoản thu"
+                                                data-confirm-sub="Mẫu bị XÓA VĨNH VIỄN. Các kỳ thu đã tạo được giữ lại nhưng mất liên kết. Không thể khôi phục."
+                                                data-confirm-btn-class="btn-danger"
+                                                data-confirm-btn-text="Xóa"
+                                                title="Xóa mẫu">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -217,6 +229,7 @@
     </div>
 </div>
 
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

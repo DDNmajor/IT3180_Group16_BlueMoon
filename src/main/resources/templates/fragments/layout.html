@@ -24,12 +24,41 @@
     <link rel="stylesheet" th:href="@{/css/moona-theme.css}"/>
     <!-- Kanata Light Theme (colors, decorations) -->
     <link rel="stylesheet" th:href="@{/css/kanata-theme.css}"/>
-    <!-- Anti-FOUC: set theme trước khi browser render -->
+    <!-- Anti-FOUC + định nghĩa sớm để mọi trang dùng được onclick -->
     <script>
       (function(){
         var t = localStorage.getItem('bluemoon-theme') || 'light';
         document.documentElement.setAttribute('data-theme', t);
       })();
+
+      function toggleKanataTheme() {
+        var current = document.documentElement.getAttribute('data-theme') || 'dark';
+        var next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('bluemoon-theme', next);
+        var btn = document.getElementById('themeToggleBtn');
+        if (btn) {
+          if (next === 'light') {
+            btn.classList.remove('btn-outline-light'); btn.classList.add('btn-outline-secondary');
+            btn.title = 'Giao diện sáng — bấm để chuyển tối';
+          } else {
+            btn.classList.remove('btn-outline-secondary'); btn.classList.add('btn-outline-light');
+            btn.title = 'Giao diện tối — bấm để chuyển sáng';
+          }
+        }
+      }
+
+      function updateThemeButton(theme) {
+        var btn = document.getElementById('themeToggleBtn');
+        if (!btn) return;
+        if (theme === 'light') {
+          btn.classList.remove('btn-outline-light'); btn.classList.add('btn-outline-secondary');
+          btn.title = 'Giao diện sáng — bấm để chuyển tối';
+        } else {
+          btn.classList.remove('btn-outline-secondary'); btn.classList.add('btn-outline-light');
+          btn.title = 'Giao diện tối — bấm để chuyển sáng';
+        }
+      }
     </script>
 </head>
 

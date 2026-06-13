@@ -3,11 +3,13 @@ package com.bluemoon.controller;
 import com.bluemoon.dto.NoPhiHoDto;
 import com.bluemoon.dto.ThongKeKhoanThuDto;
 import com.bluemoon.service.BaoCaoThanhToanService;
+import com.bluemoon.service.EmailService;
 import com.bluemoon.service.KhoanThuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +18,6 @@ import com.bluemoon.model.KhoanThu;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -29,6 +29,7 @@ public class ThanhToanBaoCaoController {
     private final BaoCaoThanhToanService baoCaoThanhToanService;
     private final KhoanThuService khoanThuService;
     private final ExcelExportService excelExportService;
+    private final EmailService emailService;
 
     @GetMapping("/thong-ke/export")
     public ResponseEntity<byte[]> exportBaoCao(@RequestParam(required = false) String thang,
@@ -112,13 +113,32 @@ public class ThanhToanBaoCaoController {
         model.addAttribute("noPhi", noPhi);
         model.addAttribute("subject", subject);
         model.addAttribute("body", body);
-        model.addAttribute("subjectEncoded", encode(subject));
-        model.addAttribute("bodyEncoded", encode(body));
 
         return "thanh-toan/email-nhac-no";
     }
 
-    private String encode(String value) {
-        return URLEncoder.encode(value == null ? "" : value, StandardCharsets.UTF_8);
+    @PostMapping("/no-phi/email/{idHo}")
+    public String guiEmailNhacNo(@PathVariable Integer idHo, RedirectAttributes ra) {
+        NoPhiHoDto noPhi = baoCaoThanhToanService.getNoPhiCuaHo(idHo);
+
+        if (noPhi.getEmail() == null || noPhi.getEmail().isBlank()) {
+            ra.addFlashAttribute("errorMsg", "Hộ này chưa có email trong hồ sơ.");
+            return "redirect:/thanh-toan/no-phi/email/" + idHo;
+        }
+
+        String subject = baoCaoThanhToanService.taoTieuDeEmail(noPhi);
+        String body = baoCaoThanhToanService.taoNoiDungEmail(noPhi);
+
+        try {
+            emailService.guiEmailNhacNo(noPhi.getEmail(), noPhi.getSoCanHo(), subject, body);
+            ra.addFlashAttribute("successMsg",
+                    "Đã gửi email nhắc nợ tới " + noPhi.getEmail() + " thành công.");
+        } catch (Exception e) {
+            ra.addFlashAttribute("errorMsg", "Gửi email thất bại: " + e.getMessage());
+            return "redirect:/thanh-toan/no-phi/email/" + idHo;
+        }
+
+        return "redirect:/thanh-toan/no-phi";
     }
+
 }

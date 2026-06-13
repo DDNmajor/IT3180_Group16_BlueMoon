@@ -131,7 +131,8 @@
                                     <i class="bi bi-inbox me-1"></i>Chưa có giao dịch nào.
                                 </td>
                             </tr>
-                            <tr th:each="tt, stat : ${danhSach}">
+                            <tr th:each="tt, stat : ${danhSach}"
+                                th:if="${tt.hoGiaDinh != null and tt.khoanThu != null}">
                                 <td class="text-muted small" th:text="${stat.count}"></td>
                                 <!-- Căn hộ -->
                                 <td>
@@ -198,28 +199,33 @@
                                         </button>
 
                                         <!-- Hoàn tiền — chỉ hiện khi DONG_DU -->
-                                        <form th:if="${tt.trangThai?.name() == 'DONG_DU'}"
-                                              th:action="@{/thanh-toan/hoan-tien/{id}(id=${tt.id})}"
-                                              method="post"
-                                              onsubmit="return confirm('Xác nhận đã hoàn trả tiền thừa cho hộ này?')">
-                                            <input type="hidden" name="idHo"
-                                                   th:value="${tt.hoGiaDinh.id}"/>
-                                            <button type="submit"
-                                                    class="btn btn-outline-info btn-sm w-100"
-                                                    title="Báo đã hoàn trả tiền thừa, chuyển sang Đã đóng">
-                                                <i class="bi bi-arrow-return-left me-1"></i>Hoàn tiền
-                                            </button>
-                                        </form>
+                                        <button th:if="${tt.trangThai?.name() == 'DONG_DU'}"
+                                                type="button"
+                                                class="btn btn-outline-info btn-sm w-100"
+                                                data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                                                th:data-confirm-url="@{/thanh-toan/hoan-tien/{id}(id=${tt.id})}"
+                                                th:data-item-name="${tt.hoGiaDinh.soCanHo} + ' — ' + ${tt.khoanThu.tenKhoanThu}"
+                                                data-confirm-title="Hoàn trả tiền thừa"
+                                                data-confirm-sub="Khoản thu sẽ chuyển từ 'Đóng dư' sang 'Đã đóng đủ'."
+                                                data-confirm-btn-class="btn-info"
+                                                data-confirm-btn-text="Xác nhận hoàn tiền"
+                                                title="Báo đã hoàn trả tiền thừa, chuyển sang Đã đóng">
+                                            <i class="bi bi-arrow-return-left me-1"></i>Hoàn tiền
+                                        </button>
 
                                         <!-- Xóa -->
-                                        <form th:action="@{/thanh-toan/xoa/{id}(id=${tt.id})}"
-                                              method="post"
-                                              onsubmit="return confirm('Xác nhận xóa bản ghi thanh toán này?')">
-                                            <button type="submit" class="btn btn-danger btn-sm w-100"
-                                                    title="Xóa">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
+                                        <button type="button"
+                                                class="btn btn-danger btn-sm w-100"
+                                                data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                                                th:data-confirm-url="@{/thanh-toan/xoa/{id}(id=${tt.id})}"
+                                                th:data-item-name="${tt.hoGiaDinh.soCanHo} + ' — ' + ${tt.khoanThu.tenKhoanThu}"
+                                                data-confirm-title="Xóa bản ghi thanh toán"
+                                                th:data-confirm-sub="${(tt.khoanThu.loaiKhoanThu != null and tt.khoanThu.loaiKhoanThu.loaiApDung != null and tt.khoanThu.loaiKhoanThu.loaiApDung.name() != 'TU_NGUYEN') ? 'Khoản bắt buộc: đặt lại về Còn nợ (0 đ). Không xóa hẳn.' : 'Bản ghi bị XÓA VĨNH VIỄN. Không thể khôi phục.'}"
+                                                data-confirm-btn-class="btn-danger"
+                                                data-confirm-btn-text="Xóa"
+                                                title="Xóa">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
 
                                     </div>
                                 </td>
@@ -234,7 +240,8 @@
             </div>
 
             <!-- ══ Modals Nộp thêm (một modal cho mỗi row CON_NO) ══ -->
-            <div th:each="tt : ${danhSach}" th:if="${tt.trangThai?.name() == 'CON_NO'}">
+            <div th:each="tt : ${danhSach}"
+                 th:if="${tt.hoGiaDinh != null and tt.khoanThu != null and tt.trangThai?.name() == 'CON_NO'}">
                 <div class="modal fade" th:id="'modalNopThem-' + ${tt.id}"
                      tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
@@ -308,6 +315,7 @@
     </div>
 </div>
 
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

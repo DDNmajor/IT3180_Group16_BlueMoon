@@ -183,6 +183,10 @@ public class KhoanThuService {
         if (loai == null || loai.getLoaiApDung() == null || !loai.getLoaiApDung().isBatBuoc()) {
             return;
         }
+        // THU_HO: số tiền nhập riêng từng hộ qua trang nhap-thu-ho
+        if (khoanThu.getLoaiTinhPhi() == LoaiTinhPhi.THU_HO) {
+            return;
+        }
 
         boolean isPerXe = khoanThu.getLoaiTinhPhi() == LoaiTinhPhi.PER_XE;
 
@@ -206,7 +210,9 @@ public class KhoanThuService {
             tt.setPhuongThuc(PhuongThucThanhToan.TIEN_MAT);
             tt.setSoTienYeuCau(soTienYeuCauCuaHo);
             thanhToanRepository.save(tt);
-            emailService.guiThongBaoKhoanThu(ho, khoanThu, soTienYeuCauCuaHo);
+            List<ThanhToan> conNoList = thanhToanRepository
+                    .findByHoGiaDinhIdAndTrangThai(ho.getId(), TrangThaiThanhToan.CON_NO);
+            emailService.guiThongBaoKhoanThuTongHop(ho, khoanThu, soTienYeuCauCuaHo, conNoList);
             count++;
         }
 
@@ -227,12 +233,17 @@ public class KhoanThuService {
                 .collect(java.util.stream.Collectors.toList());
 
         int count = 0;
+        List<KhoanThu> appliedList = new java.util.ArrayList<>();
         for (KhoanThu kt : batBuocList) {
             if (thanhToanRepository.existsByHoGiaDinhIdAndKhoanThuId(ho.getId(), kt.getId())) {
                 continue;
             }
             // hộ mới chưa đăng ký xe, bỏ qua PER_XE
             if (kt.getLoaiTinhPhi() == LoaiTinhPhi.PER_XE) {
+                continue;
+            }
+            // THU_HO: số tiền do nhân viên nhập thủ công từng tháng
+            if (kt.getLoaiTinhPhi() == LoaiTinhPhi.THU_HO) {
                 continue;
             }
             ThanhToan tt = new ThanhToan();
@@ -244,10 +255,12 @@ public class KhoanThuService {
             tt.setPhuongThuc(PhuongThucThanhToan.TIEN_MAT);
             tt.setSoTienYeuCau(tinhSoTienYeuCau(kt, ho));
             thanhToanRepository.save(tt);
+            appliedList.add(kt);
             count++;
         }
 
         if (count > 0) {
+            emailService.guiEmailChaoMungHoMoi(ho, appliedList);
             String user = currentUser();
             log.info("[AUDIT] Auto-apply hộ mới: canHo={}, soKhoanThu={}, user={}",
                     ho.getSoCanHo(), count, user);
@@ -258,6 +271,9 @@ public class KhoanThuService {
 
     public BigDecimal tinhSoTienYeuCau(KhoanThu kt, HoGiaDinh ho) {
         LoaiTinhPhi ltp = kt.getLoaiTinhPhi() != null ? kt.getLoaiTinhPhi() : LoaiTinhPhi.FIXED;
+        if (ltp == LoaiTinhPhi.THU_HO) {
+            return null; // nhập riêng từng hộ
+        }
         if (ltp == LoaiTinhPhi.PER_M2) {
             if (kt.getDonGiaPerM2() != null && ho.getDienTich() != null) {
                 return ho.getDienTich().multiply(kt.getDonGiaPerM2());

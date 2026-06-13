@@ -64,12 +64,16 @@
                                 <a th:href="@{/loai-khoan-thu/sua/{id}(id=${lkt.id})}" class="btn btn-warning btn-sm">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <form th:action="@{/loai-khoan-thu/xoa/{id}(id=${lkt.id})}" method="post" class="d-inline"
-                                      onsubmit="return confirm('Xác nhận xóa loại khoản thu này?')">
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
+                                <button type="button" class="btn btn-danger btn-sm"
+                                        data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                                        th:data-confirm-url="@{/loai-khoan-thu/xoa/{id}(id=${lkt.id})}"
+                                        th:data-item-name="${lkt.tenLoai}"
+                                        data-confirm-title="Xóa loại khoản thu"
+                                        data-confirm-sub="Loại khoản thu bị XÓA VĨNH VIỄN. Có thể lỗi nếu còn khoản thu thuộc loại này. Không thể khôi phục."
+                                        data-confirm-btn-class="btn-danger"
+                                        data-confirm-btn-text="Xóa">
+                                    <i class="bi bi-trash"></i>
+                                </button>
                             </td>
                         </tr>
                         </tbody>
@@ -80,6 +84,7 @@
     </div>
 </div>
 
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
 <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
 </html>

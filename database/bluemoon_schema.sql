@@ -8,6 +8,7 @@ CREATE DATABASE IF NOT EXISTS bluemoon
 USE bluemoon;
 
 -- Xóa bảng cũ theo thứ tự FK (reverse dependency)
+DROP TABLE IF EXISTS lich_su_email;
 DROP TABLE IF EXISTS thanh_toan;
 DROP TABLE IF EXISTS phuong_tien;
 DROP TABLE IF EXISTS bien_dong;
@@ -179,4 +180,22 @@ CREATE TABLE audit_log (
 CREATE INDEX idx_audit_thoi_gian    ON audit_log(thoi_gian);
 CREATE INDEX idx_audit_loai         ON audit_log(loai_doi_tuong);
 CREATE INDEX idx_audit_nguoi_dung   ON audit_log(nguoi_dung);
+
+-- lich_su_email — Lịch sử email đã gửi
+
+CREATE TABLE lich_su_email (
+    id            INT AUTO_INCREMENT PRIMARY KEY,
+    to_email      VARCHAR(255)  NOT NULL,
+    subject       VARCHAR(500)  NULL,
+    body          TEXT          NULL,
+    loai_email    VARCHAR(50)   NULL  COMMENT 'THONG_BAO_KHOAN_THU | CHAO_MUNG_HO_MOI | NHAC_NO_TU_DONG | NHAC_NO_THU_CONG',
+    trang_thai    VARCHAR(20)   NOT NULL COMMENT 'THANH_CONG | THAT_BAI',
+    error_message TEXT          NULL,
+    ngay_gui      DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    so_can_ho     VARCHAR(20)   NULL,
+    nguoi_gui     VARCHAR(100)  NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE INDEX idx_email_ngay_gui ON lich_su_email(ngay_gui);
+CREATE INDEX idx_email_so_can_ho ON lich_su_email(so_can_ho);
 

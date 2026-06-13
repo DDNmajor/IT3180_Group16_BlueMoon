@@ -1,10 +1,9 @@
 package com.bluemoon.service;
 
+import com.bluemoon.dao.HoGiaDinhRepository;
 import com.bluemoon.dao.ThanhToanRepository;
-import com.bluemoon.model.NguoiDung;
-import com.bluemoon.model.PhuongThucThanhToan;
-import com.bluemoon.model.ThanhToan;
-import com.bluemoon.model.TrangThaiThanhToan;
+import com.bluemoon.model.*;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,14 +13,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ThanhToanService {
 
-    private final ThanhToanRepository thanhToanRepository;
-    private final AuditLogService     auditLogService;
+    private final ThanhToanRepository  thanhToanRepository;
+    private final HoGiaDinhRepository  hoGiaDinhRepository;
+    private final AuditLogService      auditLogService;
 
     public List<ThanhToan> findAll() {
         return thanhToanRepository.findAll();
@@ -42,6 +43,11 @@ public class ThanhToanService {
 
     public List<ThanhToan> findByHoGiaDinhAndKhoanThu(Integer idHo, Integer idKhoan) {
         return thanhToanRepository.findByHoGiaDinhIdAndKhoanThuIdOrderByNgayNopDesc(idHo, idKhoan);
+    }
+
+    public Optional<ThanhToan> findConNo(Integer idHo, Integer idKhoan) {
+        return thanhToanRepository.findFirstByHoGiaDinhIdAndKhoanThuIdAndTrangThai(
+                idHo, idKhoan, TrangThaiThanhToan.CON_NO);
     }
 
     public boolean daDongHoanTat(Integer idHoGiaDinh, Integer idKhoanThu) {
@@ -124,6 +130,52 @@ public class ThanhToanService {
                 "id=" + id + ", canHo=" + canHo3 + ", soTienSauHoan=" + soTienYeuCau
                 + ", nguoiThu=" + nguoiThu3, currentUser());
         return saved;
+    }
+
+    @Transactional
+    public int nhapThuHo(KhoanThu khoanThu, java.util.Map<Integer, BigDecimal> soTienMap, NguoiDung nguoiThu) {
+        int count = 0;
+        String user = currentUser();
+        for (java.util.Map.Entry<Integer, BigDecimal> entry : soTienMap.entrySet()) {
+            Integer idHo   = entry.getKey();
+            BigDecimal amt = entry.getValue();
+            if (amt == null || amt.compareTo(BigDecimal.ZERO) <= 0) continue;
+
+            HoGiaDinh ho = hoGiaDinhRepository.findById(idHo).orElse(null);
+            if (ho == null) continue;
+
+            List<ThanhToan> existing = thanhToanRepository
+                    .findByHoGiaDinhIdAndKhoanThuIdOrderByNgayNopDesc(idHo, khoanThu.getId());
+
+            ThanhToan tt;
+            if (!existing.isEmpty()) {
+                tt = existing.get(0);
+                if (tt.getTrangThai() == TrangThaiThanhToan.DA_DONG
+                        || tt.getTrangThai() == TrangThaiThanhToan.DONG_DU) {
+                    continue; // đã đóng xong, không sửa
+                }
+                tt.setSoTienYeuCau(amt);
+                tt.setTrangThai(tinhTrangThai(tt.getSoTienDaNop(), amt));
+            } else {
+                tt = new ThanhToan();
+                tt.setHoGiaDinh(ho);
+                tt.setKhoanThu(khoanThu);
+                tt.setSoTienYeuCau(amt);
+                tt.setSoTienDaNop(BigDecimal.ZERO);
+                tt.setTrangThai(TrangThaiThanhToan.CON_NO);
+                tt.setPhuongThuc(PhuongThucThanhToan.TIEN_MAT);
+                tt.setNgayNop(LocalDate.now());
+                if (nguoiThu != null) tt.setNguoiThu(nguoiThu);
+            }
+            thanhToanRepository.save(tt);
+            count++;
+            log.info("[AUDIT] Nhập thu hộ: canHo={}, khoanThu={}, soTien={}, user={}",
+                    ho.getSoCanHo(), khoanThu.getMaKhoanThu(), amt, user);
+            auditLogService.log("Nhập thu hộ", "Thanh toán",
+                    "canHo=" + ho.getSoCanHo() + ", khoanThu=" + khoanThu.getMaKhoanThu()
+                    + ", soTien=" + amt, user);
+        }
+        return count;
     }
 
     private String currentUser() {

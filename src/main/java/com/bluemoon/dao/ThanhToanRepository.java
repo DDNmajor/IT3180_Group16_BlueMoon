@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ThanhToanRepository extends JpaRepository<ThanhToan, Integer> {
@@ -28,6 +29,15 @@ public interface ThanhToanRepository extends JpaRepository<ThanhToan, Integer> {
     boolean existsByHoGiaDinhIdAndKhoanThuIdAndTrangThaiIn(Integer idHoGiaDinh, Integer idKhoanThu, Collection<TrangThaiThanhToan> trangThais);
     boolean existsByHoGiaDinhIdAndTrangThaiIn(Integer idHoGiaDinh, Collection<TrangThaiThanhToan> trangThais);
     boolean existsByHoGiaDinhIdAndKhoanThuId(Integer idHoGiaDinh, Integer idKhoanThu);
+    Optional<ThanhToan> findFirstByHoGiaDinhIdAndKhoanThuIdAndTrangThai(
+            Integer idHoGiaDinh, Integer idKhoanThu, TrangThaiThanhToan trangThai);
+
+    List<ThanhToan> findByTrangThai(TrangThaiThanhToan trangThai);
+    List<ThanhToan> findByHoGiaDinhIdAndTrangThai(Integer idHo, TrangThaiThanhToan trangThai);
+    List<ThanhToan> findByTrangThaiAndKhoanThuHanNopBetween(
+            TrangThaiThanhToan trangThai, LocalDate from, LocalDate to);
+    List<ThanhToan> findByTrangThaiAndKhoanThuHanNop(
+            TrangThaiThanhToan trangThai, LocalDate hanNop);
 
     List<ThanhToan> findByHoGiaDinhIdAndKhoanThuLoaiTinhPhi(Integer idHoGiaDinh, LoaiTinhPhi loaiTinhPhi);
 

@@ -12,6 +12,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -197,19 +198,26 @@ public class ThanhToanController {
             return "redirect:/thanh-toan/them?idHo=" + idHo;
         }
 
-        thanhToan.setHoGiaDinh(hoGiaDinhService.findById(idHo));
-        thanhToan.setKhoanThu(khoanThuService.findById(idKhoan));
-
+        NguoiDung nguoiThu = null;
         try {
-            thanhToan.setNguoiThu(nguoiDungService.findByTenDangNhap(auth.getName()));
+            nguoiThu = nguoiDungService.findByTenDangNhap(auth.getName());
         } catch (Exception ignored) {}
 
-        if (thanhToan.getPhuongThuc() == null) {
-            thanhToan.setPhuongThuc(PhuongThucThanhToan.TIEN_MAT);
+        // Nếu đã có record CON_NO cho hộ + khoản này → nộp thêm vào đó, không tạo mới
+        var existingConNo = thanhToanService.findConNo(idHo, idKhoan);
+        if (existingConNo.isPresent()) {
+            thanhToanService.nopThem(existingConNo.get().getId(), thanhToan.getSoTienDaNop(), nguoiThu);
+            ra.addFlashAttribute("successMsg", "Ghi nhận thanh toán thành công (cộng dồn vào lần nộp trước).");
+        } else {
+            thanhToan.setHoGiaDinh(hoGiaDinhService.findById(idHo));
+            thanhToan.setKhoanThu(khoanThuService.findById(idKhoan));
+            thanhToan.setNguoiThu(nguoiThu);
+            if (thanhToan.getPhuongThuc() == null) {
+                thanhToan.setPhuongThuc(PhuongThucThanhToan.TIEN_MAT);
+            }
+            thanhToanService.save(thanhToan);
+            ra.addFlashAttribute("successMsg", "Ghi nhận thanh toán thành công.");
         }
-
-        thanhToanService.save(thanhToan);
-        ra.addFlashAttribute("successMsg", "Ghi nhận thanh toán thành công.");
         return "redirect:/thanh-toan?idHo=" + idHo;
     }
 
@@ -246,6 +254,49 @@ public class ThanhToanController {
         Integer redirectHo = idHo != null ? idHo
                 : (saved.getHoGiaDinh() != null ? saved.getHoGiaDinh().getId() : null);
         return redirectHo != null ? "redirect:/thanh-toan?idHo=" + redirectHo : "redirect:/thanh-toan";
+    }
+
+    @GetMapping("/nhap-thu-ho/{idKhoan}")
+    public String nhapThuHoForm(@PathVariable Integer idKhoan, Model model) {
+        KhoanThu kt = khoanThuService.findById(idKhoan);
+        if (kt.getLoaiTinhPhi() != LoaiTinhPhi.THU_HO) {
+            return "redirect:/khoan-thu";
+        }
+        List<ThanhToan> existing = thanhToanService.findByKhoanThu(idKhoan);
+        Map<Integer, ThanhToan> existingMap = existing.stream()
+                .collect(Collectors.toMap(tt -> tt.getHoGiaDinh().getId(), tt -> tt, (a, b) -> a));
+        model.addAttribute("khoanThu",   kt);
+        model.addAttribute("tatCaHo",    hoGiaDinhService.findAll());
+        model.addAttribute("existingMap", existingMap);
+        return "thanh-toan/nhap-thu-ho";
+    }
+
+    @PostMapping("/nhap-thu-ho/{idKhoan}")
+    public String nhapThuHo(@PathVariable Integer idKhoan,
+                             @RequestParam Map<String, String> params,
+                             Authentication auth,
+                             RedirectAttributes ra) {
+        KhoanThu kt = khoanThuService.findById(idKhoan);
+
+        Map<Integer, BigDecimal> soTienMap = new LinkedHashMap<>();
+        for (Map.Entry<String, String> p : params.entrySet()) {
+            if (!p.getKey().startsWith("soTien_")) continue;
+            try {
+                Integer idHo  = Integer.parseInt(p.getKey().substring(7));
+                String  valStr = p.getValue() == null ? "" : p.getValue().trim();
+                if (valStr.isEmpty()) continue;
+                BigDecimal val = new BigDecimal(valStr);
+                if (val.compareTo(BigDecimal.ZERO) > 0) soTienMap.put(idHo, val);
+            } catch (NumberFormatException ignored) {}
+        }
+
+        NguoiDung nguoiThu = null;
+        try { nguoiThu = nguoiDungService.findByTenDangNhap(auth.getName()); } catch (Exception ignored) {}
+
+        int count = thanhToanService.nhapThuHo(kt, soTienMap, nguoiThu);
+        ra.addFlashAttribute("successMsg",
+                "Đã lưu số tiền cho " + count + " hộ gia đình.");
+        return "redirect:/thanh-toan/nhap-thu-ho/" + idKhoan;
     }
 
     @PostMapping("/xoa/{id}")

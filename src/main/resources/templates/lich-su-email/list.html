@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Lịch sử email')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/layout :: sidebar('lich-su-email')}"></div>
+
+        <main class="col-md-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0"><i class="bi bi-envelope-paper me-2"></i>Lịch sử email</h4>
+                <span class="text-muted small" th:text="'Hiển thị ' + ${#lists.size(danhSach)} + ' bản ghi'"></span>
+            </div>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Bộ lọc -->
+            <form method="get" th:action="@{/lich-su-email}" class="row g-2 mb-3 align-items-end form-submit-once">
+                <div class="col-auto">
+                    <label class="form-label mb-1 small">Email nhận</label>
+                    <input type="text" name="toEmail" class="form-control form-control-sm"
+                           th:value="${toEmailFilter}" placeholder="Tìm email..."/>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label mb-1 small">Căn hộ</label>
+                    <input type="text" name="soCanHo" class="form-control form-control-sm"
+                           th:value="${soCanHoFilter}" placeholder="VD: A101"/>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label mb-1 small">Loại email</label>
+                    <select name="loaiEmail" class="form-select form-select-sm" style="min-width:180px">
+                        <option value="">-- Tất cả --</option>
+                        <option th:each="loai : ${loaiEmailValues}"
+                                th:value="${loai.name()}"
+                                th:text="${loai.tenHienThi}"
+                                th:selected="${loaiEmailFilter == loai}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label mb-1 small">Trạng thái</label>
+                    <select name="trangThai" class="form-select form-select-sm">
+                        <option value="">-- Tất cả --</option>
+                        <option value="THANH_CONG" th:selected="${trangThaiFilter == 'THANH_CONG'}">Thành công</option>
+                        <option value="THAT_BAI"   th:selected="${trangThaiFilter == 'THAT_BAI'}">Thất bại</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label mb-1 small">Từ ngày</label>
+                    <input type="date" name="tuNgay" class="form-control form-control-sm"
+                           th:value="${tuNgayFilter}"/>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label mb-1 small">Đến ngày</label>
+                    <input type="date" name="denNgay" class="form-control form-control-sm"
+                           th:value="${denNgayFilter}"/>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bi bi-funnel me-1"></i>Lọc
+                    </button>
+                    <a th:href="@{/lich-su-email}" class="btn btn-outline-secondary btn-sm">Xóa lọc</a>
+                </div>
+            </form>
+
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                    <table class="table table-hover table-bordered mb-0 align-middle">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Thời gian</th>
+                            <th>Loại</th>
+                            <th>Căn hộ</th>
+                            <th>Email nhận</th>
+                            <th style="max-width:260px">Tiêu đề</th>
+                            <th class="text-center">Trạng thái</th>
+                            <th class="text-center">Chi tiết</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${#lists.isEmpty(danhSach)}">
+                            <td colspan="8" class="text-center py-5">
+                                <i class="bi bi-envelope display-5 text-muted d-block mb-3"></i>
+                                <div class="fw-semibold mb-1">Không có lịch sử email</div>
+                                <div class="text-muted small">Thay đổi bộ lọc hoặc gửi email để xem lịch sử</div>
+                            </td>
+                        </tr>
+                        <tr th:each="e, stat : ${danhSach}">
+                            <td th:text="${stat.count}" class="text-muted small"></td>
+                            <td class="text-nowrap small"
+                                th:text="${e.ngayGui != null} ? ${#temporals.format(e.ngayGui,'dd/MM/yyyy HH:mm')} : '--'">
+                            </td>
+                            <td>
+                                <span th:if="${e.loaiEmail != null}"
+                                      th:text="${e.loaiEmail.tenHienThi}"
+                                      th:classappend="${e.loaiEmail.name() == 'NHAC_NO_TU_DONG' or e.loaiEmail.name() == 'NHAC_NO_THU_CONG'}
+                                                      ? 'badge bg-warning text-dark'
+                                                      : (${e.loaiEmail.name() == 'CHAO_MUNG_HO_MOI'} ? 'badge bg-success' : 'badge bg-primary')"
+                                      class="badge">
+                                </span>
+                            </td>
+                            <td>
+                                <strong th:text="${e.soCanHo}" th:if="${e.soCanHo != null}"></strong>
+                                <span th:if="${e.soCanHo == null}" class="text-muted">—</span>
+                            </td>
+                            <td th:text="${e.toEmail}" class="small"></td>
+                            <td class="small" style="max-width:260px; word-break:break-word"
+                                th:text="${e.subject}">
+                            </td>
+                            <td class="text-center">
+                                <span th:if="${e.trangThai == 'THANH_CONG'}" class="badge bg-success">
+                                    <i class="bi bi-check-circle me-1"></i>Thành công
+                                </span>
+                                <span th:if="${e.trangThai == 'THAT_BAI'}" class="badge bg-danger">
+                                    <i class="bi bi-x-circle me-1"></i>Thất bại
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-info text-white btn-sm"
+                                        data-bs-toggle="modal"
+                                        th:data-bs-target="'#modalEmail' + ${e.id}"
+                                        title="Xem nội dung">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Modal xem nội dung email -->
+<div th:each="e : ${danhSach}"
+     th:id="'modalEmail' + ${e.id}"
+     class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-envelope me-2"></i>
+                    <span th:text="${e.subject}"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-sm table-borderless mb-3">
+                    <tr>
+                        <td class="fw-semibold text-nowrap" style="width:110px">Gửi đến:</td>
+                        <td th:text="${e.toEmail}"></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold">Căn hộ:</td>
+                        <td th:text="${e.soCanHo != null ? e.soCanHo : '—'}"></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold">Thời gian:</td>
+                        <td th:text="${e.ngayGui != null ? #temporals.format(e.ngayGui,'dd/MM/yyyy HH:mm:ss') : '--'}"></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold">Loại:</td>
+                        <td th:text="${e.loaiEmail != null ? e.loaiEmail.tenHienThi : '--'}"></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold">Trạng thái:</td>
+                        <td>
+                            <span th:if="${e.trangThai == 'THANH_CONG'}" class="badge bg-success">Thành công</span>
+                            <span th:if="${e.trangThai == 'THAT_BAI'}" class="badge bg-danger">Thất bại</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${e.errorMessage != null}">
+                        <td class="fw-semibold text-danger">Lỗi:</td>
+                        <td class="text-danger small" th:text="${e.errorMessage}"></td>
+                    </tr>
+                </table>
+                <hr/>
+                <div class="fw-semibold mb-2">Nội dung email:</div>
+                <pre class="bg-light p-3 rounded small" style="white-space:pre-wrap;max-height:350px;overflow-y:auto"
+                     th:text="${e.body}"></pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

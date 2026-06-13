@@ -130,10 +130,12 @@ public class MauKhoanThuController {
                         RedirectAttributes ra) {
         try {
             YearMonth ym = YearMonth.parse(thang);
-            mauKhoanThuService.taoKhoanThuChoKy(id, ym);
-            ra.addFlashAttribute("successMsg",
-                    "Đã tạo khoản thu cho kỳ "
-                    + ym.format(DateTimeFormatter.ofPattern("MM/yyyy")) + ".");
+            var khoanThu = mauKhoanThuService.taoKhoanThuChoKy(id, ym);
+            String kyStr = ym.format(DateTimeFormatter.ofPattern("MM/yyyy"));
+            ra.addFlashAttribute("successMsg", "Đã tạo khoản thu cho kỳ " + kyStr + ".");
+            if (khoanThu.getLoaiTinhPhi() == LoaiTinhPhi.THU_HO) {
+                return "redirect:/thanh-toan/nhap-thu-ho/" + khoanThu.getId();
+            }
         } catch (IllegalStateException e) {
             ra.addFlashAttribute("errorMsg", e.getMessage());
         } catch (Exception e) {
@@ -161,6 +163,9 @@ public class MauKhoanThuController {
             if (mau.getGiaOto() == null || mau.getGiaOto().compareTo(BigDecimal.ZERO) <= 0) {
                 br.rejectValue("giaOto", "required", "Vui lòng nhập giá ô tô lớn hơn 0");
             }
+        }
+        if (ltp == LoaiTinhPhi.THU_HO) {
+            mau.setSoTien(BigDecimal.ZERO);
         }
     }
 }
