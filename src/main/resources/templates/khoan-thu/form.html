@@ -206,12 +206,16 @@
             if (labelSoTien) {
                 labelSoTien.innerHTML = val === 'PER_M2'
                     ? 'Số tiền fallback <span class="text-danger">*</span>'
-                    : 'Số tiền <span class="text-danger">*</span>';
+                    : val === 'PER_PERSON'
+                        ? 'Đơn giá/người <span class="text-danger">*</span>'
+                        : 'Số tiền <span class="text-danger">*</span>';
             }
             if (soTienHint) {
                 soTienHint.textContent = val === 'PER_M2'
                     ? 'Dùng khi hộ không có diện tích.'
-                    : '';
+                    : val === 'PER_PERSON'
+                        ? 'Số tiền mỗi hộ = số nhân khẩu đang ở × đơn giá/người.'
+                        : '';
             }
         }
 

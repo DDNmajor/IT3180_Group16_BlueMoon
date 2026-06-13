@@ -141,6 +141,8 @@
                                           th:with="v=${oto}"
                                           th:text="${#numbers.formatDecimal(v, 0, 'COMMA', 0, 'POINT')}"></span>
                                 </span>
+                                <span th:if="${kt.loaiTinhPhi != null and kt.loaiTinhPhi.name() == 'PER_PERSON'}"
+                                      th:text="${#numbers.formatDecimal(kt.soTien, 0, 'COMMA', 0, 'POINT')} + ' đ/người'"></span>
                                 <span th:if="${kt.loaiTinhPhi != null and kt.loaiTinhPhi.name() == 'THU_HO'}"
                                       class="text-muted fst-italic small">Theo hộ</span>
                             </td>
@@ -154,6 +156,8 @@
                                     <span>đ/xe máy/hộ</span>
                                     <span>đ/ô tô/hộ</span>
                                 </span>
+                                <span th:if="${kt.loaiTinhPhi != null and kt.loaiTinhPhi.name() == 'PER_PERSON'}"
+                                      class="badge bg-success">theo nhân khẩu</span>
                                 <span th:if="${kt.loaiTinhPhi != null and kt.loaiTinhPhi.name() == 'THU_HO'}"
                                       class="badge bg-primary">Thu hộ</span>
                             </td>

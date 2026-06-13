@@ -163,6 +163,12 @@ public class KhoanThuController {
         if (ltp == LoaiTinhPhi.THU_HO) {
             khoanThu.setSoTien(BigDecimal.ZERO);
         }
+        if (ltp == LoaiTinhPhi.PER_PERSON
+                && (khoanThu.getSoTien() == null
+                    || khoanThu.getSoTien().compareTo(BigDecimal.ZERO) <= 0)) {
+            bindingResult.rejectValue("soTien", "soTien.required",
+                    "Vui lòng nhập đơn giá/người lớn hơn 0");
+        }
         if (khoanThu.getKyThu() != null) {
             int year = khoanThu.getKyThu().getYear();
             if (year < 2000 || year > 2100) {

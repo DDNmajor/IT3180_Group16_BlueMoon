@@ -103,10 +103,10 @@
                             </div>
                         </div>
 
-                        <!-- FIXED / PER_M2: hiện soTien + donVi -->
+                        <!-- FIXED / PER_M2 / PER_PERSON: hiện soTien + donVi -->
                         <div id="groupSoTien" class="row mb-3">
                             <div class="col">
-                                <label class="form-label">Số tiền <span class="text-danger">*</span></label>
+                                <label id="labelSoTien" class="form-label">Số tiền <span class="text-danger">*</span></label>
                                 <input type="number" th:field="*{soTien}" class="form-control"
                                        th:errorclass="is-invalid" min="0" step="1000"/>
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('soTien')}"
@@ -217,10 +217,13 @@
         const giaXeMayInput = document.getElementById('giaXeMay');
         const giaOtoInput   = document.getElementById('giaOto');
 
+        const labelSoTien = document.getElementById('labelSoTien');
+
         function applyLoaiTinhPhi() {
             const val = loaiTinhPhiSel.value;
-            const isThuHo = val === 'THU_HO';
-            const isPerXe = val === 'PER_XE';
+            const isThuHo     = val === 'THU_HO';
+            const isPerXe     = val === 'PER_XE';
+            const isPerPerson = val === 'PER_PERSON';
             groupSoTien.style.display = (isPerXe || isThuHo) ? 'none' : '';
             groupPerM2.style.display  = (val === 'PER_M2') ? '' : 'none';
             groupPerXe.style.display  = isPerXe ? '' : 'none';
@@ -231,13 +234,21 @@
                 if (!giaXeMayInput.value) giaXeMayInput.value = '70000';
                 if (!giaOtoInput.value)   giaOtoInput.value   = '1200000';
             }
-            if (isThuHo) {
-                soTienInput.value = '0';
+            if (isThuHo) soTienInput.value = '0';
+
+            if (labelSoTien) {
+                labelSoTien.innerHTML = val === 'PER_M2'
+                    ? 'Số tiền fallback <span class="text-danger">*</span>'
+                    : isPerPerson
+                        ? 'Đơn giá/người <span class="text-danger">*</span>'
+                        : 'Số tiền <span class="text-danger">*</span>';
             }
             if (soTienHint) {
-                soTienHint.textContent = (val === 'PER_M2')
+                soTienHint.textContent = val === 'PER_M2'
                     ? 'Fallback khi hộ không có diện tích.'
-                    : 'Số tiền cố định áp cho mỗi hộ.';
+                    : isPerPerson
+                        ? 'Số tiền mỗi hộ = số nhân khẩu đang ở × đơn giá/người.'
+                        : 'Số tiền cố định áp cho mỗi hộ.';
             }
         }
 

@@ -74,11 +74,15 @@
                                 <td class="text-end">
                                     <span th:if="${mau.loaiTinhPhi?.name() == 'THU_HO'}"
                                           class="text-muted fst-italic small">Theo hộ</span>
-                                    <span th:if="${mau.loaiTinhPhi?.name() != 'THU_HO' and mau.donGiaPerM2 == null}"
+                                    <span th:if="${mau.loaiTinhPhi?.name() == 'PER_PERSON'}"
+                                          th:with="v=${mau.soTien != null ? mau.soTien : 0}"
+                                          th:text="${#numbers.formatDecimal(v, 0, 'COMMA', 0, 'POINT')} + ' đ/người'">
+                                    </span>
+                                    <span th:if="${mau.loaiTinhPhi?.name() != 'THU_HO' and mau.loaiTinhPhi?.name() != 'PER_PERSON' and mau.donGiaPerM2 == null}"
                                           th:with="v=${mau.soTien != null ? mau.soTien : 0}"
                                           th:text="${#numbers.formatDecimal(v, 0, 'COMMA', 0, 'POINT')} + ' đ'">
                                     </span>
-                                    <span th:if="${mau.loaiTinhPhi?.name() != 'THU_HO' and mau.donGiaPerM2 != null}"
+                                    <span th:if="${mau.loaiTinhPhi?.name() != 'THU_HO' and mau.loaiTinhPhi?.name() != 'PER_PERSON' and mau.donGiaPerM2 != null}"
                                           th:with="v=${mau.donGiaPerM2}"
                                           th:text="${#numbers.formatDecimal(v, 0, 'COMMA', 0, 'POINT')} + ' đ/m²'">
                                     </span>

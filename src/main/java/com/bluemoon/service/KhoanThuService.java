@@ -3,9 +3,11 @@ package com.bluemoon.service;
 import com.bluemoon.dao.HoGiaDinhRepository;
 import com.bluemoon.dao.KhoanThuRepository;
 import com.bluemoon.dao.LoaiKhoanThuRepository;
+import com.bluemoon.dao.NhanKhauRepository;
 import com.bluemoon.dao.PhuongTienRepository;
 import com.bluemoon.dao.ThanhToanRepository;
 import com.bluemoon.model.*;
+import com.bluemoon.model.TinhTrangCuTru;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,6 +31,7 @@ public class KhoanThuService {
     private final HoGiaDinhRepository    hoGiaDinhRepository;
     private final LoaiKhoanThuRepository loaiKhoanThuRepository;
     private final PhuongTienRepository   phuongTienRepository;
+    private final NhanKhauRepository     nhanKhauRepository;
     private final AuditLogService        auditLogService;
     private final EmailService           emailService;
 
@@ -188,15 +191,16 @@ public class KhoanThuService {
             return;
         }
 
-        boolean isPerXe = khoanThu.getLoaiTinhPhi() == LoaiTinhPhi.PER_XE;
+        boolean isPerXe     = khoanThu.getLoaiTinhPhi() == LoaiTinhPhi.PER_XE;
+        boolean isPerPerson = khoanThu.getLoaiTinhPhi() == LoaiTinhPhi.PER_PERSON;
 
         List<HoGiaDinh> tatCaHo = hoGiaDinhRepository.findAll();
         int count = 0;
         for (HoGiaDinh ho : tatCaHo) {
             BigDecimal soTienYeuCauCuaHo = tinhSoTienYeuCau(khoanThu, ho);
 
-            // hộ không có xe → soTien = 0, bỏ qua
-            if (isPerXe && (soTienYeuCauCuaHo == null
+            // hộ không có xe / không có nhân khẩu → soTien = 0, bỏ qua
+            if ((isPerXe || isPerPerson) && (soTienYeuCauCuaHo == null
                     || soTienYeuCauCuaHo.compareTo(BigDecimal.ZERO) == 0)) {
                 continue;
             }
@@ -246,6 +250,12 @@ public class KhoanThuService {
             if (kt.getLoaiTinhPhi() == LoaiTinhPhi.THU_HO) {
                 continue;
             }
+            BigDecimal soTienYeuCau = tinhSoTienYeuCau(kt, ho);
+            // PER_PERSON: bỏ qua hộ chưa có nhân khẩu
+            if (kt.getLoaiTinhPhi() == LoaiTinhPhi.PER_PERSON
+                    && (soTienYeuCau == null || soTienYeuCau.compareTo(BigDecimal.ZERO) == 0)) {
+                continue;
+            }
             ThanhToan tt = new ThanhToan();
             tt.setHoGiaDinh(ho);
             tt.setKhoanThu(kt);
@@ -253,7 +263,7 @@ public class KhoanThuService {
             tt.setNgayNop(kt.getKyThu());
             tt.setTrangThai(TrangThaiThanhToan.CON_NO);
             tt.setPhuongThuc(PhuongThucThanhToan.TIEN_MAT);
-            tt.setSoTienYeuCau(tinhSoTienYeuCau(kt, ho));
+            tt.setSoTienYeuCau(soTienYeuCau);
             thanhToanRepository.save(tt);
             appliedList.add(kt);
             count++;
@@ -286,6 +296,12 @@ public class KhoanThuService {
             long giaXeMay = kt.getGiaXeMay() != null ? kt.getGiaXeMay().longValue() : 70_000L;
             long giaOto   = kt.getGiaOto()   != null ? kt.getGiaOto().longValue()   : 1_200_000L;
             return BigDecimal.valueOf(soXeMay * giaXeMay + soOto * giaOto);
+        }
+        if (ltp == LoaiTinhPhi.PER_PERSON) {
+            // soTien = đơn giá/người; đếm nhân khẩu đang ở (loại trừ CHUYEN_DI)
+            long soNguoi = nhanKhauRepository.countByHoGiaDinhIdAndTinhTrangNot(
+                    ho.getId(), TinhTrangCuTru.CHUYEN_DI);
+            return BigDecimal.valueOf(soNguoi).multiply(kt.getSoTien());
         }
         // null = fallback về kt.soTien
         return null;

@@ -167,5 +167,11 @@ public class MauKhoanThuController {
         if (ltp == LoaiTinhPhi.THU_HO) {
             mau.setSoTien(BigDecimal.ZERO);
         }
+        if (ltp == LoaiTinhPhi.PER_PERSON
+                && (mau.getSoTien() == null
+                    || mau.getSoTien().compareTo(BigDecimal.ZERO) <= 0)) {
+            br.rejectValue("soTien", "soTien.required",
+                    "Vui lòng nhập đơn giá/người lớn hơn 0");
+        }
     }
 }
