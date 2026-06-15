@@ -37,7 +37,7 @@ Xây dựng phần mềm quản lý thu phí cho Ban quản trị chung cư Blue
 | **Nhân khẩu** | CRUD, validate CCCD (9/12 số), tình trạng cư trú, tìm kiếm theo CCCD | ✅ |
 | **Biến động cư trú** | Ghi nhận Tạm trú/Tạm vắng/Chuyển đến/Chuyển đi, auto-update tình trạng, scheduled job xử lý hết hạn | ✅ |
 | **Thanh toán** | Ghi nhận, nộp thêm, hoàn tiền, filter đa chiều (hộ / khoản / trạng thái / tìm kiếm) | ✅ |
-| **Thu hộ** | Nhập thu hộ điện/nước/internet (`LoaiTinhPhi.THU_HO`), quản lý riêng biệt | ✅ |
+| **Thu hộ** | Hóa đơn điện/nước/internet/gas (`HoaDonThuHo` — `/thu-ho`): tạo, gen hàng loạt, email, xác nhận, hủy/khôi phục | ✅ |
 | **Theo dõi thu phí** | Bảng cross-tab: tất cả hộ vs trạng thái đóng phí theo tháng/khoản | ✅ |
 | **Tra cứu nợ phí** | Danh sách hộ còn nợ, filter theo kỳ thu và khoản thu, hiển thị số tiền còn thiếu | ✅ |
 | **Thống kê thu phí** | Tổng phải thu / đã thu / còn nợ, số hộ đóng/chưa đóng, filter theo khoản và kỳ thu | ✅ |
@@ -78,10 +78,16 @@ source database/bluemoon_schema.sql;
 
 > File này tạo database, toàn bộ bảng và index. Chạy lại bất cứ lúc nào để reset về trạng thái ban đầu.
 
-Nếu cần dữ liệu mẫu để test:
+Nếu cần dữ liệu mẫu nhỏ để test nhanh:
 
 ```sql
 source database/mock_data.sql;
+```
+
+Nếu cần bộ dữ liệu demo đầy đủ (50 hộ, lịch sử thanh toán, hóa đơn thu hộ):
+
+```sql
+source database/example_data.sql;
 ```
 
 ### Bước 3 — Tạo file cấu hình
@@ -123,24 +129,27 @@ App tự tạo tài khoản admin (BCrypt) khi khởi động lần đầu nếu
 
 ```
 src/main/java/com/bluemoon/
-├── controller/          # 15 Spring MVC Controllers
+├── controller/          # 16 Spring MVC Controllers
 │   ├── HomeController               # / → /dashboard (thống kê)
 │   ├── AuthController               # /login
 │   ├── ErrorPageController          # /error/403, /error/404
 │   ├── NguoiDungController          # /nguoi-dung/** (admin only)
-│   ├── HoGiaDinhController          # /ho-gia-dinh/**
+│   ├── HoGiaDinhController          # /ho-gia-dinh/** + import Excel
 │   ├── NhanKhauController           # /nhan-khau/** + biến động
 │   ├── KhoanThuController           # /khoan-thu/**
 │   ├── LoaiKhoanThuController       # /loai-khoan-thu/**
 │   ├── MauKhoanThuController        # /mau-khoan-thu/** + toggle + tạo kỳ thủ công
-│   ├── ThanhToanController          # /thanh-toan/** + theo dõi + nợ phí + thu hộ
-│   ├── ThanhToanBaoCaoController    # /thanh-toan/thong-ke + /thanh-toan/thong-ke/export
-│   ├── PhuongTienController         # /phuong-tien/** (phí gửi xe)
+│   ├── ThanhToanController          # /thanh-toan/** + theo-doi + nop-them/hoan-tien/xoa
+│   ├── ThanhToanBaoCaoController    # /thanh-toan/thong-ke, /no-phi, /thong-ke/export, email-nhac-no
+│   ├── HoaDonThuHoController        # /thu-ho/** (hóa đơn thu hộ)
+│   ├── PhuongTienController         # /ho-gia-dinh/{idHo}/phuong-tien/** (phí gửi xe)
 │   ├── LichSuEmailController        # /lich-su-email/**
 │   ├── ThungRacController           # /thung-rac/** (khôi phục soft delete)
-│   └── AuditLogController           # /audit-log/** (admin only)
+│   └── AuditLogController           # /audit-log/** (admin only, 2 tab)
 │
-├── service/             # 17 Service classes
+├── config/              # GenPortFilter, InternalPortConfig (cổng nội bộ 8081 cho /thu-ho/gen)
+│
+├── service/             # 19 Service classes
 │   ├── CustomUserDetailsService     # Spring Security user loading
 │   ├── NguoiDungService             # BCrypt encode, audit log, self-role guard
 │   ├── HoGiaDinhService             # Delete constraint, CCCD search, audit log
@@ -157,9 +166,11 @@ src/main/java/com/bluemoon/
 │   ├── LichSuEmailService           # Query + filter lịch sử email
 │   ├── EmailService                 # Gửi email @Async qua Brevo SMTP
 │   ├── EmailSchedulerService        # Scheduled job nhắc nợ tự động
+│   ├── HoaDonThuHoService           # CRUD hóa đơn thu hộ + gen/email/xác nhận
+│   ├── SimulationDataService        # Sinh số tiền mô phỏng khi gen hàng loạt
 │   └── AuditLogService              # Ghi log vào DB + SLF4J
 │
-├── dao/                 # 11 Spring Data JPA Repositories
+├── dao/                 # 12 Spring Data JPA Repositories
 │   ├── NguoiDungRepository
 │   ├── HoGiaDinhRepository          # findByCccdNhanKhau (JPQL join)
 │   ├── NhanKhauRepository
@@ -169,23 +180,25 @@ src/main/java/com/bluemoon/
 │   ├── MauKhoanThuRepository
 │   ├── ThanhToanRepository          # sumSoTienDaNopThangNay, aggregate queries
 │   ├── PhuongTienRepository
+│   ├── HoaDonThuHoRepository
 │   ├── LichSuEmailRepository
 │   └── AuditLogRepository           # findWithFilter (dynamic JPQL), findDistinctNguoiDung
 │
-├── model/               # 11 JPA Entities + 9 Enums
+├── model/               # 12 JPA Entities + 11 Enums
 │   ├── Entities: NguoiDung, HoGiaDinh, NhanKhau, BienDong
 │   │            LoaiKhoanThu, KhoanThu, MauKhoanThu, ThanhToan
-│   │            PhuongTien, LichSuEmail, AuditLog
+│   │            PhuongTien, HoaDonThuHo, LichSuEmail, AuditLog
 │   └── Enums:   VaiTro, LoaiApDung, TinhTrangCuTru, LoaiBienDong
 │                TrangThaiThanhToan, PhuongThucThanhToan
 │                LoaiXe, LoaiEmail, LoaiTinhPhi
+│                LoaiDichVuThuHo, TrangThaiHoaDonThuHo
 │
 └── util/
     ├── SecurityConfig               # BCrypt bean, @EnableAsync, route rules, form login
     └── DataInitializer              # ApplicationRunner — auto-tạo admin khi lần đầu chạy
 
 src/main/resources/
-├── templates/           # 30 Thymeleaf HTML templates (Bootstrap 5.3.2)
+├── templates/           # 32 Thymeleaf HTML templates (Bootstrap 5.3.2)
 │   ├── fragments/layout.html        # head, navbar (sticky), sidebar (sticky), alerts, scripts
 │   ├── auth/login.html
 │   ├── error/{403,404}.html
@@ -197,7 +210,8 @@ src/main/resources/
 │   ├── khoan-thu/{list,form}.html
 │   ├── mau-khoan-thu/{list,form}.html
 │   ├── phuong-tien/form.html
-│   ├── thanh-toan/{list,form,theo-doi,no-phi,thong-ke,nhap-thu-ho,email-nhac-no}.html
+│   ├── thanh-toan/{list,form,theo-doi,no-phi,thong-ke,email-nhac-no}.html
+│   ├── thu-ho/{list,form,gen}.html
 │   ├── lich-su-email/list.html
 │   ├── thung-rac/index.html
 │   └── audit-log/list.html
@@ -208,8 +222,9 @@ src/main/resources/
 └── static/
 
 database/
-├── bluemoon_schema.sql              # Schema đầy đủ — chạy 1 lần để khởi tạo hoặc reset
-└── mock_data.sql                    # Dữ liệu mẫu (3 hộ, 2 khoản thu, 4 thanh toán)
+├── bluemoon_schema.sql              # Schema đầy đủ (12 bảng, gồm hoa_don_thu_ho + lich_su_email)
+├── mock_data.sql                    # Dữ liệu mẫu nhỏ (3 hộ, 2 khoản thu, 4 thanh toán)
+└── example_data.sql                 # Dữ liệu demo lớn (50 hộ, lịch sử thanh toán, hóa đơn thu hộ)
 ```
 
 ---
@@ -219,7 +234,7 @@ database/
 | Vai trò | Quyền truy cập |
 |---------|---------------|
 | `admin` | Toàn bộ, bao gồm `/nguoi-dung/**`, `/audit-log/**` và `/thung-rac/**` |
-| `staff` | Dashboard, hộ gia đình, nhân khẩu, khoản thu, mẫu thu, thanh toán, phí gửi xe |
+| `staff` | Dashboard, hộ gia đình, nhân khẩu, khoản thu, mẫu thu, thanh toán, thu hộ, phí gửi xe, báo cáo |
 
 Không thể tự đổi vai trò hoặc xoá tài khoản đang đăng nhập.
 
@@ -246,7 +261,7 @@ Không thể tự đổi vai trò hoặc xoá tài khoản đang đăng nhập.
 | Sprint 1 | Đăng nhập/phân quyền, khoản thu, loại khoản thu, dashboard | ✅ Hoàn thành |
 | Sprint 2 | Hộ gia đình, nhân khẩu, biến động, thanh toán, theo dõi thu phí | ✅ Hoàn thành |
 | Sprint 3 | Thống kê nâng cao, báo cáo Excel, phí gửi xe, import hộ, tra cứu nợ, email log | ✅ Hoàn thành |
-| Sprint 4 | v2.0 — Phí gửi xe PER_XE, thu hộ THU_HO, email nhắc nợ tự động, thùng rác, lịch sử email | ✅ Hoàn thành |
+| Sprint 4 | v2.0 — Phí gửi xe PER_XE, module thu hộ `HoaDonThuHo`, refactor UI sidebar, email nhắc nợ tự động, thùng rác, lịch sử email | ✅ Hoàn thành |
 
 ---
 
@@ -257,13 +272,13 @@ Không thể tự đổi vai trò hoặc xoá tài khoản đang đăng nhập.
 ```
 Browser (Bootstrap 5.3.2)
     ↓ HTTP
-Controller (15 classes)   — nhận request, validate input, gọi Service, đưa Model vào Template
+Controller (16 classes)   — nhận request, validate input, gọi Service, đưa Model vào Template
     ↓
-Service (17 classes)      — business logic, @Transactional, gọi Repository + EmailService
+Service (19 classes)      — business logic, @Transactional, gọi Repository + EmailService
     ↓
-DAO / Repository (11)     — Spring Data JPA, custom @Query, JpaSpecificationExecutor
+DAO / Repository (12)     — Spring Data JPA, custom @Query, JpaSpecificationExecutor
     ↓
-MySQL 8 (11 bảng)         — schema quản lý bằng SQL thuần, ddl-auto=validate
+MySQL 8 (12 bảng)         — schema quản lý bằng SQL thuần, ddl-auto=validate
 ```
 
 Thymeleaf render HTML server-side. Tất cả email gửi `@Async` qua Brevo SMTP, mỗi lần gửi đều ghi vào `lich_su_email`.
@@ -278,7 +293,8 @@ Thymeleaf render HTML server-side. Tất cả email gửi `@Async` qua Brevo SMT
 | `PER_M2` | Đơn giá × diện tích căn hộ | `donGiaPerM2` × `hoGiaDinh.dienTich` |
 | `PER_XE` | Đơn giá × số xe mỗi loại | `giaXeMay` × xe máy + `giaOto` × ô tô |
 | `PER_PERSON` | Đơn giá × số nhân khẩu thường trú | `soTien` × countNhanKhau(≠ CHUYEN_DI) |
-| `THU_HO` | Nhập tay từng hộ (điện/nước/internet) | Form `nhap-thu-ho` |
+
+> Thu hộ điện/nước/internet/gas **không** dùng `LoaiTinhPhi` — quản lý riêng qua entity `HoaDonThuHo` tại `/thu-ho`.
 
 ---
 
@@ -304,6 +320,8 @@ Ngoài ra, `MauKhoanThuService` và `BienDongService` đều có `@EventListener
 | `CHAO_MUNG_HO_MOI` | Hộ mới được tạo, liệt kê phí bắt buộc đang áp dụng | `@Async` |
 | `NHAC_NO_TU_DONG` | Gửi theo lịch (3 scheduled jobs) | `@Async` |
 | `NHAC_NO_THU_CONG` | Staff gửi thủ công từ trang tra cứu nợ | Sync |
+| `THU_HO_THONG_BAO` | Thông báo hóa đơn thu hộ (điện/nước/internet/gas) | `@Async` |
+| `THU_HO_XAC_NHAN` | Biên nhận xác nhận đã thu hóa đơn thu hộ | `@Async` |
 
 Mọi lần gửi (thành công hay thất bại) đều được lưu vào `lich_su_email`. Xem lại tại `/audit-log?tab=email` hoặc `/lich-su-email`.
 
@@ -342,5 +360,7 @@ Mọi lần gửi (thành công hay thất bại) đều được lưu vào `lic
 | `/thanh-toan/theo-doi` | Cross-tab: hộ × trạng thái đóng phí |
 | `/thanh-toan/no-phi` | Tra cứu nợ, gửi email nhắc thủ công |
 | `/thanh-toan/thong-ke` | Thống kê tổng hợp, xuất Excel |
+| `/thu-ho` | Hóa đơn thu hộ: danh sách, tạo, gen, gửi email, xác nhận |
+| `/thu-ho/gen` | Gen hàng loạt (chỉ truy cập qua cổng nội bộ `8081`) |
 | `/thung-rac` | Khôi phục / xóa vĩnh viễn (admin only) |
 | `/audit-log` | Nhật ký hoạt động + lịch sử email (admin only) |
