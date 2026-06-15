@@ -186,11 +186,6 @@ public class KhoanThuService {
         if (loai == null || loai.getLoaiApDung() == null || !loai.getLoaiApDung().isBatBuoc()) {
             return;
         }
-        // THU_HO: số tiền nhập riêng từng hộ qua trang nhap-thu-ho
-        if (khoanThu.getLoaiTinhPhi() == LoaiTinhPhi.THU_HO) {
-            return;
-        }
-
         boolean isPerXe     = khoanThu.getLoaiTinhPhi() == LoaiTinhPhi.PER_XE;
         boolean isPerPerson = khoanThu.getLoaiTinhPhi() == LoaiTinhPhi.PER_PERSON;
 
@@ -246,10 +241,6 @@ public class KhoanThuService {
             if (kt.getLoaiTinhPhi() == LoaiTinhPhi.PER_XE) {
                 continue;
             }
-            // THU_HO: số tiền do nhân viên nhập thủ công từng tháng
-            if (kt.getLoaiTinhPhi() == LoaiTinhPhi.THU_HO) {
-                continue;
-            }
             BigDecimal soTienYeuCau = tinhSoTienYeuCau(kt, ho);
             // PER_PERSON: bỏ qua hộ chưa có nhân khẩu
             if (kt.getLoaiTinhPhi() == LoaiTinhPhi.PER_PERSON
@@ -281,9 +272,6 @@ public class KhoanThuService {
 
     public BigDecimal tinhSoTienYeuCau(KhoanThu kt, HoGiaDinh ho) {
         LoaiTinhPhi ltp = kt.getLoaiTinhPhi() != null ? kt.getLoaiTinhPhi() : LoaiTinhPhi.FIXED;
-        if (ltp == LoaiTinhPhi.THU_HO) {
-            return null; // nhập riêng từng hộ
-        }
         if (ltp == LoaiTinhPhi.PER_M2) {
             if (kt.getDonGiaPerM2() != null && ho.getDienTich() != null) {
                 return ho.getDienTich().multiply(kt.getDonGiaPerM2());

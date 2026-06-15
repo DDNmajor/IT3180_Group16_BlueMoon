@@ -46,7 +46,8 @@ public class HoaDonThuHoController {
         model.addAttribute("loaiDichVuFilter", loaiEnum);
         model.addAttribute("trangThaiFilter",  ttEnum);
         model.addAttribute("thangFilter",      ym != null ? ym.toString() : null);
-        model.addAttribute("choThanhToan",     TrangThaiHoaDonThuHo.CHO_THANH_TOAN);
+        model.addAttribute("choThanhToan",  TrangThaiHoaDonThuHo.CHO_THANH_TOAN);
+        model.addAttribute("daHuy",         TrangThaiHoaDonThuHo.DA_HUY);
         return "thu-ho/list";
     }
 
@@ -150,6 +151,28 @@ public class HoaDonThuHoController {
         try {
             hoaDonService.xacNhanThanhToan(id, auth.getName());
             ra.addFlashAttribute("successMsg", "Đã xác nhận thanh toán và gửi email biên nhận.");
+        } catch (IllegalStateException e) {
+            ra.addFlashAttribute("errorMsg", e.getMessage());
+        }
+        return "redirect:/thu-ho";
+    }
+
+    @PostMapping("/{id}/khoi-phuc")
+    public String khoiPhuc(@PathVariable Integer id, RedirectAttributes ra) {
+        try {
+            hoaDonService.khôiPhucHoaDon(id);
+            ra.addFlashAttribute("successMsg", "Đã khôi phục hóa đơn về trạng thái Chờ thanh toán.");
+        } catch (IllegalStateException e) {
+            ra.addFlashAttribute("errorMsg", e.getMessage());
+        }
+        return "redirect:/thu-ho";
+    }
+
+    @PostMapping("/{id}/xoa")
+    public String xoa(@PathVariable Integer id, RedirectAttributes ra) {
+        try {
+            hoaDonService.xoaHoaDon(id);
+            ra.addFlashAttribute("successMsg", "Đã xóa hóa đơn.");
         } catch (IllegalStateException e) {
             ra.addFlashAttribute("errorMsg", e.getMessage());
         }

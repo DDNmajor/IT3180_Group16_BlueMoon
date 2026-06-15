@@ -94,15 +94,6 @@
                             </select>
                         </div>
 
-                        <!-- THU_HO: thông báo nhập tiền theo hộ -->
-                        <div id="groupThuHo" class="mb-3" style="display:none;">
-                            <div class="alert alert-warning py-2 small mb-0">
-                                <i class="bi bi-people me-1"></i>
-                                <strong>Thu hộ:</strong> Số tiền được nhập riêng cho từng hộ sau khi tạo kỳ thu.
-                                Hệ thống sẽ chuyển bạn đến trang nhập tiền ngay sau khi tạo kỳ.
-                            </div>
-                        </div>
-
                         <!-- FIXED / PER_M2 / PER_PERSON: hiện soTien + donVi -->
                         <div id="groupSoTien" class="row mb-3">
                             <div class="col">
@@ -210,7 +201,6 @@
         const groupSoTien    = document.getElementById('groupSoTien');
         const groupPerM2     = document.getElementById('groupPerM2');
         const groupPerXe     = document.getElementById('groupPerXe');
-        const groupThuHo     = document.getElementById('groupThuHo');
         const soTienInput    = groupSoTien.querySelector('input[type=number]');
         const soTienHint     = document.getElementById('soTienHint');
 
@@ -221,20 +211,17 @@
 
         function applyLoaiTinhPhi() {
             const val = loaiTinhPhiSel.value;
-            const isThuHo     = val === 'THU_HO';
             const isPerXe     = val === 'PER_XE';
             const isPerPerson = val === 'PER_PERSON';
-            groupSoTien.style.display = (isPerXe || isThuHo) ? 'none' : '';
+            groupSoTien.style.display = isPerXe ? 'none' : '';
             groupPerM2.style.display  = (val === 'PER_M2') ? '' : 'none';
             groupPerXe.style.display  = isPerXe ? '' : 'none';
-            groupThuHo.style.display  = isThuHo ? '' : 'none';
 
             if (isPerXe) {
                 soTienInput.value = '0';
                 if (!giaXeMayInput.value) giaXeMayInput.value = '70000';
                 if (!giaOtoInput.value)   giaOtoInput.value   = '1200000';
             }
-            if (isThuHo) soTienInput.value = '0';
 
             if (labelSoTien) {
                 labelSoTien.innerHTML = val === 'PER_M2'

@@ -72,17 +72,15 @@
 
                                 <!-- Số tiền -->
                                 <td class="text-end">
-                                    <span th:if="${mau.loaiTinhPhi?.name() == 'THU_HO'}"
-                                          class="text-muted fst-italic small">Theo hộ</span>
                                     <span th:if="${mau.loaiTinhPhi?.name() == 'PER_PERSON'}"
                                           th:with="v=${mau.soTien != null ? mau.soTien : 0}"
                                           th:text="${#numbers.formatDecimal(v, 0, 'COMMA', 0, 'POINT')} + ' đ/người'">
                                     </span>
-                                    <span th:if="${mau.loaiTinhPhi?.name() != 'THU_HO' and mau.loaiTinhPhi?.name() != 'PER_PERSON' and mau.donGiaPerM2 == null}"
+                                    <span th:if="${mau.loaiTinhPhi?.name() != 'PER_PERSON' and mau.donGiaPerM2 == null}"
                                           th:with="v=${mau.soTien != null ? mau.soTien : 0}"
                                           th:text="${#numbers.formatDecimal(v, 0, 'COMMA', 0, 'POINT')} + ' đ'">
                                     </span>
-                                    <span th:if="${mau.loaiTinhPhi?.name() != 'THU_HO' and mau.loaiTinhPhi?.name() != 'PER_PERSON' and mau.donGiaPerM2 != null}"
+                                    <span th:if="${mau.loaiTinhPhi?.name() != 'PER_PERSON' and mau.donGiaPerM2 != null}"
                                           th:with="v=${mau.donGiaPerM2}"
                                           th:text="${#numbers.formatDecimal(v, 0, 'COMMA', 0, 'POINT')} + ' đ/m²'">
                                     </span>
@@ -109,12 +107,6 @@
                                              class="text-muted small"
                                              th:with="lastKy=${kyList[0]}">
                                             <span th:text="'Gần nhất: ' + ${#temporals.format(lastKy.kyThu, 'MM/yyyy')}"></span>
-                                            <a th:if="${mau.loaiTinhPhi?.name() == 'THU_HO'}"
-                                               th:href="@{/thanh-toan/nhap-thu-ho/{id}(id=${lastKy.id})}"
-                                               class="btn btn-info btn-sm ms-1 py-0 px-1"
-                                               title="Nhập tiền từng hộ">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
                                         </div>
                                     </span>
                                 </td>

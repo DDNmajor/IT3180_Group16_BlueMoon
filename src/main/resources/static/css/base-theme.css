@@ -64,9 +64,6 @@ h1, h2, h3, h4, h5, h6 {
   height: calc(100vh - var(--navbar-h));
   overflow: hidden;
   align-self: flex-start; /* quan trọng: ngăn flexbox kéo dài sidebar theo row height */
-  will-change: transform;  /* pre-composite GPU layer, tránh jitter khi bắt đầu scroll */
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
   flex: 0 0 250px;
   width: 250px;
   max-width: 250px;

@@ -189,6 +189,32 @@ public class HoaDonThuHoService {
                 "ma=" + hd.getMaHoaDon() + ", canHo=" + hd.getHoGiaDinh().getSoCanHo(), tenDangNhap);
     }
 
+    /** Khôi phục hóa đơn đã hủy về CHO_THANH_TOAN. */
+    @Transactional
+    public void khôiPhucHoaDon(Integer id) {
+        HoaDonThuHo hd = findById(id);
+        if (hd.getTrangThai() != TrangThaiHoaDonThuHo.DA_HUY) {
+            throw new IllegalStateException("Chỉ có thể khôi phục hóa đơn đã hủy.");
+        }
+        hd.setTrangThai(TrangThaiHoaDonThuHo.CHO_THANH_TOAN);
+        hoaDonRepo.save(hd);
+        auditLogService.log("Khôi phục", "HoaDonThuHo",
+                "ma=" + hd.getMaHoaDon() + ", canHo=" + hd.getHoGiaDinh().getSoCanHo(), currentUser());
+    }
+
+    /** Xóa vĩnh viễn hóa đơn (chỉ khi CHO_THANH_TOAN hoặc DA_HUY). */
+    @Transactional
+    public void xoaHoaDon(Integer id) {
+        HoaDonThuHo hd = findById(id);
+        if (hd.getTrangThai() == TrangThaiHoaDonThuHo.DA_THANH_TOAN) {
+            throw new IllegalStateException("Không thể xóa hóa đơn đã thanh toán.");
+        }
+        auditLogService.log("Xóa", "HoaDonThuHo",
+                "ma=" + hd.getMaHoaDon() + ", canHo=" + hd.getHoGiaDinh().getSoCanHo()
+                + ", trangThai=" + hd.getTrangThai().getTenHienThi(), currentUser());
+        hoaDonRepo.deleteById(id);
+    }
+
     /** Hủy hóa đơn (chỉ khi CHO_THANH_TOAN). */
     @Transactional
     public void huyHoaDon(Integer id, String ghiChuHuy) {

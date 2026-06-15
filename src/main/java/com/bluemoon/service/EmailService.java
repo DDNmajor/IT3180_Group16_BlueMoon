@@ -245,7 +245,6 @@ public class EmailService {
 
     // ── THU HỘ ──────────────────────────────────────────────────────────────
 
-    @Async
     public void guiEmailThuHoThongBao(HoaDonThuHo hd) {
         HoGiaDinh ho = hd.getHoGiaDinh();
         if (ho.getEmail() == null || ho.getEmail().isBlank()) return;
@@ -301,7 +300,6 @@ public class EmailService {
         }
     }
 
-    @Async
     public void guiEmailThuHoXacNhan(HoaDonThuHo hd) {
         HoGiaDinh ho = hd.getHoGiaDinh();
         if (ho.getEmail() == null || ho.getEmail().isBlank()) return;

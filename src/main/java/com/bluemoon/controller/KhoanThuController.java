@@ -80,11 +80,7 @@ public class KhoanThuController {
             return "khoan-thu/form";
         }
         try {
-            KhoanThu saved = khoanThuService.save(khoanThu);
-            if (saved.getLoaiTinhPhi() == LoaiTinhPhi.THU_HO) {
-                ra.addFlashAttribute("successMsg", "Thêm khoản thu hộ thành công. Vui lòng nhập số tiền từng hộ.");
-                return "redirect:/thanh-toan/nhap-thu-ho/" + saved.getId();
-            }
+            khoanThuService.save(khoanThu);
             ra.addFlashAttribute("successMsg", "Thêm khoản thu thành công.");
             return "redirect:/khoan-thu";
         } catch (IllegalArgumentException e) {
@@ -159,9 +155,6 @@ public class KhoanThuController {
             if (khoanThu.getGiaOto() == null || khoanThu.getGiaOto().compareTo(BigDecimal.ZERO) <= 0) {
                 bindingResult.rejectValue("giaOto", "required", "Vui lòng nhập giá ô tô lớn hơn 0");
             }
-        }
-        if (ltp == LoaiTinhPhi.THU_HO) {
-            khoanThu.setSoTien(BigDecimal.ZERO);
         }
         if (ltp == LoaiTinhPhi.PER_PERSON
                 && (khoanThu.getSoTien() == null

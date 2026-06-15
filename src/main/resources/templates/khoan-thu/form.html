@@ -98,14 +98,6 @@
                             <div class="form-text">Số tiền mỗi hộ = <strong>diện tích × đơn giá/m²</strong>.</div>
                         </div>
 
-                        <!-- THU_HO: thông báo nhập từng hộ sau -->
-                        <div id="groupThuHo" class="mb-3" style="display:none;">
-                            <div class="alert alert-info py-2 mb-0">
-                                <i class="bi bi-lightning-charge me-1"></i>
-                                <strong>Thu hộ:</strong> Số tiền sẽ nhập riêng cho từng hộ sau khi lưu (theo hóa đơn điện/nước/internet).
-                            </div>
-                        </div>
-
                         <!-- PER_XE: nhập giá từng loại xe -->
                         <div id="groupPerXe" class="mb-3" style="display:none;">
                             <div class="alert alert-info py-2 mb-2">
@@ -180,7 +172,6 @@
         const groupSoTien    = document.getElementById('groupSoTien');
         const groupPerM2     = document.getElementById('groupPerM2');
         const groupPerXe     = document.getElementById('groupPerXe');
-        const groupThuHo     = document.getElementById('groupThuHo');
         const soTienInput    = groupSoTien.querySelector('input[type=number]');
 
         const labelSoTien = document.getElementById('labelSoTien');
@@ -191,17 +182,13 @@
 
         function applyLoaiTinhPhi() {
             const val = loaiTinhPhiSel.value;
-            groupSoTien.style.display = (val === 'PER_XE' || val === 'THU_HO') ? 'none' : '';
+            groupSoTien.style.display = (val === 'PER_XE') ? 'none' : '';
             groupPerM2.style.display  = (val === 'PER_M2') ? ''     : 'none';
             groupPerXe.style.display  = (val === 'PER_XE') ? ''     : 'none';
-            groupThuHo.style.display  = (val === 'THU_HO') ? ''     : 'none';
             if (val === 'PER_XE') {
                 soTienInput.value = '0';
                 if (!giaXeMayInput.value) giaXeMayInput.value = '70000';
                 if (!giaOtoInput.value)   giaOtoInput.value   = '1200000';
-            }
-            if (val === 'THU_HO') {
-                soTienInput.value = '0';
             }
             if (labelSoTien) {
                 labelSoTien.innerHTML = val === 'PER_M2'

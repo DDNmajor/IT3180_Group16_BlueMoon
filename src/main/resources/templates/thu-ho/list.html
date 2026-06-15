@@ -25,6 +25,9 @@
                 </div>
 
                 <div class="d-flex gap-2">
+                    <a th:href="@{/thu-ho/gen}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-lightning me-1"></i>Gen hàng loạt
+                    </a>
                     <a th:href="@{/thu-ho/tao}" class="btn btn-success btn-sm">
                         <i class="bi bi-plus-lg me-1"></i>Tạo hóa đơn
                     </a>
@@ -92,12 +95,14 @@
             </form>
 
             <!-- TABLE -->
+            <div class="card shadow-sm">
+            <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-sm table-hover align-middle">
+                <table class="table table-hover table-bordered mb-0 align-middle">
 
-                    <thead>
+                    <thead class="table-dark">
                     <tr>
-                        <th>Mã hóa đơn</th>
+                        <th style="width:140px">Mã hóa đơn</th>
                         <th>Căn hộ</th>
                         <th>Dịch vụ</th>
                         <th>Kỳ</th>
@@ -106,7 +111,7 @@
                         <th>Trạng thái</th>
                         <th>Email</th>
                         <th>Xác nhận</th>
-                        <th></th>
+                        <th style="width:180px">Thao tác</th>
                     </tr>
                     </thead>
 
@@ -176,21 +181,75 @@
                             <span th:if="${hd.ngayXacNhan == null}" class="text-muted">—</span>
                         </td>
 
-                        <td class="text-end">
-                            <div class="d-flex gap-1 justify-content-end flex-wrap">
+                        <td class="text-center">
+                            <div class="d-flex gap-1 justify-content-center flex-wrap">
 
+                                <!-- Gửi email thông báo (CHO_THANH_TOAN) -->
                                 <form th:if="${tt == choThanhToan}"
-                                      th:action="@{/thu-ho/__${hd.id}__/gui-email}"
+                                      th:action="@{/thu-ho/{id}/gui-email(id=${hd.id})}"
                                       method="post">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                    <button class="btn btn-outline-info btn-sm">
+                                    <button type="submit" class="btn btn-outline-info btn-sm"
+                                            title="Gửi email thông báo">
                                         <i class="bi bi-envelope"></i>
                                     </button>
                                 </form>
 
+                                <!-- Xác nhận thanh toán (CHO_THANH_TOAN) -->
                                 <button th:if="${tt == choThanhToan}"
-                                        class="btn btn-success btn-sm">
+                                        type="button"
+                                        class="btn btn-success btn-sm"
+                                        title="Xác nhận đã thu tiền"
+                                        data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                                        th:data-confirm-url="@{/thu-ho/{id}/xac-nhan(id=${hd.id})}"
+                                        data-confirm-title="Xác nhận thanh toán"
+                                        th:data-confirm-message="${'Xác nhận đã thu tiền hóa đơn ' + hd.maHoaDon + '? Hệ thống sẽ gửi email biên nhận cho cư dân.'}"
+                                        data-confirm-btn-class="btn-success"
+                                        data-confirm-btn-text="Xác nhận">
                                     <i class="bi bi-check-lg"></i>
+                                </button>
+
+                                <!-- Hủy (CHO_THANH_TOAN) -->
+                                <button th:if="${tt == choThanhToan}"
+                                        type="button"
+                                        class="btn btn-warning btn-sm"
+                                        title="Hủy hóa đơn"
+                                        data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                                        th:data-confirm-url="@{/thu-ho/{id}/huy(id=${hd.id})}"
+                                        data-confirm-title="Hủy hóa đơn"
+                                        th:data-confirm-message="${'Hủy hóa đơn ' + hd.maHoaDon + '?'}"
+                                        data-confirm-btn-class="btn-warning"
+                                        data-confirm-btn-text="Hủy">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+
+                                <!-- Khôi phục (DA_HUY) -->
+                                <button th:if="${tt == daHuy}"
+                                        type="button"
+                                        class="btn btn-outline-secondary btn-sm"
+                                        title="Khôi phục về Chờ thanh toán"
+                                        data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                                        th:data-confirm-url="@{/thu-ho/{id}/khoi-phuc(id=${hd.id})}"
+                                        data-confirm-title="Khôi phục hóa đơn"
+                                        th:data-confirm-message="${'Khôi phục hóa đơn ' + hd.maHoaDon + ' về trạng thái Chờ thanh toán?'}"
+                                        data-confirm-btn-class="btn-secondary"
+                                        data-confirm-btn-text="Khôi phục">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
+
+                                <!-- Xóa vĩnh viễn (CHO_THANH_TOAN hoặc DA_HUY) -->
+                                <button th:if="${tt == choThanhToan or tt == daHuy}"
+                                        type="button"
+                                        class="btn btn-danger btn-sm"
+                                        title="Xóa vĩnh viễn"
+                                        data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                                        th:data-confirm-url="@{/thu-ho/{id}/xoa(id=${hd.id})}"
+                                        data-confirm-title="Xóa hóa đơn"
+                                        th:data-confirm-message="${'Xóa vĩnh viễn hóa đơn ' + hd.maHoaDon + '? Không thể hoàn tác.'}"
+                                        data-confirm-sub="Thao tác này không thể hoàn tác."
+                                        data-confirm-btn-class="btn-danger"
+                                        data-confirm-btn-text="Xóa vĩnh viễn">
+                                    <i class="bi bi-trash"></i>
                                 </button>
 
                             </div>
@@ -200,7 +259,9 @@
                     </tbody>
 
                 </table>
-            </div>
+            </div><!-- /table-responsive -->
+            </div><!-- /card-body -->
+            </div><!-- /card -->
 
             <div class="text-muted small mt-2">
                 Tổng: <strong th:text="${#lists.size(danhSach)}"></strong> hóa đơn
@@ -209,6 +270,51 @@
         </main>
     </div>
 </div>
+
+<!-- Modal: Gửi email hàng loạt -->
+<div class="modal fade" id="modalGuiEmailHangLoat" tabindex="-1"
+     aria-labelledby="modalGuiEmailTitle" aria-modal="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <form th:action="@{/thu-ho/gui-email-hang-loat}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <div class="modal-header border-0 pb-1">
+                    <h6 class="modal-title" id="modalGuiEmailTitle">
+                        <i class="bi bi-envelope-paper me-1"></i>Gửi email hàng loạt
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-1">
+                    <div class="mb-2">
+                        <label class="form-label form-label-sm">Loại dịch vụ</label>
+                        <select name="loaiDichVu" class="form-select form-select-sm">
+                            <option value="">Tất cả dịch vụ</option>
+                            <option th:each="dv : ${loaiDichVuAll}"
+                                    th:value="${dv}"
+                                    th:text="${dv.tenHienThi}"
+                                    th:selected="${loaiDichVuFilter == dv}"></option>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label form-label-sm">Tháng</label>
+                        <input type="month" name="thang" class="form-control form-control-sm"
+                               th:value="${thangFilter}"/>
+                    </div>
+                    <small class="text-muted">Chỉ gửi cho hóa đơn Chờ thanh toán chưa gửi email.</small>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-info btn-sm text-white">
+                        <i class="bi bi-send me-1"></i>Gửi
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
 
 </body>
 </html>
