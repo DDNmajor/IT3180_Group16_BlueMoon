@@ -146,13 +146,14 @@
                                    th:text="${dv.nhaCungCap}"></small>
                         </td>
 
-                        <td th:text="${hd.kyHienThi}"></td>
+                        <td th:text="${#temporals.format(hd.kyThanhToan, 'MM/yyyy')}"></td>
 
-                        <td class="fw-bold" th:text="${hd.soTienHienThi}"></td>
+                        <td class="fw-bold"
+                            th:text="${#numbers.formatDecimal(hd.soTien, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
 
                         <td>
                                 <span th:if="${hd.hanThanhToan != null}"
-                                      th:text="${hd.hanHienThi}"></span>
+                                      th:text="${#temporals.format(hd.hanThanhToan, 'dd/MM/yyyy')}"></span>
 
                             <span th:if="${hd.hanThanhToan == null}" class="text-muted">—</span>
                         </td>

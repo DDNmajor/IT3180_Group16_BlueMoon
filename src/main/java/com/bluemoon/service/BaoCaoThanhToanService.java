@@ -328,17 +328,7 @@ public class BaoCaoThanhToanService {
     }
 
     private BigDecimal laySoTienYeuCau(ThanhToan thanhToan) {
-        Object value = invokeGetter(thanhToan, "getSoTienYeuCau");
-
-        if (value instanceof BigDecimal bd) {
-            return nz(bd);
-        }
-
-        if (thanhToan.getKhoanThu() != null && thanhToan.getKhoanThu().getSoTien() != null) {
-            return nz(thanhToan.getKhoanThu().getSoTien());
-        }
-
-        return BigDecimal.ZERO;
+        return nz(thanhToan.getSoTienYeuCauHieuLuc());
     }
 
     private String layEmailHo(HoGiaDinh ho) {

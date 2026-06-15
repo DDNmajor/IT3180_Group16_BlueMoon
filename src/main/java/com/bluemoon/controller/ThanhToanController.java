@@ -94,6 +94,7 @@ public class ThanhToanController {
             List<ThanhToan> payments = thanhToanService.findByKhoanThu(selected.getId());
 
             Map<Integer, ThanhToan> paymentMap = payments.stream()
+                    .filter(tt -> tt.getHoGiaDinh() != null)
                     .collect(Collectors.toMap(
                             tt -> tt.getHoGiaDinh().getId(),
                             tt -> tt,
@@ -144,8 +145,9 @@ public class ThanhToanController {
             thanhToan.setHoGiaDinh(hoGiaDinhService.findById(idHo));
 
             List<Integer> daDongIds = thanhToanService.findByHoGiaDinh(idHo).stream()
-                    .filter(tt -> tt.getTrangThai() == TrangThaiThanhToan.DA_DONG
-                               || tt.getTrangThai() == TrangThaiThanhToan.DONG_DU)
+                    .filter(tt -> tt.getKhoanThu() != null
+                            && (tt.getTrangThai() == TrangThaiThanhToan.DA_DONG
+                                || tt.getTrangThai() == TrangThaiThanhToan.DONG_DU))
                     .map(tt -> tt.getKhoanThu().getId())
                     .collect(Collectors.toList());
             List<KhoanThu> availableFees = khoanThuService.findAll().stream()

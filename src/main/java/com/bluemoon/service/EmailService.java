@@ -245,6 +245,7 @@ public class EmailService {
 
     // ── THU HỘ ──────────────────────────────────────────────────────────────
 
+    @Async
     public void guiEmailThuHoThongBao(HoaDonThuHo hd) {
         HoGiaDinh ho = hd.getHoGiaDinh();
         if (ho.getEmail() == null || ho.getEmail().isBlank()) return;
@@ -300,6 +301,7 @@ public class EmailService {
         }
     }
 
+    @Async
     public void guiEmailThuHoXacNhan(HoaDonThuHo hd) {
         HoGiaDinh ho = hd.getHoGiaDinh();
         if (ho.getEmail() == null || ho.getEmail().isBlank()) return;
@@ -344,6 +346,8 @@ public class EmailService {
             mailSender.send(msg);
             log.info("[AUDIT] Gửi email thu hộ xác nhận: email={}, canHo={}, ma={}",
                     ho.getEmail(), ho.getSoCanHo(), hd.getMaHoaDon());
+            auditLogService.log("Gửi email thu hộ", "HoaDonThuHo",
+                    "ma=" + hd.getMaHoaDon() + ", canHo=" + ho.getSoCanHo() + " (xác nhận)", "system");
             lichSuEmailService.ghiLichSu(ho.getEmail(), subject, body,
                     LoaiEmail.THU_HO_XAC_NHAN, true, null, ho.getSoCanHo(), "system");
         } catch (Exception e) {

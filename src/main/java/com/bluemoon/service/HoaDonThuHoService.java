@@ -66,7 +66,7 @@ public class HoaDonThuHoService {
         return list;
     }
 
-    /** Tạo hóa đơn cho 1 hộ cụ thể (nhập tay hoặc từ gen màn hình gen hàng loạt). */
+    // tạo hóa đơn cho 1 hộ (nhập tay hoặc gen hàng loạt)
     @Transactional
     public HoaDonThuHo taoHoaDon(Integer idHo, LoaiDichVuThuHo loaiDichVu,
                                   YearMonth ky, BigDecimal soTien,
@@ -94,16 +94,15 @@ public class HoaDonThuHoService {
 
         HoaDonThuHo saved = hoaDonRepo.save(hd);
         String user = currentUser();
+        log.info("[AUDIT] Tạo hóa đơn thu hộ: ma={}, canHo={}, dv={}, soTien={}, user={}",
+                saved.getMaHoaDon(), ho.getSoCanHo(), loaiDichVu.getTenHienThi(), soTien, user);
         auditLogService.log("Tạo", "HoaDonThuHo",
                 "ma=" + saved.getMaHoaDon() + ", canHo=" + ho.getSoCanHo()
                 + ", dv=" + loaiDichVu.getTenHienThi() + ", soTien=" + soTien, user);
         return saved;
     }
 
-    /**
-     * Gen hóa đơn mô phỏng cho TẤT CẢ hộ với 1 loại dịch vụ + 1 kỳ.
-     * Bỏ qua hộ đã có hóa đơn cùng kỳ.
-     */
+    // gen hóa đơn mô phỏng cho tất cả hộ — bỏ qua hộ đã có cùng kỳ
     @Transactional
     public int genHangLoat(LoaiDichVuThuHo loaiDichVu, YearMonth ky, LocalDate hanThanhToan) {
         List<HoGiaDinh> tatCaHo = hoRepo.findAll();
@@ -128,6 +127,8 @@ public class HoaDonThuHoService {
         }
 
         String user = currentUser();
+        log.info("[AUDIT] Gen hàng loạt hóa đơn thu hộ: dv={}, ky={}, soHoaDon={}, user={}",
+                loaiDichVu.getTenHienThi(), ky.format(DateTimeFormatter.ofPattern("MM/yyyy")), count, user);
         auditLogService.log("Gen hàng loạt", "HoaDonThuHo",
                 "dv=" + loaiDichVu.getTenHienThi()
                 + ", ky=" + ky.format(DateTimeFormatter.ofPattern("MM/yyyy"))
@@ -135,7 +136,7 @@ public class HoaDonThuHoService {
         return count;
     }
 
-    /** Gửi email thông báo hóa đơn, cập nhật emailDaGui=true. */
+    // gửi email thông báo, cập nhật emailDaGui=true
     @Transactional
     public void guiEmailThongBao(Integer id) {
         HoaDonThuHo hd = findById(id);
@@ -145,11 +146,13 @@ public class HoaDonThuHoService {
         emailService.guiEmailThuHoThongBao(hd);
         hd.setEmailDaGui(true);
         hoaDonRepo.save(hd);
+        log.info("[AUDIT] Gửi email thông báo hóa đơn thu hộ: ma={}, canHo={}, user={}",
+                hd.getMaHoaDon(), hd.getHoGiaDinh().getSoCanHo(), currentUser());
         auditLogService.log("Gửi email", "HoaDonThuHo",
                 "ma=" + hd.getMaHoaDon() + ", canHo=" + hd.getHoGiaDinh().getSoCanHo(), currentUser());
     }
 
-    /** Gửi email thông báo hàng loạt cho tất cả hóa đơn CHO_THANH_TOAN chưa gửi email. */
+    // gửi email hàng loạt cho hóa đơn CHO_THANH_TOAN chưa gửi
     @Transactional
     public int guiEmailHangLoat(LoaiDichVuThuHo loaiDichVu, YearMonth ky) {
         List<HoaDonThuHo> list = findWithFilter(null, loaiDichVu,
@@ -162,6 +165,10 @@ public class HoaDonThuHoService {
             hd.setEmailDaGui(true);
             hoaDonRepo.save(hd);
         }
+        log.info("[AUDIT] Gửi email hàng loạt hóa đơn thu hộ: dv={}, ky={}, soEmail={}, user={}",
+                loaiDichVu != null ? loaiDichVu.getTenHienThi() : "tất cả",
+                ky != null ? ky.format(DateTimeFormatter.ofPattern("MM/yyyy")) : "tất cả",
+                chuaGui.size(), currentUser());
         auditLogService.log("Gửi email hàng loạt", "HoaDonThuHo",
                 "dv=" + (loaiDichVu != null ? loaiDichVu.getTenHienThi() : "tất cả")
                 + ", ky=" + (ky != null ? ky.format(DateTimeFormatter.ofPattern("MM/yyyy")) : "tất cả")
@@ -169,7 +176,7 @@ public class HoaDonThuHoService {
         return chuaGui.size();
     }
 
-    /** Xác nhận đã thu tiền → DA_THANH_TOAN, gửi email xác nhận. */
+    // xác nhận đã thu → DA_THANH_TOAN + email biên nhận
     @Transactional
     public void xacNhanThanhToan(Integer id, String tenDangNhap) {
         HoaDonThuHo hd = findById(id);
@@ -185,37 +192,44 @@ public class HoaDonThuHoService {
         hoaDonRepo.save(hd);
 
         emailService.guiEmailThuHoXacNhan(hd);
+        log.info("[AUDIT] Xác nhận thanh toán hóa đơn thu hộ: ma={}, canHo={}, user={}",
+                hd.getMaHoaDon(), hd.getHoGiaDinh().getSoCanHo(), tenDangNhap);
         auditLogService.log("Xác nhận thanh toán", "HoaDonThuHo",
                 "ma=" + hd.getMaHoaDon() + ", canHo=" + hd.getHoGiaDinh().getSoCanHo(), tenDangNhap);
     }
 
-    /** Khôi phục hóa đơn đã hủy về CHO_THANH_TOAN. */
+    // khôi phục hóa đơn DA_HUY → CHO_THANH_TOAN
     @Transactional
-    public void khôiPhucHoaDon(Integer id) {
+    public void khoiPhucHoaDon(Integer id) {
         HoaDonThuHo hd = findById(id);
         if (hd.getTrangThai() != TrangThaiHoaDonThuHo.DA_HUY) {
             throw new IllegalStateException("Chỉ có thể khôi phục hóa đơn đã hủy.");
         }
         hd.setTrangThai(TrangThaiHoaDonThuHo.CHO_THANH_TOAN);
         hoaDonRepo.save(hd);
+        log.info("[AUDIT] Khôi phục hóa đơn thu hộ: ma={}, canHo={}, user={}",
+                hd.getMaHoaDon(), hd.getHoGiaDinh().getSoCanHo(), currentUser());
         auditLogService.log("Khôi phục", "HoaDonThuHo",
                 "ma=" + hd.getMaHoaDon() + ", canHo=" + hd.getHoGiaDinh().getSoCanHo(), currentUser());
     }
 
-    /** Xóa vĩnh viễn hóa đơn (chỉ khi CHO_THANH_TOAN hoặc DA_HUY). */
+    // xóa vĩnh viễn (chỉ CHO_THANH_TOAN hoặc DA_HUY)
     @Transactional
     public void xoaHoaDon(Integer id) {
         HoaDonThuHo hd = findById(id);
         if (hd.getTrangThai() == TrangThaiHoaDonThuHo.DA_THANH_TOAN) {
             throw new IllegalStateException("Không thể xóa hóa đơn đã thanh toán.");
         }
+        log.info("[AUDIT] Xóa hóa đơn thu hộ: ma={}, canHo={}, trangThai={}, user={}",
+                hd.getMaHoaDon(), hd.getHoGiaDinh().getSoCanHo(),
+                hd.getTrangThai().getTenHienThi(), currentUser());
         auditLogService.log("Xóa", "HoaDonThuHo",
                 "ma=" + hd.getMaHoaDon() + ", canHo=" + hd.getHoGiaDinh().getSoCanHo()
                 + ", trangThai=" + hd.getTrangThai().getTenHienThi(), currentUser());
         hoaDonRepo.deleteById(id);
     }
 
-    /** Hủy hóa đơn (chỉ khi CHO_THANH_TOAN). */
+    // hủy hóa đơn (chỉ CHO_THANH_TOAN)
     @Transactional
     public void huyHoaDon(Integer id, String ghiChuHuy) {
         HoaDonThuHo hd = findById(id);
@@ -227,6 +241,8 @@ public class HoaDonThuHoService {
             hd.setGhiChu((hd.getGhiChu() != null ? hd.getGhiChu() + " | " : "") + "Hủy: " + ghiChuHuy);
         }
         hoaDonRepo.save(hd);
+        log.info("[AUDIT] Hủy hóa đơn thu hộ: ma={}, canHo={}, lyDo={}, user={}",
+                hd.getMaHoaDon(), hd.getHoGiaDinh().getSoCanHo(), ghiChuHuy, currentUser());
         auditLogService.log("Hủy hóa đơn", "HoaDonThuHo",
                 "ma=" + hd.getMaHoaDon() + ", canHo=" + hd.getHoGiaDinh().getSoCanHo()
                 + ", lyDo=" + ghiChuHuy, currentUser());

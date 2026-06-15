@@ -155,6 +155,8 @@ public class MauKhoanThuService {
             }
         }
         if (taoDuoc > 0) {
+            log.info("[AUDIT] Auto-apply mẫu khoản thu: nguon={}, ky={}, soKhoan={}, user=system",
+                    nguon, ym, taoDuoc);
             auditLogService.log("Auto-apply", "Mẫu khoản thu",
                     nguon + ": tạo " + taoDuoc + " khoản thu cho kỳ " + ym, "system");
         }

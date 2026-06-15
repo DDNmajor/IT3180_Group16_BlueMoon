@@ -6,8 +6,10 @@ import com.bluemoon.model.HoGiaDinh;
 import com.bluemoon.model.NhanKhau;
 import com.bluemoon.model.TinhTrangCuTru;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,11 +26,13 @@ import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ExcelImportService {
 
     private final HoGiaDinhRepository hoGiaDinhRepository;
     private final NhanKhauRepository  nhanKhauRepository;
     private final KhoanThuService     khoanThuService;
+    private final AuditLogService     auditLogService;
 
     private static final Pattern EMAIL_PATTERN   = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
     private static final Pattern CCCD_PATTERN    = Pattern.compile("^\\d{9}$|^\\d{12}$");
@@ -217,6 +221,11 @@ public class ExcelImportService {
                 }
             }
 
+            String user = currentUser();
+            log.info("[AUDIT] Import Excel hộ gia đình: hoMoi={}, capNhat={}, nkMoi={}, user={}",
+                    soHoMoi, soHoCapNhat, soNkMoi, user);
+            auditLogService.log("Import", "Hộ gia đình",
+                    "hoMoi=" + soHoMoi + ", capNhat=" + soHoCapNhat + ", nkMoi=" + soNkMoi, user);
             return new ImportResult(soHoMoi, soHoCapNhat, soNkMoi, Collections.emptyList());
 
         } catch (ImportValidationException e) {
@@ -227,7 +236,6 @@ public class ExcelImportService {
         }
     }
 
-    /** Tạo file Excel mẫu để người dùng tải về */
     public byte[] generateTemplate() throws IOException {
         try (Workbook wb = new XSSFWorkbook()) {
             CellStyle bold = wb.createCellStyle();
@@ -299,5 +307,10 @@ public class ExcelImportService {
             this.errors = errors;
         }
         List<String> getErrors() { return errors; }
+    }
+
+    private String currentUser() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth != null ? auth.getName() : "system";
     }
 }

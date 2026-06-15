@@ -131,15 +131,18 @@
                                         </a>
 
                                         <!-- Toggle active -->
-                                        <form th:action="@{/mau-khoan-thu/{id}/doi-trang-thai(id=${mau.id})}"
-                                              method="post" class="d-inline">
-                                            <button type="submit"
-                                                    th:class="${mau.active} ? 'btn btn-outline-secondary btn-sm' : 'btn btn-outline-success btn-sm'"
-                                                    th:title="${mau.active} ? 'Tạm dừng tự động' : 'Kích hoạt lại'"
-                                                    th:onclick="${mau.active} ? 'return confirm(\'Tạm dừng mẫu này? Job sẽ không tạo kỳ mới cho tháng tới.\')' : 'return true'">
-                                                <i th:class="${mau.active} ? 'bi bi-pause' : 'bi bi-play'"></i>
-                                            </button>
-                                        </form>
+                                        <button type="button"
+                                                th:class="${mau.active} ? 'btn btn-outline-secondary btn-sm' : 'btn btn-outline-success btn-sm'"
+                                                th:title="${mau.active} ? 'Tạm dừng tự động' : 'Kích hoạt lại'"
+                                                data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                                                th:data-confirm-url="@{/mau-khoan-thu/{id}/doi-trang-thai(id=${mau.id})}"
+                                                th:data-item-name="${mau.tenMau}"
+                                                th:data-confirm-title="${mau.active} ? 'Tạm dừng mẫu' : 'Kích hoạt mẫu'"
+                                                th:data-confirm-sub="${mau.active} ? 'Job sẽ không tạo kỳ mới cho tháng tới.' : 'Mẫu sẽ được kích hoạt lại và job cron sẽ tạo kỳ mới.'"
+                                                th:data-confirm-btn-class="${mau.active} ? 'btn-warning' : 'btn-success'"
+                                                th:data-confirm-btn-text="${mau.active} ? 'Tạm dừng' : 'Kích hoạt'">
+                                            <i th:class="${mau.active} ? 'bi bi-pause' : 'bi bi-play'"></i>
+                                        </button>
 
                                         <!-- Tạo kỳ thủ công -->
                                         <button type="button"

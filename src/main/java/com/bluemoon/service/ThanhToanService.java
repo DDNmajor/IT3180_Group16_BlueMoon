@@ -75,6 +75,9 @@ public class ThanhToanService {
         if (thanhToan.getNgayNop() == null) {
             thanhToan.setNgayNop(LocalDate.now());
         }
+        if (thanhToan.getPhuongThuc() == null) {
+            thanhToan.setPhuongThuc(PhuongThucThanhToan.TIEN_MAT);
+        }
         if (thanhToan.getKhoanThu() != null && thanhToan.getSoTienDaNop() != null) {
             thanhToan.setTrangThai(
                     tinhTrangThai(thanhToan.getSoTienDaNop(), thanhToan.getSoTienYeuCauHieuLuc()));

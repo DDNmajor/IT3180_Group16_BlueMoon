@@ -12,9 +12,10 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div th:replace="~{fragments/layout :: sidebar('no-phi')}"></div>
+        <div th:replace="~{fragments/layout :: sidebar('thanh-toan')}"></div>
 
         <main class="col-md-10 p-4">
+            <div th:replace="~{fragments/layout :: alerts}"></div>
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h3 class="fw-bold mb-1">Email nhắc thanh toán</h3>

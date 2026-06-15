@@ -160,7 +160,7 @@ public class HoaDonThuHoController {
     @PostMapping("/{id}/khoi-phuc")
     public String khoiPhuc(@PathVariable Integer id, RedirectAttributes ra) {
         try {
-            hoaDonService.khôiPhucHoaDon(id);
+            hoaDonService.khoiPhucHoaDon(id);
             ra.addFlashAttribute("successMsg", "Đã khôi phục hóa đơn về trạng thái Chờ thanh toán.");
         } catch (IllegalStateException e) {
             ra.addFlashAttribute("errorMsg", e.getMessage());
