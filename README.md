@@ -7,8 +7,8 @@
 
 | Họ tên | MSSV | Vai trò | GitHub |
 |--------|------|---------|--------|
+| Lê Quang Huy | ... | Product Owner · Leader | @DDNmajor |
 | Trần Khánh Linh | ... | Scrum Master | @linhch123-phe |
-| Lê Quang Huy | ... | Product Owner | @DDNmajor |
 | Trần Thị Nhật Linh | ... | Developer | @nhat-linh05 |
 | Đoàn Văn Thắng | ... | Developer | @vanthang10tin |
 | Đặng Hải Đăng | ... | Developer | @danghaidang04 |
@@ -37,9 +37,17 @@ Xây dựng phần mềm quản lý thu phí cho Ban quản trị chung cư Blue
 | **Nhân khẩu** | CRUD, validate CCCD (9/12 số), tình trạng cư trú, tìm kiếm theo CCCD | ✅ |
 | **Biến động cư trú** | Ghi nhận Tạm trú/Tạm vắng/Chuyển đến/Chuyển đi, auto-update tình trạng, scheduled job xử lý hết hạn | ✅ |
 | **Thanh toán** | Ghi nhận, nộp thêm, hoàn tiền, filter đa chiều (hộ / khoản / trạng thái / tìm kiếm) | ✅ |
+| **Thu hộ** | Nhập thu hộ điện/nước/internet (`LoaiTinhPhi.THU_HO`), quản lý riêng biệt | ✅ |
 | **Theo dõi thu phí** | Bảng cross-tab: tất cả hộ vs trạng thái đóng phí theo tháng/khoản | ✅ |
+| **Tra cứu nợ phí** | Danh sách hộ còn nợ, filter theo kỳ thu và khoản thu, hiển thị số tiền còn thiếu | ✅ |
+| **Thống kê thu phí** | Tổng phải thu / đã thu / còn nợ, số hộ đóng/chưa đóng, filter theo khoản và kỳ thu | ✅ |
+| **Xuất báo cáo Excel** | Xuất file `.xlsx` chi tiết và tổng hợp, hỗ trợ filter trạng thái | ✅ |
+| **Import Excel hộ gia đình** | Upload file Excel để nhập hàng loạt hộ gia đình và nhân khẩu, validate từng dòng | ✅ |
+| **Phí gửi xe** | Quản lý phương tiện của hộ (xe máy/ô tô), tính phí theo loại xe | ✅ |
+| **Lịch sử email** | Ghi log toàn bộ email đã gửi, filter theo loại/trạng thái/căn hộ, xem chi tiết nội dung | ✅ |
+| **Thùng rác** | Khôi phục hộ gia đình và khoản thu đã xoá mềm (soft delete) | ✅ |
 | **Nhật ký hoạt động** | Ghi audit log toàn hệ thống, filter theo loại đối tượng / người dùng / khoảng ngày (admin only) | ✅ |
-| **Email thông báo** | Gửi email @Async qua Brevo SMTP khi khoản thu mới được tạo, bỏ qua nếu hộ không có email | ✅ |
+| **Email thông báo** | Gửi email @Async qua Brevo SMTP khi khoản thu mới được tạo, nhắc nợ tự động và thủ công | ✅ |
 | **Giao diện** | Light/Dark mode, sticky navbar + sidebar, glassmorphism (light), starfield (dark) | ✅ |
 
 ---
@@ -58,29 +66,23 @@ Xây dựng phần mềm quản lý thu phí cho Ban quản trị chung cư Blue
 ```bash
 git clone https://github.com/<org>/BlueMoon.git
 cd BlueMoon
-git checkout develop
 ```
 
 ### Bước 2 — Khởi tạo database
 
-Mở MySQL Workbench hoặc terminal và chạy **theo thứ tự**:
+Mở MySQL Workbench hoặc terminal và chạy:
 
 ```sql
 source database/bluemoon_schema.sql;
-source database/migration_v2_payment_fields.sql;
-source database/migration_v3_khoan_thu_enhancements.sql;
-source database/migration_v4_auth_enhancements.sql;
-source database/migration_v5_doi_mat_khau.sql;
-source database/migration_v6_ho_nhan_khau.sql;
-source database/migration_v6b_bien_dong_fix.sql;
-source database/migration_v7_bien_dong_ngay_ket_thuc.sql;
-source database/migration_v8_audit_log.sql;
-source database/migration_v9_dien_tich_fee.sql;
-source database/migration_v10_mau_khoan_thu.sql;
-source database/migration_v11_email_ho_gia_dinh.sql;
 ```
 
-> Nếu bắt đầu từ DB trống, chạy `bluemoon_schema.sql` trước rồi mới chạy các migration theo thứ tự.
+> File này tạo database, toàn bộ bảng và index. Chạy lại bất cứ lúc nào để reset về trạng thái ban đầu.
+
+Nếu cần dữ liệu mẫu để test:
+
+```sql
+source database/mock_data.sql;
+```
 
 ### Bước 3 — Tạo file cấu hình
 
@@ -121,57 +123,71 @@ App tự tạo tài khoản admin (BCrypt) khi khởi động lần đầu nếu
 
 ```
 src/main/java/com/bluemoon/
-├── controller/          # 9 Spring MVC Controllers
-│   ├── HomeController           # / → /dashboard (thống kê)
-│   ├── AuthController           # /login
-│   ├── ErrorPageController      # /error/403, /error/404
-│   ├── NguoiDungController      # /nguoi-dung/** (admin only)
-│   ├── HoGiaDinhController      # /ho-gia-dinh/**
-│   ├── NhanKhauController       # /nhan-khau/** + biến động
-│   ├── KhoanThuController       # /khoan-thu/**
-│   ├── LoaiKhoanThuController   # /loai-khoan-thu/**
-│   ├── MauKhoanThuController    # /mau-khoan-thu/** + toggle + tạo kỳ thủ công
-│   ├── ThanhToanController      # /thanh-toan/** + theo dõi
-│   └── AuditLogController       # /audit-log/** (admin only)
+├── controller/          # 15 Spring MVC Controllers
+│   ├── HomeController               # / → /dashboard (thống kê)
+│   ├── AuthController               # /login
+│   ├── ErrorPageController          # /error/403, /error/404
+│   ├── NguoiDungController          # /nguoi-dung/** (admin only)
+│   ├── HoGiaDinhController          # /ho-gia-dinh/**
+│   ├── NhanKhauController           # /nhan-khau/** + biến động
+│   ├── KhoanThuController           # /khoan-thu/**
+│   ├── LoaiKhoanThuController       # /loai-khoan-thu/**
+│   ├── MauKhoanThuController        # /mau-khoan-thu/** + toggle + tạo kỳ thủ công
+│   ├── ThanhToanController          # /thanh-toan/** + theo dõi + nợ phí + thu hộ
+│   ├── ThanhToanBaoCaoController    # /thanh-toan/thong-ke + /thanh-toan/thong-ke/export
+│   ├── PhuongTienController         # /phuong-tien/** (phí gửi xe)
+│   ├── LichSuEmailController        # /lich-su-email/**
+│   ├── ThungRacController           # /thung-rac/** (khôi phục soft delete)
+│   └── AuditLogController           # /audit-log/** (admin only)
 │
-├── service/             # 10 Service classes
-│   ├── CustomUserDetailsService # Spring Security user loading
-│   ├── NguoiDungService         # BCrypt encode, audit log, self-role guard
-│   ├── HoGiaDinhService         # Delete constraint, CCCD search, audit log
-│   ├── NhanKhauService          # CCCD uniqueness, audit log
-│   ├── BienDongService          # Ghi biến động + auto-update + scheduled hết hạn
-│   ├── KhoanThuService          # Auto-apply bắt buộc, phí diện tích, audit log
+├── service/             # 17 Service classes
+│   ├── CustomUserDetailsService     # Spring Security user loading
+│   ├── NguoiDungService             # BCrypt encode, audit log, self-role guard
+│   ├── HoGiaDinhService             # Delete constraint, CCCD search, audit log
+│   ├── NhanKhauService              # CCCD uniqueness, audit log
+│   ├── BienDongService              # Ghi biến động + auto-update + scheduled hết hạn
+│   ├── KhoanThuService              # Auto-apply bắt buộc, phí diện tích, audit log
 │   ├── LoaiKhoanThuService
-│   ├── MauKhoanThuService       # Scheduled job ngày 28, startup check, toggle active
-│   ├── ThanhToanService         # nopThem, baoDaHoanTien, delete/reset
-│   ├── AuditLogService          # Ghi log vào DB + SLF4J
-│   └── EmailService             # Gửi email @Async qua Brevo SMTP
+│   ├── MauKhoanThuService           # Scheduled job ngày 28, startup check, toggle active
+│   ├── ThanhToanService             # nopThem, baoDaHoanTien, delete/reset
+│   ├── BaoCaoThanhToanService       # Tổng hợp thống kê thu phí
+│   ├── ExcelExportService           # Xuất báo cáo .xlsx (Apache POI)
+│   ├── ExcelImportService           # Import hộ/nhân khẩu từ file .xlsx
+│   ├── PhuongTienService            # CRUD phương tiện, tính phí gửi xe
+│   ├── LichSuEmailService           # Query + filter lịch sử email
+│   ├── EmailService                 # Gửi email @Async qua Brevo SMTP
+│   ├── EmailSchedulerService        # Scheduled job nhắc nợ tự động
+│   └── AuditLogService              # Ghi log vào DB + SLF4J
 │
-├── dao/                 # 9 Spring Data JPA Repositories
+├── dao/                 # 11 Spring Data JPA Repositories
 │   ├── NguoiDungRepository
-│   ├── HoGiaDinhRepository      # findByCccdNhanKhau (JPQL join)
+│   ├── HoGiaDinhRepository          # findByCccdNhanKhau (JPQL join)
 │   ├── NhanKhauRepository
 │   ├── BienDongRepository
-│   ├── KhoanThuRepository       # existsByMauKhoanThuIdAndKyThu (idempotent check)
+│   ├── KhoanThuRepository           # existsByMauKhoanThuIdAndKyThu (idempotent check)
 │   ├── LoaiKhoanThuRepository
 │   ├── MauKhoanThuRepository
-│   ├── ThanhToanRepository      # sumSoTienDaNopThangNay, existsByHoAndKhoan
-│   └── AuditLogRepository       # findWithFilter (dynamic JPQL), findDistinctNguoiDung
+│   ├── ThanhToanRepository          # sumSoTienDaNopThangNay, aggregate queries
+│   ├── PhuongTienRepository
+│   ├── LichSuEmailRepository
+│   └── AuditLogRepository           # findWithFilter (dynamic JPQL), findDistinctNguoiDung
 │
-├── model/               # 9 JPA Entities + 6 Enums
+├── model/               # 11 JPA Entities + 9 Enums
 │   ├── Entities: NguoiDung, HoGiaDinh, NhanKhau, BienDong
-│   │            LoaiKhoanThu, KhoanThu, MauKhoanThu, ThanhToan, AuditLog
-│   └── Enums:   VaiTro (admin/staff), LoaiApDung, TinhTrangCuTru
-│                LoaiBienDong, TrangThaiThanhToan, PhuongThucThanhToan
+│   │            LoaiKhoanThu, KhoanThu, MauKhoanThu, ThanhToan
+│   │            PhuongTien, LichSuEmail, AuditLog
+│   └── Enums:   VaiTro, LoaiApDung, TinhTrangCuTru, LoaiBienDong
+│                TrangThaiThanhToan, PhuongThucThanhToan
+│                LoaiXe, LoaiEmail, LoaiTinhPhi
 │
 └── util/
-    ├── SecurityConfig           # BCrypt bean, @EnableAsync, route rules, form login
-    └── DataInitializer          # ApplicationRunner — auto-tạo admin khi lần đầu chạy
+    ├── SecurityConfig               # BCrypt bean, @EnableAsync, route rules, form login
+    └── DataInitializer              # ApplicationRunner — auto-tạo admin khi lần đầu chạy
 
 src/main/resources/
-├── templates/           # 23 Thymeleaf HTML templates (Bootstrap 5.3.2)
-│   ├── fragments/layout.html    # head, navbar (sticky), sidebar (sticky), alerts, scripts
-│   ├── auth/login.html          # login với theme toggle riêng
+├── templates/           # 30 Thymeleaf HTML templates (Bootstrap 5.3.2)
+│   ├── fragments/layout.html        # head, navbar (sticky), sidebar (sticky), alerts, scripts
+│   ├── auth/login.html
 │   ├── error/{403,404}.html
 │   ├── dashboard.html
 │   ├── nguoi-dung/{list,form}.html
@@ -180,27 +196,20 @@ src/main/resources/
 │   ├── loai-khoan-thu/{list,form}.html
 │   ├── khoan-thu/{list,form}.html
 │   ├── mau-khoan-thu/{list,form}.html
-│   ├── thanh-toan/{list,form,theo-doi}.html
+│   ├── phuong-tien/form.html
+│   ├── thanh-toan/{list,form,theo-doi,no-phi,thong-ke,nhap-thu-ho,email-nhac-no}.html
+│   ├── lich-su-email/list.html
+│   ├── thung-rac/index.html
 │   └── audit-log/list.html
 ├── static/css/
-│   ├── base-theme.css           # Layout, typography, sticky navbar/sidebar
-│   ├── moona-theme.css          # Dark mode (Moonlit Observatory palette)
-│   └── kanata-theme.css         # Light mode (Soft Purple Glassmorphism)
+│   ├── base-theme.css               # Layout, typography, sticky navbar/sidebar
+│   ├── moona-theme.css              # Dark mode (Moonlit Observatory palette)
+│   └── kanata-theme.css             # Light mode (Soft Purple Glassmorphism)
 └── static/
 
-database/                        # Chạy theo thứ tự trên DB mới
-├── bluemoon_schema.sql                       # v1  — Schema khởi tạo
-├── migration_v2_payment_fields.sql           # v2  — Trường thanh toán
-├── migration_v3_khoan_thu_enhancements.sql   # v3  — Cải tiến khoản thu
-├── migration_v4_auth_enhancements.sql        # v4  — Cột active người dùng
-├── migration_v5_doi_mat_khau.sql             # v5  — doi_mat_khau_lan_dau
-├── migration_v6_ho_nhan_khau.sql             # v6  — tang_khu_vuc, tinh_trang, bien_dong
-├── migration_v6b_bien_dong_fix.sql           # v6b — Fix bảng bien_dong
-├── migration_v7_bien_dong_ngay_ket_thuc.sql  # v7  — ngay_ket_thuc
-├── migration_v8_audit_log.sql                # v8  — Bảng audit_log
-├── migration_v9_dien_tich_fee.sql            # v9  — don_gia_per_m2, so_tien_yeu_cau
-├── migration_v10_mau_khoan_thu.sql           # v10 — Bảng mau_khoan_thu, FK id_mau
-└── migration_v11_email_ho_gia_dinh.sql       # v11 — Cột email hộ gia đình
+database/
+├── bluemoon_schema.sql              # Schema đầy đủ — chạy 1 lần để khởi tạo hoặc reset
+└── mock_data.sql                    # Dữ liệu mẫu (3 hộ, 2 khoản thu, 4 thanh toán)
 ```
 
 ---
@@ -209,8 +218,8 @@ database/                        # Chạy theo thứ tự trên DB mới
 
 | Vai trò | Quyền truy cập |
 |---------|---------------|
-| `admin` | Toàn bộ, bao gồm `/nguoi-dung/**` và `/audit-log/**` |
-| `staff` | Dashboard, hộ gia đình, nhân khẩu, khoản thu, mẫu thu, thanh toán |
+| `admin` | Toàn bộ, bao gồm `/nguoi-dung/**`, `/audit-log/**` và `/thung-rac/**` |
+| `staff` | Dashboard, hộ gia đình, nhân khẩu, khoản thu, mẫu thu, thanh toán, phí gửi xe |
 
 Không thể tự đổi vai trò hoặc xoá tài khoản đang đăng nhập.
 
@@ -236,155 +245,102 @@ Không thể tự đổi vai trò hoặc xoá tài khoản đang đăng nhập.
 | Sprint 0 | Khởi động, lập kế hoạch, thiết lập repo, schema DB | ✅ Hoàn thành |
 | Sprint 1 | Đăng nhập/phân quyền, khoản thu, loại khoản thu, dashboard | ✅ Hoàn thành |
 | Sprint 2 | Hộ gia đình, nhân khẩu, biến động, thanh toán, theo dõi thu phí | ✅ Hoàn thành |
-| Sprint 3 | Thống kê nâng cao, báo cáo, kiểm thử tích hợp | 🔄 In Progress |
+| Sprint 3 | Thống kê nâng cao, báo cáo Excel, phí gửi xe, import hộ, tra cứu nợ, email log | ✅ Hoàn thành |
+| Sprint 4 | v2.0 — Phí gửi xe PER_XE, thu hộ THU_HO, email nhắc nợ tự động, thùng rác, lịch sử email | ✅ Hoàn thành |
 
 ---
 
-## Phân công Sprint 3
+## Tổng quan kỹ thuật
+
+### Kiến trúc phân lớp
+
+```
+Browser (Bootstrap 5.3.2)
+    ↓ HTTP
+Controller (15 classes)   — nhận request, validate input, gọi Service, đưa Model vào Template
+    ↓
+Service (17 classes)      — business logic, @Transactional, gọi Repository + EmailService
+    ↓
+DAO / Repository (11)     — Spring Data JPA, custom @Query, JpaSpecificationExecutor
+    ↓
+MySQL 8 (11 bảng)         — schema quản lý bằng SQL thuần, ddl-auto=validate
+```
+
+Thymeleaf render HTML server-side. Tất cả email gửi `@Async` qua Brevo SMTP, mỗi lần gửi đều ghi vào `lich_su_email`.
 
 ---
 
-### 👤 Người A · UC014: Đổi mật khẩu
+### Chế độ tính phí (LoaiTinhPhi)
 
-**File chạm đến:**
-
-| File | Thay đổi |
-|------|---------|
-| `controller/NguoiDungController.java` | Thêm `GET /doi-mat-khau` và `POST /doi-mat-khau` |
-| `service/NguoiDungService.java` | Thêm `doiMatKhau(tenDangNhap, matKhauCu, matKhauMoi)` |
-| `templates/nguoi-dung/doi-mat-khau.html` | Template mới (pattern Form page) |
-| `fragments/layout.html` | Thêm link "Đổi mật khẩu" vào khu vực user trên **navbar** (cạnh tên user) |
-
-**Tiêu chuẩn hoàn thành (DoD):**
-- [ ] `GET /doi-mat-khau` hiển thị form 3 trường: mật khẩu cũ, mật khẩu mới, xác nhận mật khẩu mới
-- [ ] Validation server-side: mật khẩu cũ sai → `bindingResult.rejectValue`; mật khẩu mới < 6 ký tự → lỗi; 2 trường mới không khớp → lỗi; mật khẩu mới trùng cũ → lỗi
-- [ ] `NguoiDungService.doiMatKhau()` dùng `passwordEncoder.matches()` kiểm tra mật khẩu cũ trước khi `passwordEncoder.encode()` mật khẩu mới
-- [ ] Sau khi thành công: set `doiMatKhauLanDau = false`, gọi `new SecurityContextLogoutHandler().logout(request, response, auth)`, redirect `/login?logout`
-- [ ] Ghi audit log qua `auditLogService.log("Đổi mật khẩu", "Người dùng", "user=" + tenDangNhap, tenDangNhap)`
-- [ ] Form dùng đúng pattern Bootstrap 5 + `invalid-feedback`, không dùng `th:field` cho password (tránh lộ giá trị)
-
-**Lưu ý kỹ thuật:**
-- `/doi-mat-khau` đã được phép theo rule `anyRequest().authenticated()` — **không sửa `SecurityConfig`**
-- Dùng `SecurityContextLogoutHandler` thay vì `HttpSession.invalidate()` trực tiếp để Spring Security xử lý đúng session
-
-**Rủi ro conflict:** Thấp. Chỉ chạm `NguoiDungController` và `NguoiDungService` ở phần cuối file.
+| Giá trị | Ý nghĩa | Trường dùng |
+|---------|---------|------------|
+| `FIXED` | Số tiền cố định cho mọi hộ | `soTien` |
+| `PER_M2` | Đơn giá × diện tích căn hộ | `donGiaPerM2` × `hoGiaDinh.dienTich` |
+| `PER_XE` | Đơn giá × số xe mỗi loại | `giaXeMay` × xe máy + `giaOto` × ô tô |
+| `PER_PERSON` | Đơn giá × số nhân khẩu thường trú | `soTien` × countNhanKhau(≠ CHUYEN_DI) |
+| `THU_HO` | Nhập tay từng hộ (điện/nước/internet) | Form `nhap-thu-ho` |
 
 ---
 
-### 👤 Người B · UC011: Tra cứu nợ phí
+### Scheduled Jobs
 
-> **Lưu ý:** Filter `?trangThai=CON_NO` đã tồn tại tại `/thanh-toan`. UC011 là trang **chuyên biệt** tập trung vào nợ phí với filter bổ sung theo kỳ thu và khoản thu, hiển thị số tiền còn thiếu cụ thể.
+| Cron | Service | Việc làm |
+|------|---------|---------|
+| `0 0 8 28 * *` | `MauKhoanThuService` | Tạo `KhoanThu` tháng tới từ tất cả mẫu đang bật |
+| `0 0 1 * * *` | `BienDongService` | Xử lý biến động hết hạn (TAM_TRU/TAM_VANG → THUONG_TRU/CHUYEN_DI) |
+| `0 0 8 * * MON` | `EmailSchedulerService` | Gửi email nhắc tất cả hộ còn nợ (thứ Hai hàng tuần) |
+| `0 0 8 * * *` | `EmailSchedulerService` | Gửi email nhắc hộ có phí đến hạn trong 1–3 ngày |
+| `0 0 9 * * *` | `EmailSchedulerService` | Gửi email nhắc hộ vừa quá hạn ngày hôm trước |
 
-**File chạm đến:**
-
-| File | Thay đổi |
-|------|---------|
-| `controller/ThanhToanController.java` | Thêm `GET /thanh-toan/tra-cuu-no` |
-| `service/ThanhToanService.java` | Thêm `findDanhSachNo(Integer idKhoan, YearMonth kyThu)` |
-| `dao/ThanhToanRepository.java` | Thêm `@Query` lọc `CON_NO` theo `idKhoan` + `kyThu` |
-| `templates/thanh-toan/tra-cuu-no.html` | Template mới |
-
-**Tiêu chuẩn hoàn thành (DoD):**
-- [ ] `GET /thanh-toan/tra-cuu-no` liệt kê `ThanhToan` có `trangThai = CON_NO`
-- [ ] Filter `?idKhoan=X` lọc theo khoản thu; `?kyThu=yyyy-MM` lọc theo `KhoanThu.kyThu` — query dùng `YEAR()`+`MONTH()` trong JPQL
-- [ ] Mỗi dòng: Mã căn hộ · Tên chủ hộ · Tên khoản thu · Số tiền yêu cầu (`getSoTienYeuCauHieuLuc()`) · Đã nộp · Còn thiếu · Hạn nộp
-- [ ] Dòng quá hạn (`hanNop < today`) hiển thị badge `bg-danger`
-- [ ] Khi không có nợ → thông báo "Không có khoản nợ nào"
-- [ ] Nút "Xuất Excel" link sang `GET /bao-cao/xuat-excel?trangThai=CON_NO&idKhoan=X` (kết nối UC013 Người D)
-- [ ] Thêm link "Tra cứu nợ phí" vào sidebar dưới nhóm "Quản lý thu phí" *(giao snippet cho SM)*
-- [ ] Mọi user đã đăng nhập đều truy cập được (`anyRequest().authenticated()` — **không sửa `SecurityConfig`**)
-
-**Rủi ro conflict:** Trung bình. `ThanhToanRepository.java` bị Người D cùng đụng → **Người B merge trước**, Người D rebase.
+Ngoài ra, `MauKhoanThuService` và `BienDongService` đều có `@EventListener(ApplicationReadyEvent)` để back-fill dữ liệu ngay khi ứng dụng khởi động.
 
 ---
 
-### 👤 Người C · UC016: Quản lý phí gửi xe
+### Hệ thống Email
 
-> **Lưu ý:** Migration hiện tại đã tới v11. File migration của task này phải là **v12**.
+| Loại (`LoaiEmail`) | Khi nào gửi | Sync/Async |
+|--------------------|------------|-----------|
+| `THONG_BAO_KHOAN_THU` | Khoản thu mới được áp dụng cho hộ | `@Async` |
+| `CHAO_MUNG_HO_MOI` | Hộ mới được tạo, liệt kê phí bắt buộc đang áp dụng | `@Async` |
+| `NHAC_NO_TU_DONG` | Gửi theo lịch (3 scheduled jobs) | `@Async` |
+| `NHAC_NO_THU_CONG` | Staff gửi thủ công từ trang tra cứu nợ | Sync |
 
-**File chạm đến (toàn bộ file mới):**
-
-| File | Mô tả |
-|------|-------|
-| `model/XeDangKy.java` | Entity: `loaiXe` (`@Enumerated STRING`), `hoGiaDinh` (`@ManyToOne`), `soLuong`, `ngayDangKy` |
-| `model/LoaiXe.java` | Enum mới: `XE_MAY`, `O_TO` (có `tenHienThi`, `donGia` mặc định) |
-| `dao/XeDangKyRepository.java` | `findByHoGiaDinhId(Integer)`, `findByLoaiXe(LoaiXe)` |
-| `service/XeDangKyService.java` | `tinhPhiGuiXe(HoGiaDinh, YearMonth)`, CRUD + audit log |
-| `controller/XeDangKyController.java` | `/phi-gui-xe/**` |
-| `templates/phi-gui-xe/list.html` | Danh sách xe, filter theo hộ/loại |
-| `templates/phi-gui-xe/form.html` | Form đăng ký xe (chọn hộ, loại, số lượng) |
-| `database/migration_v12_phi_gui_xe.sql` | Tạo bảng `xe_dang_ky` |
-
-**Tiêu chuẩn hoàn thành (DoD):**
-- [ ] `migration_v12` tạo bảng `xe_dang_ky`: `id`, `loai_xe VARCHAR(10)`, `id_ho INT FK`, `so_luong INT NOT NULL`, `ngay_dang_ky DATE NOT NULL`; thêm `spring.jpa.hibernate.ddl-auto=validate` sẽ pass
-- [ ] `GET /phi-gui-xe` liệt kê tất cả xe, có filter theo hộ và loại xe
-- [ ] `GET/POST /phi-gui-xe/them`: chọn hộ từ dropdown (dùng `HoGiaDinhService.findAll()`), chọn loại xe, nhập số lượng ≥ 1
-- [ ] `POST /phi-gui-xe/xoa/{id}`: xóa với confirm dialog
-- [ ] `tinhPhiGuiXe()` = `soLuong × donGia`; đơn giá đọc từ `application.properties` với `@Value(${phi.xe.may:70000})` và `@Value(${phi.o.to:200000})`
-- [ ] Không tự tạo `ThanhToan` — chỉ hiển thị tính toán; kế toán tạo khoản thu thủ công
-- [ ] Audit log qua `auditLogService` theo chuẩn hiện tại
-- [ ] Thêm link "Phí gửi xe" vào sidebar dưới nhóm "Quản lý thu phí" *(giao snippet cho SM)*
-
-**Rủi ro conflict:** Thấp nhất. Toàn bộ file mới, không đụng file hiện tại.
+Mọi lần gửi (thành công hay thất bại) đều được lưu vào `lich_su_email`. Xem lại tại `/audit-log?tab=email` hoặc `/lich-su-email`.
 
 ---
 
-### 👤 Người D · UC012 + UC013: Thống kê & Xuất báo cáo
+### Luồng nghiệp vụ chính
 
-**File chạm đến:**
+**Tạo hộ gia đình mới**
+1. Lưu hộ → `autoApplyForNewHo()` áp tất cả khoản thu bắt buộc đang có → tạo `ThanhToan` CON_NO cho mỗi khoản → gửi email chào mừng
 
-| File | Thay đổi |
-|------|---------|
-| `controller/BaoCaoController.java` | Controller MỚI `/bao-cao/**` |
-| `service/BaoCaoService.java` | Service MỚI — tổng hợp số liệu |
-| `dao/ThanhToanRepository.java` | Thêm các `@Query` aggregate (rebase lên branch Người B) |
-| `templates/bao-cao/thong-ke.html` | Trang thống kê + nút xuất |
-| `pom.xml` | Thêm `apache-poi` (xlsx) — **merge trước Người E** |
+**Tạo khoản thu bắt buộc mới**
+1. Lưu khoản → `autoApplyNeuBatBuoc()` tạo `ThanhToan` CON_NO cho mọi hộ → tính `soTienYeuCau` theo `loaiTinhPhi` → gửi email thông báo cho từng hộ
 
-**Tiêu chuẩn hoàn thành (DoD):**
+**Tự động tạo khoản thu định kỳ (ngày 28)**
+1. Scheduler kiểm tra từng mẫu đang `active` → nếu chưa có khoản cho tháng tới thì tạo → gọi `KhoanThuService.save()` → kích hoạt auto-apply
 
-UC012 — Thống kê:
-- [ ] `GET /bao-cao/thong-ke?idKhoan=X`: hiển thị tổng phải thu, đã thu, còn nợ, số hộ đã đóng, số hộ chưa đóng
-- [ ] Tính tiền dùng `getSoTienYeuCauHieuLuc()` — không dùng trực tiếp `khoanThu.soTien` (bỏ qua phí diện tích)
-- [ ] Dropdown chọn khoản thu từ `KhoanThuService.findAll()`; filter thêm `?kyThu=yyyy-MM`
-- [ ] Bảng chi tiết: Mã hộ · Chủ hộ · Số tiền yêu cầu · Đã nộp · Trạng thái (badge màu theo convention)
-- [ ] Thêm link "Báo cáo" vào sidebar dưới nhóm "Quản lý thu phí" *(giao snippet cho SM)*
+**Ghi nhận thanh toán**
+1. Kiểm tra đã có `CON_NO` chưa → nếu có: `nopThem()` cộng dồn; nếu chưa: tạo mới → tính lại `trangThai` (DA_DONG / CON_NO / DONG_DU)
 
-UC013 — Xuất Excel:
-- [ ] `GET /bao-cao/xuat-excel?idKhoan=X` → `ResponseEntity<byte[]>` với `Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`, filename `baocao_{maKhoanThu}_{yyyy-MM-dd}.xlsx`
-- [ ] Sheet Excel: hàng tiêu đề (tên khoản, kỳ thu, ngày xuất) + bảng chi tiết + dòng tổng cộng
-- [ ] Hỗ trợ filter `?trangThai=CON_NO` để Người B có thể link sang (UC011 → UC013)
-- [ ] Audit log: `"Xuất báo cáo"`, `"Báo cáo"`, `"khoan=" + maKhoanThu + ", format=xlsx"`, `currentUser()`
-
-**Rủi ro conflict:** Trung bình. `ThanhToanRepository.java` cùng đụng Người B → **rebase lên branch B sau khi B merge**. `pom.xml` cùng đụng Người E → **Người D merge pom.xml trước**.
+**Soft delete & Thùng rác**
+- `@SQLRestriction("deleted_at IS NULL")` trên `HoGiaDinh` và `KhoanThu` — JPA tự lọc, không cần sửa query
+- Thùng rác dùng native SQL bypass restriction để restore hoặc xóa vĩnh viễn
 
 ---
 
-### 👤 Người E · UC017: Import Excel + Kiểm thử
+### URL tham chiếu nhanh
 
-**File chạm đến:**
-
-| File | Thay đổi |
-|------|---------|
-| `controller/ImportController.java` | Controller MỚI `/import/**` |
-| `service/ImportService.java` | Service MỚI — parse + validate + save |
-| `templates/import/form.html` | Form upload + link tải file mẫu |
-| `templates/import/ket-qua.html` | Bảng kết quả: dòng thành công / dòng lỗi |
-| `pom.xml` | `apache-poi` *(rebase sau Người D nếu D đã thêm)* |
-
-**Tiêu chuẩn hoàn thành (DoD):**
-
-UC017 — Import:
-- [ ] File Excel mẫu tải về gồm 2 sheet: `HoGiaDinh` (soCanHo, chuHo, dienTich, tangKhuVuc, email) và `NhanKhau` (hoTen, ngaySinh `dd/MM/yyyy`, cccd, gioiTinh, quanHeChuHo, soCanHo)
-- [ ] `POST /import/upload`: parse file, validate từng dòng, redirect sang trang kết quả (không lưu DB ở bước này)
-- [ ] `POST /import/confirm`: lưu toàn bộ trong 1 `@Transactional` — nếu có exception thì rollback hết, không bắt exception im lặng
-- [ ] Validate: CCCD pattern `^\d{9}$|^\d{12}$` · `soCanHo` không trùng với DB hiện tại · `email` đúng format nếu có · `ngaySinh` parse được
-- [ ] Sau import thành công: gọi `KhoanThuService.autoApplyForNewHo()` cho từng hộ mới — đảm bảo khoản thu bắt buộc được áp dụng
-- [ ] Kết quả hiển thị: tổng dòng · thành công · lỗi · bảng chi tiết lỗi từng dòng (dòng số, field, lý do)
-- [ ] Cả `admin` và `staff` đều truy cập được
-
-Kiểm thử:
-- [ ] Viết tối thiểu 4 test case thủ công (ghi vào file `test/kiem-thu-sprint3.md`): đăng nhập → import hộ → tạo khoản thu bắt buộc → kiểm tra ThanhToan tự tạo → ghi nhận thanh toán → xem báo cáo
-- [ ] Mỗi luồng: 1 happy path + 1 error case (CCCD trùng, email sai format, v.v.)
-
-**Rủi ro conflict:** Thấp. Toàn bộ file mới. Chỉ cần coordinate `pom.xml` với Người D.
+| URL | Mô tả |
+|-----|-------|
+| `/dashboard` | Tổng quan: KPI, biểu đồ 6 tháng, sắp hạn, top nợ |
+| `/ho-gia-dinh` | Danh sách hộ, tìm kiếm, nhập Excel |
+| `/ho-gia-dinh/{id}` | Chi tiết hộ: lịch sử thanh toán, nhân khẩu, phương tiện |
+| `/khoan-thu` | Danh sách khoản thu, filter theo loại/tháng/trạng thái |
+| `/mau-khoan-thu` | Mẫu khoản thu định kỳ, toggle bật/tắt, tạo kỳ thủ công |
+| `/thanh-toan` | Danh sách thanh toán, ghi nhận, nộp thêm, hoàn tiền |
+| `/thanh-toan/theo-doi` | Cross-tab: hộ × trạng thái đóng phí |
+| `/thanh-toan/no-phi` | Tra cứu nợ, gửi email nhắc thủ công |
+| `/thanh-toan/thong-ke` | Thống kê tổng hợp, xuất Excel |
+| `/thung-rac` | Khôi phục / xóa vĩnh viễn (admin only) |
+| `/audit-log` | Nhật ký hoạt động + lịch sử email (admin only) |
