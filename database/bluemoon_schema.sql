@@ -8,6 +8,7 @@ CREATE DATABASE IF NOT EXISTS bluemoon
 USE bluemoon;
 
 -- Xóa bảng cũ theo thứ tự FK (reverse dependency)
+DROP TABLE IF EXISTS hoa_don_thu_ho;
 DROP TABLE IF EXISTS lich_su_email;
 DROP TABLE IF EXISTS thanh_toan;
 DROP TABLE IF EXISTS phuong_tien;
@@ -198,4 +199,30 @@ CREATE TABLE lich_su_email (
 
 CREATE INDEX idx_email_ngay_gui ON lich_su_email(ngay_gui);
 CREATE INDEX idx_email_so_can_ho ON lich_su_email(so_can_ho);
+
+-- hoa_don_thu_ho — Hóa đơn thu hộ (điện, nước, internet, gas)
+
+CREATE TABLE hoa_don_thu_ho (
+    id                  INT AUTO_INCREMENT PRIMARY KEY,
+    ma_hoa_don          VARCHAR(50)   NOT NULL UNIQUE,
+    id_ho_gia_dinh      INT           NOT NULL,
+    loai_dich_vu        VARCHAR(20)   NOT NULL COMMENT 'DIEN | NUOC | INTERNET | GAS',
+    ky_thanh_toan       DATE          NOT NULL COMMENT 'Ngày đầu tháng của kỳ',
+    so_tien             DECIMAL(15,2) NOT NULL,
+    han_thanh_toan      DATE          NULL,
+    trang_thai          VARCHAR(20)   NOT NULL DEFAULT 'CHO_THANH_TOAN'
+                                     COMMENT 'CHO_THANH_TOAN | DA_THANH_TOAN | DA_HUY',
+    email_da_gui        BOOLEAN       NOT NULL DEFAULT FALSE,
+    ngay_tao            DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ngay_xac_nhan       DATETIME      NULL,
+    id_nguoi_xac_nhan   INT           NULL,
+    ghi_chu             TEXT          NULL,
+    CONSTRAINT uq_hoadon_ho_dv_ky UNIQUE (id_ho_gia_dinh, loai_dich_vu, ky_thanh_toan),
+    CONSTRAINT fk_hdth_ho   FOREIGN KEY (id_ho_gia_dinh)    REFERENCES ho_gia_dinh(id),
+    CONSTRAINT fk_hdth_user FOREIGN KEY (id_nguoi_xac_nhan) REFERENCES nguoi_dung(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE INDEX idx_hdth_ho_dv    ON hoa_don_thu_ho(id_ho_gia_dinh, loai_dich_vu);
+CREATE INDEX idx_hdth_ky       ON hoa_don_thu_ho(ky_thanh_toan);
+CREATE INDEX idx_hdth_trang_thai ON hoa_don_thu_ho(trang_thai);
 

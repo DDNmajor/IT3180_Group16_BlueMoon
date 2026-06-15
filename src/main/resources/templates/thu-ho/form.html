@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/layout :: head('Tạo hóa đơn thu hộ')}">
+    <title>Tạo hóa đơn thu hộ | BlueMoon</title>
+</head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/layout :: sidebar('thu-ho')}"></div>
+
+        <main class="col-md-10 p-4">
+
+            <div class="d-flex align-items-center mb-3 gap-2">
+                <a th:href="@{/thu-ho}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h4 class="mb-0">
+                    <i class="bi bi-plus-circle me-2 text-success"></i>
+                    Tạo hóa đơn thu hộ
+                </h4>
+            </div>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+
+                            <form th:action="@{/thu-ho/tao}" method="post" class="form-submit-once">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                                <!-- Căn hộ -->
+                                <div class="mb-3">
+                                    <label for="idHo" class="form-label fw-semibold">
+                                        Căn hộ <span class="text-danger">*</span>
+                                    </label>
+                                    <select id="idHo" name="idHo" class="form-select" required
+                                            onchange="loadThongTinHo(this.value)">
+                                        <option value="">— Chọn căn hộ —</option>
+                                        <option th:each="ho : ${danhSachHo}"
+                                                th:value="${ho.id}"
+                                                th:text="${ho.tieuDe}"
+                                                th:data-chu-ho="${ho.chuHo}"
+                                                th:data-sdt="${ho.soDienThoai}"
+                                                th:data-email="${ho.email}">
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- Thông tin chủ hộ -->
+                                <div id="thongTinHo" class="mb-3 p-2 rounded border small text-muted d-none">
+                                    <div><i class="bi bi-person me-1"></i><span id="infoTenChuHo"></span></div>
+                                    <div><i class="bi bi-telephone me-1"></i><span id="infoSdt"></span></div>
+                                    <div><i class="bi bi-envelope me-1"></i><span id="infoEmail"></span></div>
+                                </div>
+
+                                <!-- Loại dịch vụ -->
+                                <div class="mb-3">
+                                    <label for="loaiDichVu" class="form-label fw-semibold">
+                                        Loại dịch vụ <span class="text-danger">*</span>
+                                    </label>
+                                    <select id="loaiDichVu" name="loaiDichVu" class="form-select" required>
+                                        <option value="">— Chọn dịch vụ —</option>
+                                        <option th:each="dv : ${loaiDichVuAll}"
+                                                th:value="${dv}"
+                                                th:text="${dv.moTa}">
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- Kỳ thanh toán -->
+                                <div class="mb-3">
+                                    <label for="ky" class="form-label fw-semibold">
+                                        Kỳ thanh toán <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="month" id="ky" name="ky" class="form-control" required
+                                           th:value="${kyMacDinh}"/>
+                                </div>
+
+                                <!-- Số tiền -->
+                                <div class="mb-3">
+                                    <label for="soTien" class="form-label fw-semibold">
+                                        Số tiền (đ) <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" id="soTien" name="soTien" class="form-control"
+                                           required min="1000" step="1000"
+                                           placeholder="VD: 450000"/>
+                                    <div class="form-text">Nhập số tiền từ hóa đơn nhà cung cấp</div>
+                                </div>
+
+                                <!-- Hạn thanh toán -->
+                                <div class="mb-3">
+                                    <label for="hanThanhToan" class="form-label fw-semibold">Hạn thanh toán</label>
+                                    <input type="date" id="hanThanhToan" name="hanThanhToan" class="form-control"
+                                           th:value="${hanMacDinh}"/>
+                                </div>
+
+                                <!-- Ghi chú -->
+                                <div class="mb-4">
+                                    <label for="ghiChu" class="form-label fw-semibold">Ghi chú</label>
+                                    <input type="text" id="ghiChu" name="ghiChu" class="form-control"
+                                           placeholder="Ghi chú thêm nếu cần"/>
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-check-lg me-1"></i>Tạo hóa đơn
+                                    </button>
+                                    <a th:href="@{/thu-ho}" class="btn btn-outline-secondary">Hủy</a>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+
+<script>
+    function loadThongTinHo(idHo) {
+        var sel = document.querySelector('select[name=idHo]');
+        var opt = sel.options[sel.selectedIndex];
+        var box = document.getElementById('thongTinHo');
+
+        if (!idHo) {
+            box.classList.add('d-none');
+            return;
+        }
+
+        document.getElementById('infoTenChuHo').textContent = opt.dataset.chuHo || '—';
+        document.getElementById('infoSdt').textContent = opt.dataset.sdt || '—';
+        document.getElementById('infoEmail').textContent = opt.dataset.email || '(Không có email)';
+
+        box.classList.remove('d-none');
+    }
+</script>
+
+</body>
+</html>

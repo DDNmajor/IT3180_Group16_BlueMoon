@@ -1,5 +1,6 @@
 package com.bluemoon.service;
 
+import com.bluemoon.model.HoaDonThuHo;
 import com.bluemoon.model.HoGiaDinh;
 import com.bluemoon.model.KhoanThu;
 import com.bluemoon.model.LoaiEmail;
@@ -239,6 +240,119 @@ public class EmailService {
                     toEmail, soCanHo, e.getMessage());
             lichSuEmailService.ghiLichSu(toEmail, subject, bodyStr,
                     LoaiEmail.NHAC_NO_TU_DONG, false, e.getMessage(), soCanHo, "system");
+        }
+    }
+
+    // ── THU HỘ ──────────────────────────────────────────────────────────────
+
+    @Async
+    public void guiEmailThuHoThongBao(HoaDonThuHo hd) {
+        HoGiaDinh ho = hd.getHoGiaDinh();
+        if (ho.getEmail() == null || ho.getEmail().isBlank()) return;
+
+        NumberFormat fmt = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
+        DateTimeFormatter dtfMonth = DateTimeFormatter.ofPattern("MM/yyyy");
+        DateTimeFormatter dtfDate  = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        String kyStr  = hd.getKyThanhToan().format(dtfMonth);
+        String hanStr = hd.getHanThanhToan() != null
+                ? hd.getHanThanhToan().format(dtfDate) : "Không giới hạn";
+
+        String body = String.format(
+                "Kính gửi chủ hộ %s - Căn hộ %s,%n%n"
+                + "Ban quản trị chung cư BlueMoon thông báo hóa đơn thu hộ từ %s:%n%n"
+                + "  Mã hóa đơn   : %s%n"
+                + "  Dịch vụ      : %s%n"
+                + "  Kỳ thanh toán: %s%n"
+                + "  Số tiền      : %s đ%n"
+                + "  Hạn thanh toán: %s%n%n"
+                + "Vui lòng nộp tiền trực tiếp tại văn phòng Ban quản lý. Ban quản lý sẽ xác nhận thanh toán và gửi email biên nhận sau khi nhận tiền.%n%n"
+                + "Trân trọng,%n"
+                + "Ban quản trị chung cư BlueMoon",
+                ho.getChuHo(), ho.getSoCanHo(),
+                hd.getLoaiDichVu().getNhaCungCap(),
+                hd.getMaHoaDon(),
+                hd.getLoaiDichVu().getTenHienThi(),
+                kyStr,
+                fmt.format(hd.getSoTien()),
+                hanStr
+        );
+
+        String subject = "[BlueMoon] Hóa đơn thu hộ " + hd.getLoaiDichVu().getTenHienThi()
+                + " tháng " + kyStr + " - Căn hộ " + ho.getSoCanHo();
+        try {
+            SimpleMailMessage msg = new SimpleMailMessage();
+            msg.setFrom(mailFrom);
+            msg.setTo(ho.getEmail());
+            msg.setSubject(subject);
+            msg.setText(body);
+            mailSender.send(msg);
+            log.info("[AUDIT] Gửi email thu hộ thông báo: email={}, canHo={}, ma={}",
+                    ho.getEmail(), ho.getSoCanHo(), hd.getMaHoaDon());
+            auditLogService.log("Gửi email thu hộ", "HoaDonThuHo",
+                    "ma=" + hd.getMaHoaDon() + ", canHo=" + ho.getSoCanHo(), "system");
+            lichSuEmailService.ghiLichSu(ho.getEmail(), subject, body,
+                    LoaiEmail.THU_HO_THONG_BAO, true, null, ho.getSoCanHo(), "system");
+        } catch (Exception e) {
+            log.warn("[MAIL] Gửi email thu hộ thông báo thất bại: email={}, ma={}, loi={}",
+                    ho.getEmail(), hd.getMaHoaDon(), e.getMessage());
+            lichSuEmailService.ghiLichSu(ho.getEmail(), subject, body,
+                    LoaiEmail.THU_HO_THONG_BAO, false, e.getMessage(), ho.getSoCanHo(), "system");
+        }
+    }
+
+    @Async
+    public void guiEmailThuHoXacNhan(HoaDonThuHo hd) {
+        HoGiaDinh ho = hd.getHoGiaDinh();
+        if (ho.getEmail() == null || ho.getEmail().isBlank()) return;
+
+        NumberFormat fmt = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
+        DateTimeFormatter dtfMonth = DateTimeFormatter.ofPattern("MM/yyyy");
+        DateTimeFormatter dtfDate  = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+        String kyStr      = hd.getKyThanhToan().format(dtfMonth);
+        String xacNhanStr = hd.getNgayXacNhan() != null
+                ? hd.getNgayXacNhan().format(dtfDate) : "—";
+        String nguoiXnStr = hd.getNguoiXacNhan() != null
+                ? hd.getNguoiXacNhan().getTenDangNhap() : "BQL";
+
+        String body = String.format(
+                "Kính gửi chủ hộ %s - Căn hộ %s,%n%n"
+                + "Ban quản trị chung cư BlueMoon xác nhận đã nhận thanh toán hóa đơn thu hộ:%n%n"
+                + "  Mã hóa đơn   : %s%n"
+                + "  Dịch vụ      : %s (%s)%n"
+                + "  Kỳ thanh toán: %s%n"
+                + "  Số tiền      : %s đ%n"
+                + "  Thời gian XN : %s%n"
+                + "  Nhân viên XN : %s%n%n"
+                + "Cảm ơn bạn đã thanh toán đúng hạn.%n%n"
+                + "Trân trọng,%n"
+                + "Ban quản trị chung cư BlueMoon",
+                ho.getChuHo(), ho.getSoCanHo(),
+                hd.getMaHoaDon(),
+                hd.getLoaiDichVu().getTenHienThi(), hd.getLoaiDichVu().getNhaCungCap(),
+                kyStr,
+                fmt.format(hd.getSoTien()),
+                xacNhanStr, nguoiXnStr
+        );
+
+        String subject = "[BlueMoon] Xác nhận thanh toán - " + hd.getMaHoaDon();
+        try {
+            SimpleMailMessage msg = new SimpleMailMessage();
+            msg.setFrom(mailFrom);
+            msg.setTo(ho.getEmail());
+            msg.setSubject(subject);
+            msg.setText(body);
+            mailSender.send(msg);
+            log.info("[AUDIT] Gửi email thu hộ xác nhận: email={}, canHo={}, ma={}",
+                    ho.getEmail(), ho.getSoCanHo(), hd.getMaHoaDon());
+            lichSuEmailService.ghiLichSu(ho.getEmail(), subject, body,
+                    LoaiEmail.THU_HO_XAC_NHAN, true, null, ho.getSoCanHo(), "system");
+        } catch (Exception e) {
+            log.warn("[MAIL] Gửi email thu hộ xác nhận thất bại: email={}, ma={}, loi={}",
+                    ho.getEmail(), hd.getMaHoaDon(), e.getMessage());
+            lichSuEmailService.ghiLichSu(ho.getEmail(), subject, body,
+                    LoaiEmail.THU_HO_XAC_NHAN, false, e.getMessage(), ho.getSoCanHo(), "system");
         }
     }
 

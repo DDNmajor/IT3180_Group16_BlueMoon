@@ -111,78 +111,133 @@
 
     <!-- Desktop sidebar — ẩn trên mobile -->
     <div class="col-md-2 sidebar pt-3 d-none d-md-block">
-        <nav class="nav flex-column px-2 gap-1">
-            <span class="nav-section">Tổng quan</span>
-            <a class="nav-link" th:classappend="${activePage == 'dashboard'} ? 'active' : ''"
-               th:href="@{/dashboard}">
-                <i class="bi bi-speedometer2 me-2"></i>Dashboard
-            </a>
+        <div class="sidebar-nav-wrapper">
+            <nav class="nav flex-column px-2 gap-1">
 
-            <span class="nav-section">Danh mục</span>
-            <a class="nav-link"
-               th:classappend="${activePage == 'loai-khoan-thu'} ? 'active' : ''"
-               th:href="@{/loai-khoan-thu}"
-               title="Phân nhóm khoản thu: bắt buộc, tự nguyện, đột xuất">
-                <i class="bi bi-tags me-2"></i>Loại khoản thu
-            </a>
-            <a class="nav-link"
-               th:classappend="${activePage == 'mau-khoan-thu'} ? 'active' : ''"
-               th:href="@{/mau-khoan-thu}"
-               title="Khoản thu tự động tạo mỗi tháng theo mẫu">
-                <i class="bi bi-arrow-repeat me-2"></i>Mẫu thu định kỳ
-            </a>
+                <!-- Tổng quan -->
+                <button class="nav-section nav-section-toggle" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#sbd-tong-quan"
+                        aria-expanded="true" aria-controls="sbd-tong-quan">
+                    Tổng quan <i class="bi bi-chevron-up"></i>
+                </button>
+                <div class="collapse show sidebar-collapse-section" id="sbd-tong-quan" data-section-key="tong-quan">
+                    <div class="nav flex-column gap-1 pb-1">
+                        <a class="nav-link" th:classappend="${activePage == 'dashboard'} ? 'active' : ''"
+                           th:href="@{/dashboard}">
+                            <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                        </a>
+                    </div>
+                </div>
 
-            <span class="nav-section">Quản lý thu phí</span>
-            <a class="nav-link"
-               th:classappend="${activePage == 'khoan-thu'} ? 'active' : ''"
-               th:href="@{/khoan-thu}"
-               title="Danh sách từng khoản thu theo kỳ">
-                <i class="bi bi-receipt me-2"></i>Khoản thu
-            </a>
-            <a class="nav-link"
-               th:classappend="${activePage == 'thanh-toan'} ? 'active' : ''"
-               th:href="@{/thanh-toan}">
-                <i class="bi bi-cash-coin me-2"></i>Thanh toán
-            </a>
-            <a class="nav-link"
-               th:classappend="${activePage == 'thong-ke'} ? 'active' : ''"
-               th:href="@{/thanh-toan/thong-ke}">
-                <i class="bi bi-bar-chart-line me-2"></i>Thống kê
-            </a>
-            <a class="nav-link"
-               th:classappend="${activePage == 'no-phi'} ? 'active' : ''"
-               th:href="@{/thanh-toan/no-phi}">
-                <i class="bi bi-exclamation-circle me-2"></i>Nợ phí
-            </a>
+                <!-- Danh mục -->
+                <button class="nav-section nav-section-toggle" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#sbd-danh-muc"
+                        aria-expanded="true" aria-controls="sbd-danh-muc">
+                    Danh mục <i class="bi bi-chevron-up"></i>
+                </button>
+                <div class="collapse show sidebar-collapse-section" id="sbd-danh-muc" data-section-key="danh-muc">
+                    <div class="nav flex-column gap-1 pb-1">
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'loai-khoan-thu'} ? 'active' : ''"
+                           th:href="@{/loai-khoan-thu}"
+                           title="Phân nhóm khoản thu: bắt buộc, tự nguyện, đột xuất">
+                            <i class="bi bi-tags me-2"></i>Loại khoản thu
+                        </a>
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'mau-khoan-thu'} ? 'active' : ''"
+                           th:href="@{/mau-khoan-thu}"
+                           title="Khoản thu tự động tạo mỗi tháng theo mẫu">
+                            <i class="bi bi-arrow-repeat me-2"></i>Mẫu thu định kỳ
+                        </a>
+                    </div>
+                </div>
 
-            <span class="nav-section">Dân cư</span>
-            <a class="nav-link"
-               th:classappend="${activePage == 'ho-gia-dinh'} ? 'active' : ''"
-               th:href="@{/ho-gia-dinh}">
-                <i class="bi bi-house me-2"></i>Hộ gia đình
-            </a>
-            <a class="nav-link"
-               th:classappend="${activePage == 'nhan-khau'} ? 'active' : ''"
-               th:href="@{/nhan-khau}">
-                <i class="bi bi-person me-2"></i>Nhân khẩu
-            </a>
+                <!-- Quản lý thu phí -->
+                <button class="nav-section nav-section-toggle" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#sbd-quan-ly"
+                        aria-expanded="true" aria-controls="sbd-quan-ly">
+                    Quản lý thu phí <i class="bi bi-chevron-up"></i>
+                </button>
+                <div class="collapse show sidebar-collapse-section" id="sbd-quan-ly" data-section-key="quan-ly">
+                    <div class="nav flex-column gap-1 pb-1">
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'khoan-thu'} ? 'active' : ''"
+                           th:href="@{/khoan-thu}"
+                           title="Danh sách từng khoản thu theo kỳ">
+                            <i class="bi bi-receipt me-2"></i>Khoản thu
+                        </a>
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'thanh-toan'} ? 'active' : ''"
+                           th:href="@{/thanh-toan}">
+                            <i class="bi bi-cash-coin me-2"></i>Thanh toán
+                        </a>
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'thong-ke'} ? 'active' : ''"
+                           th:href="@{/thanh-toan/thong-ke}">
+                            <i class="bi bi-bar-chart-line me-2"></i>Thống kê
+                        </a>
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'no-phi'} ? 'active' : ''"
+                           th:href="@{/thanh-toan/no-phi}">
+                            <i class="bi bi-exclamation-circle me-2"></i>Nợ phí
+                        </a>
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'thu-ho'} ? 'active' : ''"
+                           th:href="@{/thu-ho}"
+                           title="Hóa đơn điện, nước, internet, gas thu hộ">
+                            <i class="bi bi-file-earmark-text me-2"></i>Thu hộ
+                        </a>
+                    </div>
+                </div>
 
-            <div sec:authorize="hasRole('admin')">
-                <span class="nav-section">Hệ thống</span>
-                <a th:href="@{/nguoi-dung}" class="nav-link"
-                   th:classappend="${activePage == 'nguoi-dung'} ? 'active' : ''">
-                    <i class="bi bi-people me-2"></i>Người dùng
-                </a>
-                <a th:href="@{/audit-log}" class="nav-link"
-                   th:classappend="${activePage == 'audit-log'} ? 'active' : ''">
-                    <i class="bi bi-journal-text me-2"></i>Nhật ký hoạt động
-                </a>
-                <a th:href="@{/thung-rac}" class="nav-link"
-                   th:classappend="${activePage == 'thung-rac'} ? 'active' : ''">
-                    <i class="bi bi-trash me-2"></i>Thùng rác
-                </a>
-            </div>
-        </nav>
+                <!-- Dân cư -->
+                <button class="nav-section nav-section-toggle" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#sbd-dan-cu"
+                        aria-expanded="true" aria-controls="sbd-dan-cu">
+                    Dân cư <i class="bi bi-chevron-up"></i>
+                </button>
+                <div class="collapse show sidebar-collapse-section" id="sbd-dan-cu" data-section-key="dan-cu">
+                    <div class="nav flex-column gap-1 pb-1">
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'ho-gia-dinh'} ? 'active' : ''"
+                           th:href="@{/ho-gia-dinh}">
+                            <i class="bi bi-house me-2"></i>Hộ gia đình
+                        </a>
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'nhan-khau'} ? 'active' : ''"
+                           th:href="@{/nhan-khau}">
+                            <i class="bi bi-person me-2"></i>Nhân khẩu
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Hệ thống (admin only) -->
+                <div sec:authorize="hasRole('admin')">
+                    <button class="nav-section nav-section-toggle" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#sbd-he-thong"
+                            aria-expanded="true" aria-controls="sbd-he-thong">
+                        Hệ thống <i class="bi bi-chevron-up"></i>
+                    </button>
+                    <div class="collapse show sidebar-collapse-section" id="sbd-he-thong" data-section-key="he-thong">
+                        <div class="nav flex-column gap-1 pb-2">
+                            <a th:href="@{/nguoi-dung}" class="nav-link"
+                               th:classappend="${activePage == 'nguoi-dung'} ? 'active' : ''">
+                                <i class="bi bi-people me-2"></i>Người dùng
+                            </a>
+                            <a th:href="@{/audit-log}" class="nav-link"
+                               th:classappend="${activePage == 'audit-log'} ? 'active' : ''">
+                                <i class="bi bi-journal-text me-2"></i>Nhật ký hoạt động
+                            </a>
+                            <a th:href="@{/thung-rac}" class="nav-link"
+                               th:classappend="${activePage == 'thung-rac'} ? 'active' : ''">
+                                <i class="bi bi-trash me-2"></i>Thùng rác
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </nav>
+        </div>
     </div>
 
     <!-- Mobile offcanvas sidebar — kích hoạt bởi hamburger button -->
@@ -197,76 +252,129 @@
         </div>
         <div class="offcanvas-body p-0 pt-2">
             <nav class="nav flex-column px-2 gap-1 sidebar-offcanvas-nav">
-                <span class="nav-section">Tổng quan</span>
-                <a class="nav-link" th:classappend="${activePage == 'dashboard'} ? 'active' : ''"
-                   th:href="@{/dashboard}" data-bs-dismiss="offcanvas">
-                    <i class="bi bi-speedometer2 me-2"></i>Dashboard
-                </a>
 
-                <span class="nav-section">Danh mục</span>
-                <a class="nav-link"
-                   th:classappend="${activePage == 'loai-khoan-thu'} ? 'active' : ''"
-                   th:href="@{/loai-khoan-thu}" data-bs-dismiss="offcanvas">
-                    <i class="bi bi-tags me-2"></i>Loại khoản thu
-                </a>
-                <a class="nav-link"
-                   th:classappend="${activePage == 'mau-khoan-thu'} ? 'active' : ''"
-                   th:href="@{/mau-khoan-thu}" data-bs-dismiss="offcanvas">
-                    <i class="bi bi-arrow-repeat me-2"></i>Mẫu thu định kỳ
-                </a>
-
-                <span class="nav-section">Quản lý thu phí</span>
-                <a class="nav-link"
-                   th:classappend="${activePage == 'khoan-thu'} ? 'active' : ''"
-                   th:href="@{/khoan-thu}" data-bs-dismiss="offcanvas">
-                    <i class="bi bi-receipt me-2"></i>Khoản thu
-                </a>
-                <a class="nav-link"
-                   th:classappend="${activePage == 'thanh-toan'} ? 'active' : ''"
-                   th:href="@{/thanh-toan}" data-bs-dismiss="offcanvas">
-                    <i class="bi bi-cash-coin me-2"></i>Thanh toán
-                </a>
-                <a class="nav-link"
-                   th:classappend="${activePage == 'thong-ke'} ? 'active' : ''"
-                   th:href="@{/thanh-toan/thong-ke}" data-bs-dismiss="offcanvas">
-                    <i class="bi bi-bar-chart-line me-2"></i>Thống kê
-                </a>
-                <a class="nav-link"
-                   th:classappend="${activePage == 'no-phi'} ? 'active' : ''"
-                   th:href="@{/thanh-toan/no-phi}" data-bs-dismiss="offcanvas">
-                    <i class="bi bi-exclamation-circle me-2"></i>Nợ phí
-                </a>
-
-                <span class="nav-section">Dân cư</span>
-                <a class="nav-link"
-                   th:classappend="${activePage == 'ho-gia-dinh'} ? 'active' : ''"
-                   th:href="@{/ho-gia-dinh}" data-bs-dismiss="offcanvas">
-                    <i class="bi bi-house me-2"></i>Hộ gia đình
-                </a>
-                <a class="nav-link"
-                   th:classappend="${activePage == 'nhan-khau'} ? 'active' : ''"
-                   th:href="@{/nhan-khau}" data-bs-dismiss="offcanvas">
-                    <i class="bi bi-person me-2"></i>Nhân khẩu
-                </a>
-
-                <div sec:authorize="hasRole('admin')">
-                    <span class="nav-section">Hệ thống</span>
-                    <a th:href="@{/nguoi-dung}" class="nav-link"
-                       th:classappend="${activePage == 'nguoi-dung'} ? 'active' : ''"
-                       data-bs-dismiss="offcanvas">
-                        <i class="bi bi-people me-2"></i>Người dùng
-                    </a>
-                    <a th:href="@{/audit-log}" class="nav-link"
-                       th:classappend="${activePage == 'audit-log'} ? 'active' : ''"
-                       data-bs-dismiss="offcanvas">
-                        <i class="bi bi-journal-text me-2"></i>Nhật ký hoạt động
-                    </a>
-                    <a th:href="@{/thung-rac}" class="nav-link"
-                       th:classappend="${activePage == 'thung-rac'} ? 'active' : ''"
-                       data-bs-dismiss="offcanvas">
-                        <i class="bi bi-trash me-2"></i>Thùng rác
-                    </a>
+                <!-- Tổng quan -->
+                <button class="nav-section nav-section-toggle" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#sbm-tong-quan"
+                        aria-expanded="true" aria-controls="sbm-tong-quan">
+                    Tổng quan <i class="bi bi-chevron-up"></i>
+                </button>
+                <div class="collapse show sidebar-collapse-section" id="sbm-tong-quan" data-section-key="tong-quan">
+                    <div class="nav flex-column gap-1 pb-1">
+                        <a class="nav-link" th:classappend="${activePage == 'dashboard'} ? 'active' : ''"
+                           th:href="@{/dashboard}" data-bs-dismiss="offcanvas">
+                            <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                        </a>
+                    </div>
                 </div>
+
+                <!-- Danh mục -->
+                <button class="nav-section nav-section-toggle" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#sbm-danh-muc"
+                        aria-expanded="true" aria-controls="sbm-danh-muc">
+                    Danh mục <i class="bi bi-chevron-up"></i>
+                </button>
+                <div class="collapse show sidebar-collapse-section" id="sbm-danh-muc" data-section-key="danh-muc">
+                    <div class="nav flex-column gap-1 pb-1">
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'loai-khoan-thu'} ? 'active' : ''"
+                           th:href="@{/loai-khoan-thu}" data-bs-dismiss="offcanvas">
+                            <i class="bi bi-tags me-2"></i>Loại khoản thu
+                        </a>
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'mau-khoan-thu'} ? 'active' : ''"
+                           th:href="@{/mau-khoan-thu}" data-bs-dismiss="offcanvas">
+                            <i class="bi bi-arrow-repeat me-2"></i>Mẫu thu định kỳ
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quản lý thu phí -->
+                <button class="nav-section nav-section-toggle" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#sbm-quan-ly"
+                        aria-expanded="true" aria-controls="sbm-quan-ly">
+                    Quản lý thu phí <i class="bi bi-chevron-up"></i>
+                </button>
+                <div class="collapse show sidebar-collapse-section" id="sbm-quan-ly" data-section-key="quan-ly">
+                    <div class="nav flex-column gap-1 pb-1">
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'khoan-thu'} ? 'active' : ''"
+                           th:href="@{/khoan-thu}" data-bs-dismiss="offcanvas">
+                            <i class="bi bi-receipt me-2"></i>Khoản thu
+                        </a>
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'thanh-toan'} ? 'active' : ''"
+                           th:href="@{/thanh-toan}" data-bs-dismiss="offcanvas">
+                            <i class="bi bi-cash-coin me-2"></i>Thanh toán
+                        </a>
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'thong-ke'} ? 'active' : ''"
+                           th:href="@{/thanh-toan/thong-ke}" data-bs-dismiss="offcanvas">
+                            <i class="bi bi-bar-chart-line me-2"></i>Thống kê
+                        </a>
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'no-phi'} ? 'active' : ''"
+                           th:href="@{/thanh-toan/no-phi}" data-bs-dismiss="offcanvas">
+                            <i class="bi bi-exclamation-circle me-2"></i>Nợ phí
+                        </a>
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'thu-ho'} ? 'active' : ''"
+                           th:href="@{/thu-ho}" data-bs-dismiss="offcanvas"
+                           title="Hóa đơn điện, nước, internet, gas thu hộ">
+                            <i class="bi bi-file-earmark-text me-2"></i>Thu hộ
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Dân cư -->
+                <button class="nav-section nav-section-toggle" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#sbm-dan-cu"
+                        aria-expanded="true" aria-controls="sbm-dan-cu">
+                    Dân cư <i class="bi bi-chevron-up"></i>
+                </button>
+                <div class="collapse show sidebar-collapse-section" id="sbm-dan-cu" data-section-key="dan-cu">
+                    <div class="nav flex-column gap-1 pb-1">
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'ho-gia-dinh'} ? 'active' : ''"
+                           th:href="@{/ho-gia-dinh}" data-bs-dismiss="offcanvas">
+                            <i class="bi bi-house me-2"></i>Hộ gia đình
+                        </a>
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'nhan-khau'} ? 'active' : ''"
+                           th:href="@{/nhan-khau}" data-bs-dismiss="offcanvas">
+                            <i class="bi bi-person me-2"></i>Nhân khẩu
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Hệ thống (admin only) -->
+                <div sec:authorize="hasRole('admin')">
+                    <button class="nav-section nav-section-toggle" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#sbm-he-thong"
+                            aria-expanded="true" aria-controls="sbm-he-thong">
+                        Hệ thống <i class="bi bi-chevron-up"></i>
+                    </button>
+                    <div class="collapse show sidebar-collapse-section" id="sbm-he-thong" data-section-key="he-thong">
+                        <div class="nav flex-column gap-1 pb-2">
+                            <a th:href="@{/nguoi-dung}" class="nav-link"
+                               th:classappend="${activePage == 'nguoi-dung'} ? 'active' : ''"
+                               data-bs-dismiss="offcanvas">
+                                <i class="bi bi-people me-2"></i>Người dùng
+                            </a>
+                            <a th:href="@{/audit-log}" class="nav-link"
+                               th:classappend="${activePage == 'audit-log'} ? 'active' : ''"
+                               data-bs-dismiss="offcanvas">
+                                <i class="bi bi-journal-text me-2"></i>Nhật ký hoạt động
+                            </a>
+                            <a th:href="@{/thung-rac}" class="nav-link"
+                               th:classappend="${activePage == 'thung-rac'} ? 'active' : ''"
+                               data-bs-dismiss="offcanvas">
+                                <i class="bi bi-trash me-2"></i>Thùng rác
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
             </nav>
         </div>
     </div>

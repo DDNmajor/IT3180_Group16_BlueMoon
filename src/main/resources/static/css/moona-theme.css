@@ -136,6 +136,16 @@
   background: linear-gradient(180deg, #150E34 0%, #100C2C 100%) !important;
   border-right: 1px solid var(--moon-border);
 }
+[data-theme="dark"] .sidebar-nav-wrapper {
+  scrollbar-color: rgba(167, 125, 255, 0.30) transparent;
+}
+[data-theme="dark"] .sidebar-nav-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(167, 125, 255, 0.30);
+  border-radius: 2px;
+}
+[data-theme="dark"] .sidebar-nav-wrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(167, 125, 255, 0.60);
+}
 
 [data-theme="dark"] .sidebar .nav-link {
   color: var(--moon-text-muted) !important;

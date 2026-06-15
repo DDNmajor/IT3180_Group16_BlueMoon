@@ -55,4 +55,8 @@ public class HoGiaDinh {
 
     @OneToMany(mappedBy = "hoGiaDinh")
     private List<NhanKhau> nhanKhaus;
+
+    public String getTieuDe() {
+        return soCanHo + " - " + chuHo;
+    }
 }
