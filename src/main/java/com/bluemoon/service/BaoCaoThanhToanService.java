@@ -129,6 +129,7 @@ public class BaoCaoThanhToanService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public NoPhiHoDto getNoPhiCuaHo(Integer idHo) {
         return getBangNoPhi(null, null, BigDecimal.ZERO)
                 .stream()
