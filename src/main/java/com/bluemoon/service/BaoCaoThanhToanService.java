@@ -12,6 +12,7 @@ import com.bluemoon.model.LoaiKhoanThu;
 import com.bluemoon.model.ThanhToan;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -38,6 +39,7 @@ public class BaoCaoThanhToanService {
     private final HoGiaDinhRepository hoGiaDinhRepository;
     private final KhoanThuRepository khoanThuRepository;
 
+    @Transactional(readOnly = true)
     public List<NoPhiHoDto> getBangNoPhi(String keyword, Integer idKhoanThu, BigDecimal noTren) {
         String kw = keyword == null ? "" : keyword.trim().toLowerCase();
         BigDecimal minNo = noTren == null ? BigDecimal.ZERO : noTren;
@@ -135,6 +137,7 @@ public class BaoCaoThanhToanService {
                 .orElseThrow(() -> new RuntimeException("Hộ này hiện không có khoản nợ nào."));
     }
 
+    @Transactional(readOnly = true)
     public List<ThongKeKhoanThuDto> getThongKeKhoanDongGop(YearMonth thang, String loaiFilter) {
         String filter = loaiFilter == null ? "ALL" : loaiFilter;
 
@@ -266,6 +269,7 @@ public class BaoCaoThanhToanService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    @Transactional(readOnly = true)
     public long tongSoHoDangNoItNhatMotKhoanTrongThongKe(List<ThongKeKhoanThuDto> thongKeList) {
         Set<Integer> idKhoanSet = thongKeList.stream()
                 .map(ThongKeKhoanThuDto::getIdKhoanThu)
