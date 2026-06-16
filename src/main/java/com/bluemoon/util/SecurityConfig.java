@@ -59,7 +59,7 @@ public class SecurityConfig {
         http
             .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/actuator/health").permitAll()
                 .requestMatchers("/thu-ho/gen", "/thu-ho/gen/**").permitAll()
                 .requestMatchers("/nguoi-dung/**", "/audit-log/**", "/thung-rac/**").hasRole("admin")
                 .anyRequest().authenticated()
