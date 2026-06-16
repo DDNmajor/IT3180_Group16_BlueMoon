@@ -540,11 +540,11 @@
             'animation:kanata-bg-cloud-drift ' + c.dur + 's linear infinite',
             'animation-delay:' + calcDelay(c.dur, c.del) + 's'
           ].join(';');
-          /* 3 blobs overlapping — màu tím nhạt hơn */
+          /* 3 blobs overlapping — ice blue × antique gold halo */
           [
-            { t:'20%', l:'12%', w:'70%', h:'55%', blur:28, c:'rgba(139,92,246,0.32)'  },
-            { t:'32%', l:'0',   w:'48%', h:'50%', blur:22, c:'rgba(167,139,250,0.28)' },
-            { t:'28%', l:'42%', w:'55%', h:'52%', blur:24, c:'rgba(124,58,237,0.25)'  }
+            { t:'20%', l:'12%', w:'70%', h:'55%', blur:28, c:'rgba(106,191,230,0.28)' },
+            { t:'32%', l:'0',   w:'48%', h:'50%', blur:22, c:'rgba(160,212,244,0.22)' },
+            { t:'28%', l:'42%', w:'55%', h:'52%', blur:24, c:'rgba(192,144,24,0.10)'  }
           ].forEach(function(b) {
             var blob = document.createElement('div');
             blob.style.cssText = [
@@ -576,11 +576,11 @@
           'width:310px', 'height:175px', 'opacity:0.55',
           'pointer-events:none', 'z-index:0',
           'animation:kanata-wings-float 5s ease-in-out ' + calcDelay(5) + 's infinite',
-          'filter:drop-shadow(0 6px 18px rgba(99,102,241,0.42))'
+          'filter:drop-shadow(0 6px 18px rgba(106,191,230,0.38))'
         ].join(';');
         /* Cánh trái — dải lông xòe ra */
         var lWing = document.createElementNS(ns, 'path');
-        lWing.setAttribute('fill', 'rgba(167,139,250,0.92)');
+        lWing.setAttribute('fill', 'rgba(106,191,230,0.70)');
         lWing.setAttribute('d',
           'M160 90' +
           ' C140 68, 105 42, 62 26' +
@@ -596,7 +596,7 @@
         );
         /* Cánh phải — đối xứng */
         var rWing = document.createElementNS(ns, 'path');
-        rWing.setAttribute('fill', 'rgba(147,197,253,0.84)');
+        rWing.setAttribute('fill', 'rgba(160,212,244,0.65)');
         rWing.setAttribute('d',
           'M160 90' +
           ' C180 68, 215 42, 258 26' +
@@ -616,9 +616,9 @@
 
         /* Lông vũ rơi — 3 chiếc, góc nghiêng biến thiên rộng: a=10-90°, b=-20÷-90° */
         [
-          { left:'20%', sz:24, del:0,   dur:9,  col:'rgba(167,139,250,0.88)', anim:'kanata-feather-fall-a' },
-          { left:'58%', sz:20, del:3.5, dur:11, col:'rgba(147,197,253,0.85)', anim:'kanata-feather-fall-b' },
-          { left:'76%', sz:22, del:7,   dur:10, col:'rgba(196,181,253,0.82)', anim:'kanata-feather-fall-a' }
+          { left:'20%', sz:24, del:0,   dur:9,  col:'rgba(106,191,230,0.78)', anim:'kanata-feather-fall-a' },
+          { left:'58%', sz:20, del:3.5, dur:11, col:'rgba(160,212,244,0.72)', anim:'kanata-feather-fall-b' },
+          { left:'76%', sz:22, del:7,   dur:10, col:'rgba(130,200,238,0.74)', anim:'kanata-feather-fall-a' }
         ].forEach(function(d) {
           var svg = document.createElementNS(ns, 'svg');
           svg.setAttribute('viewBox', '0 0 24 48');
@@ -629,7 +629,7 @@
             'pointer-events:none', 'z-index:0',
             'animation:' + d.anim + ' ' + d.dur + 's ease-in-out infinite',
             'animation-delay:' + calcDelay(d.dur, d.del) + 's',
-            'filter:drop-shadow(0 2px 6px rgba(99,102,241,0.38))'
+            'filter:drop-shadow(0 2px 6px rgba(106,191,230,0.32))'
           ].join(';');
           var featherBody = document.createElementNS(ns, 'path');
           featherBody.setAttribute('fill', d.col);

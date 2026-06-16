@@ -135,7 +135,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .sidebar .nav-link.active {
-  font-weight: 600;
+  font-weight: 700;
+  border-left-width: 4px;
+  padding-left: 11px;
+}
+
+/* Icons — unified size & transition, both themes */
+.sidebar .nav-link i,
+.sidebar .nav-link .bi {
+  font-size: 1.05rem;
+  transition: color 0.2s ease, filter 0.2s ease;
 }
 
 .sidebar .nav-section {
@@ -286,6 +295,10 @@ h5::before,
   font-weight:    normal;
 }
 
+/* Suppress decorator in layout-sensitive contexts */
+.card-header h3::before, .card-header h4::before, .card-header h5::before,
+table h3::before, table h4::before, table h5::before { content: none; }
+
 .sidebar .nav-section::before {
   content:      "✦";
   font-size:    0.75em;
@@ -378,7 +391,17 @@ h5::before,
   padding:       0.38rem 0.75rem 0.38rem 12px;
   margin-right:  4px;
 }
-.sidebar-offcanvas-nav .nav-link.active { font-weight: 600; }
+.sidebar-offcanvas-nav .nav-link.active {
+  font-weight: 700;
+  border-left-width: 4px;
+  padding-left: 11px;
+}
+
+.sidebar-offcanvas-nav .nav-link i,
+.sidebar-offcanvas-nav .nav-link .bi {
+  font-size: 1.05rem;
+  transition: color 0.2s ease, filter 0.2s ease;
+}
 .sidebar-offcanvas-nav .nav-section {
   font-family:    'Be Vietnam Pro', sans-serif;
   font-size:      0.82rem;
@@ -410,3 +433,171 @@ h5::before,
   border-style:    solid;
   border-width:    2px;
 }
+
+/* ─── DASHBOARD v2 — LAYOUT & ANIMATION ──────────────────────── */
+@keyframes db-reveal {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.reveal-card {
+  opacity: 0;
+  animation: db-reveal 0.52s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Hero banner */
+.db-hero {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 1.75rem 2rem;
+  border-radius: 16px;
+  flex-wrap: wrap;
+}
+.db-hero-left   { flex: 1; min-width: 190px; }
+.db-hero-center { flex: 0 0 auto; display: flex; justify-content: center; }
+.db-hero-right  { flex: 0 0 176px; display: flex; flex-direction: column; gap: 0.5rem; }
+
+.db-month-eyebrow {
+  font-size:      0.7rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  font-weight:    700;
+  margin-bottom:  0.2rem;
+  opacity:        0.55;
+}
+.db-month-name {
+  font-family:   'Cinzel', 'Be Vietnam Pro', sans-serif;
+  font-weight:   700;
+  font-size:     2rem;
+  letter-spacing: 2px;
+  line-height:   1.1;
+  margin-bottom: 0.4rem;
+}
+.db-hero-sub { font-size: 0.82rem; opacity: 0.65; }
+
+/* SVG Ring Chart (circumference r=40: 2π×40 ≈ 251.3) */
+.db-ring-wrap {
+  position: relative;
+  width:    120px;
+  height:   120px;
+}
+.db-ring-svg {
+  width:     120px;
+  height:    120px;
+  transform: rotate(-90deg);
+}
+.db-ring-bg {
+  fill:         none;
+  stroke-width: 9;
+}
+.db-ring-fill {
+  fill:                none;
+  stroke-width:        9;
+  stroke-linecap:      round;
+  stroke-dasharray:    251.3;
+  stroke-dashoffset:   251.3;
+  animation:           db-ring-draw 1.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards;
+}
+@keyframes db-ring-draw {
+  to { stroke-dashoffset: var(--ring-offset, 251.3); }
+}
+.db-ring-inner {
+  position:        absolute;
+  inset:           0;
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  text-align:      center;
+}
+.db-ring-pct {
+  font-size:   1.55rem;
+  font-weight: 800;
+  line-height: 1;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  letter-spacing: -1px;
+}
+.db-ring-cap {
+  font-size:      0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  opacity:        0.6;
+  margin-top:     3px;
+}
+
+/* Metric Cards */
+.db-metric-card {
+  display:     flex;
+  align-items: center;
+  gap:         0.875rem;
+  padding:     1rem 1.125rem;
+  border-radius: 12px;
+  height:      100%;
+  min-height:  90px;
+}
+.db-metric-icon {
+  flex:            0 0 44px;
+  width:           44px;
+  height:          44px;
+  border-radius:   11px;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  font-size:       1.3rem;
+}
+.db-metric-body { flex: 1; min-width: 0; }
+.db-metric-val {
+  font-size:      1.55rem;
+  font-weight:    800;
+  letter-spacing: -0.5px;
+  line-height:    1;
+  font-family:    'Be Vietnam Pro', sans-serif;
+}
+.db-metric-lbl {
+  font-size:     0.76rem;
+  opacity:       0.65;
+  margin-top:    3px;
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+}
+.db-metric-delta { font-size: 0.72rem; margin-top: 4px; }
+
+/* Stat Strips (right column) */
+.db-stat-strip {
+  display:       flex;
+  align-items:   center;
+  gap:           0.75rem;
+  padding:       0.875rem 1rem;
+  border-radius: 12px;
+  flex:          1;
+  min-height:    70px;
+}
+.db-stat-icon {
+  font-size: 1.4rem;
+  flex:      0 0 auto;
+  opacity:   0.75;
+}
+.db-stat-body { flex: 1; min-width: 0; }
+.db-stat-lbl {
+  font-size:     0.74rem;
+  opacity:       0.62;
+  margin-bottom: 2px;
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+}
+.db-stat-val {
+  font-size:   1.05rem;
+  font-weight: 800;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  line-height: 1.1;
+}
+.db-stat-link {
+  font-size:       1.1rem;
+  opacity:         0.5;
+  flex:            0 0 auto;
+  transition:      opacity 0.2s, transform 0.2s;
+  text-decoration: none;
+}
+.db-stat-link:hover { opacity: 1; transform: translateX(4px); }

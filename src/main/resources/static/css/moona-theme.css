@@ -160,7 +160,7 @@
   background: linear-gradient(90deg,
     rgba(167, 125, 255, 0.18) 0%,
     rgba(167, 125, 255, 0.04) 100%) !important;
-  border-left: 3px solid var(--moon-lavender) !important;
+  border-left-color: var(--moon-lavender) !important;
   box-shadow: inset 3px 0 12px rgba(215, 180, 255, 0.06),
               -1px 0 8px rgba(215, 180, 255, 0.10) !important;
 }
@@ -286,9 +286,9 @@
   color: var(--moon-success) !important;
 }
 [data-theme="dark"] .badge.bg-warning {
-  background-color: rgba(255, 93, 122, 0.14) !important;
-  border: 1px solid rgba(255, 93, 122, 0.28) !important;
-  color: var(--moon-danger) !important;
+  background-color: rgba(231, 201, 106, 0.16) !important;
+  border: 1px solid rgba(231, 201, 106, 0.30) !important;
+  color: var(--moon-gold-light) !important;
 }
 [data-theme="dark"] .badge.bg-info {
   background-color: rgba(231, 201, 106, 0.14) !important;
@@ -652,9 +652,9 @@
   border-left-color: rgba(167, 125, 255, 0.30) !important;
 }
 [data-theme="dark"] .sidebar-offcanvas-nav .nav-link.active {
-  color:       var(--moon-gold-light) !important;
-  background:  linear-gradient(90deg, rgba(167,125,255,0.18) 0%, rgba(167,125,255,0.04) 100%) !important;
-  border-left: 3px solid var(--moon-lavender) !important;
+  color:             var(--moon-gold-light) !important;
+  background:        linear-gradient(90deg, rgba(167,125,255,0.18) 0%, rgba(167,125,255,0.04) 100%) !important;
+  border-left-color: var(--moon-lavender) !important;
 }
 [data-theme="dark"] .sidebar-offcanvas-nav .nav-section           { color: var(--moon-gold) !important; opacity: 0.88; }
 [data-theme="dark"] .sidebar-offcanvas-nav .nav-section::before   { color: var(--moon-gold); opacity: 0.55; }
@@ -665,3 +665,46 @@
   color: var(--moon-gold);
   border: 1px solid var(--moon-border-lit);
 }
+
+/* ─── DASHBOARD v2 — dark mode ───────────────────────────────── */
+[data-theme="dark"] .db-hero {
+  background: linear-gradient(135deg, #241A4D 0%, #1D1541 100%);
+  border: 1px solid var(--moon-border-lit);
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.40),
+              inset 0 1px 0 rgba(215, 180, 255, 0.06);
+}
+[data-theme="dark"] .db-month-eyebrow { color: var(--moon-gold); }
+[data-theme="dark"] .db-month-name    { color: var(--moon-lavender); }
+[data-theme="dark"] .db-hero-sub      { color: var(--moon-text-muted); }
+
+[data-theme="dark"] .db-ring-bg   { stroke: rgba(215, 180, 255, 0.10); }
+[data-theme="dark"] .db-ring-fill { stroke: var(--moon-purple); filter: drop-shadow(0 0 6px rgba(167, 125, 255, 0.45)); }
+[data-theme="dark"] .db-ring-pct  { color: var(--moon-lavender); }
+
+[data-theme="dark"] .db-metric-card {
+  background: var(--moon-card);
+  border: 1px solid var(--moon-border);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+[data-theme="dark"] .db-metric-card:hover {
+  border-color: var(--moon-border-lit);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28);
+}
+[data-theme="dark"] .db-icon-blue   { background: rgba(125, 211, 252, 0.10); color: #7DD3FC; }
+[data-theme="dark"] .db-icon-purple { background: rgba(167, 125, 255, 0.12); color: var(--moon-purple); }
+[data-theme="dark"] .db-icon-amber  { background: rgba(231, 201, 106, 0.10); color: var(--moon-gold); }
+[data-theme="dark"] .db-icon-green  { background: rgba(56, 211, 159, 0.10);  color: var(--moon-success); }
+[data-theme="dark"] .db-metric-val  { color: var(--moon-text); }
+[data-theme="dark"] .db-metric-lbl  { color: var(--moon-text-muted); }
+
+[data-theme="dark"] .db-stat-strip {
+  background: var(--moon-card);
+  border: 1px solid var(--moon-border);
+  transition: border-color 0.2s ease;
+}
+[data-theme="dark"] .db-stat-strip:hover      { border-color: var(--moon-border-lit); }
+[data-theme="dark"] .db-stat-strip--danger     { border-color: rgba(255, 93, 122, 0.18); }
+[data-theme="dark"] .db-stat-strip--danger:hover { border-color: rgba(255, 93, 122, 0.35); }
+[data-theme="dark"] .db-stat-lbl  { color: var(--moon-text-muted); }
+[data-theme="dark"] .db-stat-val  { color: var(--moon-text); }
+[data-theme="dark"] .db-stat-link { color: var(--moon-purple); }
