@@ -47,7 +47,7 @@ Xây dựng phần mềm quản lý thu phí cho Ban quản trị chung cư Blue
 | **Lịch sử email** | Ghi log toàn bộ email đã gửi, filter theo loại/trạng thái/căn hộ, xem chi tiết nội dung | ✅ |
 | **Thùng rác** | Khôi phục hộ gia đình và khoản thu đã xoá mềm (soft delete) | ✅ |
 | **Nhật ký hoạt động** | Ghi audit log toàn hệ thống, filter theo loại đối tượng / người dùng / khoảng ngày (admin only) | ✅ |
-| **Email thông báo** | Gửi email @Async qua Brevo SMTP khi khoản thu mới được tạo, nhắc nợ tự động và thủ công | ✅ |
+| **Email thông báo** | Gửi email @Async qua Brevo API khi khoản thu mới được tạo, nhắc nợ tự động và thủ công | ✅ |
 | **Giao diện** | Light/Dark mode, sticky navbar + sidebar, glassmorphism (light), starfield (dark) | ✅ |
 
 ---
@@ -164,7 +164,7 @@ src/main/java/com/bluemoon/
 │   ├── ExcelImportService           # Import hộ/nhân khẩu từ file .xlsx
 │   ├── PhuongTienService            # CRUD phương tiện, tính phí gửi xe
 │   ├── LichSuEmailService           # Query + filter lịch sử email
-│   ├── EmailService                 # Gửi email @Async qua Brevo SMTP
+│   ├── EmailService                 # Gửi email @Async qua Brevo API (RestClient)
 │   ├── EmailSchedulerService        # Scheduled job nhắc nợ tự động
 │   ├── HoaDonThuHoService           # CRUD hóa đơn thu hộ + gen/email/xác nhận
 │   ├── SimulationDataService        # Sinh số tiền mô phỏng khi gen hàng loạt
@@ -281,7 +281,7 @@ DAO / Repository (12)     — Spring Data JPA, custom @Query, JpaSpecificationEx
 MySQL 8 (12 bảng)         — schema quản lý bằng SQL thuần, ddl-auto=validate
 ```
 
-Thymeleaf render HTML server-side. Tất cả email gửi `@Async` qua Brevo SMTP, mỗi lần gửi đều ghi vào `lich_su_email`.
+Thymeleaf render HTML server-side. Tất cả email gửi `@Async` qua Brevo Transactional Email API, mỗi lần gửi đều ghi vào `lich_su_email`.
 
 ---
 
