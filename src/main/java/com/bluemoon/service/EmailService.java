@@ -1,5 +1,6 @@
 package com.bluemoon.service;
 
+import com.bluemoon.dao.HoaDonThuHoRepository;
 import com.bluemoon.model.HoaDonThuHo;
 import com.bluemoon.model.HoGiaDinh;
 import com.bluemoon.model.KhoanThu;
@@ -26,9 +27,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EmailService {
 
-    private final JavaMailSender     mailSender;
-    private final AuditLogService    auditLogService;
-    private final LichSuEmailService lichSuEmailService;
+    private final JavaMailSender          mailSender;
+    private final AuditLogService         auditLogService;
+    private final LichSuEmailService      lichSuEmailService;
+    private final HoaDonThuHoRepository hoaDonThuHoRepository;
 
     @Value("${bluemoon.mail.from}")
     private String mailFrom;
@@ -247,6 +249,7 @@ public class EmailService {
 
     @Async
     public void guiEmailThuHoThongBao(HoaDonThuHo hd) {
+        hd = hoaDonThuHoRepository.findByIdWithAssociations(hd.getId()).orElse(hd);
         HoGiaDinh ho = hd.getHoGiaDinh();
         if (ho.getEmail() == null || ho.getEmail().isBlank()) return;
 
@@ -303,6 +306,7 @@ public class EmailService {
 
     @Async
     public void guiEmailThuHoXacNhan(HoaDonThuHo hd) {
+        hd = hoaDonThuHoRepository.findByIdWithAssociations(hd.getId()).orElse(hd);
         HoGiaDinh ho = hd.getHoGiaDinh();
         if (ho.getEmail() == null || ho.getEmail().isBlank()) return;
 

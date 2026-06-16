@@ -4,6 +4,8 @@ import com.bluemoon.model.HoaDonThuHo;
 import com.bluemoon.model.LoaiDichVuThuHo;
 import com.bluemoon.model.TrangThaiHoaDonThuHo;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -27,4 +29,7 @@ public interface HoaDonThuHoRepository extends JpaRepository<HoaDonThuHo, Intege
             Integer idHo, LoaiDichVuThuHo loaiDichVu, LocalDate kyThanhToan);
 
     Optional<HoaDonThuHo> findByMaHoaDon(String maHoaDon);
+
+    @Query("SELECT h FROM HoaDonThuHo h LEFT JOIN FETCH h.hoGiaDinh LEFT JOIN FETCH h.nguoiXacNhan WHERE h.id = :id")
+    Optional<HoaDonThuHo> findByIdWithAssociations(@Param("id") Integer id);
 }
