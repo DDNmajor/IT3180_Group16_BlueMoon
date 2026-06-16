@@ -1,5 +1,5 @@
 -- BlueMoon Fee Management System — Full Schema
--- Chạy file này để khởi tạo hoặc reset toàn bộ database
+-- Chạy file này để khởi tạo/reset toàn bộ database
 
 CREATE DATABASE IF NOT EXISTS bluemoon
     CHARACTER SET utf8mb4
