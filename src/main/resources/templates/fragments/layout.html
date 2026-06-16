@@ -82,16 +82,19 @@
         <a class="navbar-brand" href="/dashboard">
             <i class="bi bi-moon-stars-fill me-2"></i>BlueMoon
         </a>
+        <!-- Module name — hiện trên desktop -->
+        <span class="nav-module-sep d-none d-lg-inline" aria-hidden="true"></span>
+        <span id="navPageTitle" class="nav-page-title d-none d-lg-inline" aria-hidden="true"></span>
     </div>
 
-    <div class="d-flex align-items-center gap-3">
-        <span class="nav-user-name d-none d-sm-inline">
+    <div class="d-flex align-items-center gap-2">
+        <span class="nav-user-name d-none d-md-inline">
             <i class="bi bi-person-circle me-1"></i>
             <span th:text="${#authentication?.name}">Người dùng</span>
         </span>
         <button id="themeToggleBtn"
                 onclick="toggleKanataTheme()"
-                class="btn btn-sm btn-outline-light ms-2"
+                class="btn btn-sm btn-outline-light"
                 title="Chuyển giao diện sáng/tối"
                 aria-label="Chuyển giao diện sáng tối">
             <i class="bi bi-moon-stars" aria-hidden="true"></i>
@@ -110,9 +113,9 @@
           xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
     <!-- Desktop sidebar — ẩn trên mobile -->
-    <div class="col-md-2 sidebar pt-3 d-none d-md-block">
+    <div class="col-md-2 sidebar d-none d-md-flex">
         <div class="sidebar-nav-wrapper">
-            <nav class="nav flex-column px-2 gap-1">
+            <nav class="nav flex-column px-2 gap-1 pt-2">
 
                 <!-- Tổng quan -->
                 <button class="nav-section nav-section-toggle" type="button"
@@ -226,7 +229,7 @@
                             </a>
                             <a th:href="@{/audit-log}" class="nav-link"
                                th:classappend="${activePage == 'audit-log'} ? 'active' : ''">
-                                <i class="bi bi-journal-text me-2"></i>Nhật ký hoạt động
+                                <i class="bi bi-journal-text me-2"></i>Nhật ký
                             </a>
                             <a th:href="@{/thung-rac}" class="nav-link"
                                th:classappend="${activePage == 'thung-rac'} ? 'active' : ''">
@@ -237,6 +240,11 @@
                 </div>
 
             </nav>
+        </div>
+        <!-- Sidebar footer — tên người dùng -->
+        <div class="sidebar-footer">
+            <i class="bi bi-person-circle"></i>
+            <span class="sidebar-footer-user" th:text="${#authentication?.name}">Người dùng</span>
         </div>
     </div>
 
@@ -364,7 +372,7 @@
                             <a th:href="@{/audit-log}" class="nav-link"
                                th:classappend="${activePage == 'audit-log'} ? 'active' : ''"
                                data-bs-dismiss="offcanvas">
-                                <i class="bi bi-journal-text me-2"></i>Nhật ký hoạt động
+                                <i class="bi bi-journal-text me-2"></i>Nhật ký
                             </a>
                             <a th:href="@{/thung-rac}" class="nav-link"
                                th:classappend="${activePage == 'thung-rac'} ? 'active' : ''"
@@ -445,6 +453,28 @@
       }
       syncNavbarHeight();
       window.addEventListener('resize', syncNavbarHeight);
+
+      /* Hiện tên module hiện tại trong navbar (đọc từ active sidebar item) */
+      (function() {
+        var active = document.querySelector('.sidebar .nav-link.active');
+        if (active) {
+          var raw = active.textContent.trim();
+          var el = document.getElementById('navPageTitle');
+          if (el) el.textContent = raw;
+        }
+      })();
+
+      /* Giữ vị trí scroll của sidebar khi navigate giữa các trang */
+      (function() {
+        var wrapper = document.querySelector('.sidebar-nav-wrapper');
+        if (!wrapper) return;
+        var KEY = 'bluemoon-sidebar-scroll';
+        var saved = parseInt(localStorage.getItem(KEY), 10);
+        if (saved > 0) wrapper.scrollTop = saved;
+        wrapper.addEventListener('scroll', function() {
+          localStorage.setItem(KEY, wrapper.scrollTop);
+        }, { passive: true });
+      })();
 
       function toggleKanataTheme() {
         var current = document.documentElement.getAttribute('data-theme') || 'dark';

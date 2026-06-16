@@ -6,26 +6,26 @@
 
 /* ─── CSS VARIABLES ─────────────────────────────────────────── */
 [data-theme="light"] {
-  --k-primary:       #6ABFE6;
-  --k-primary-hover: #5AB0DA;
-  --k-secondary:     #A0D4F4;
-  --k-accent:        #C09018;
-  --k-accent-light:  #D4A828;
-  --k-navy:          #1A2440;
-  --k-bg-base:       #F2FAFF;
-  --k-glass-sidebar: rgba(245, 252, 255, 0.94);
-  --k-glass-card:    rgba(255, 255, 255, 0.93);
-  --k-glass-modal:   rgba(255, 255, 255, 0.96);
+  --k-primary:       #3EA8D8;
+  --k-primary-hover: #2D98CA;
+  --k-secondary:     #7DC4EE;
+  --k-accent:        #A87012;
+  --k-accent-light:  #C08820;
+  --k-navy:          #152238;
+  --k-bg-base:       #EBF6FF;
+  --k-glass-sidebar: rgba(240, 250, 255, 0.94);
+  --k-glass-card:    rgba(255, 255, 255, 0.94);
+  --k-glass-modal:   rgba(255, 255, 255, 0.97);
   --k-surface:       #FFFFFF;
-  --k-text:          #1A2440;
-  --k-text-muted:    #5A7A9A;
-  --k-border:        rgba(106, 191, 230, 0.18);
-  --k-border-solid:  #C0E0F8;
-  --k-active-bg:     rgba(106, 191, 230, 0.10);
-  --k-thead-bg:      #1A4060;
-  --k-thead-text:    #EEF6FF;
-  --k-shadow:        0 4px 24px rgba(106, 191, 230, 0.10);
-  --k-shadow-hover:  0 8px 32px rgba(106, 191, 230, 0.18);
+  --k-text:          #152238;
+  --k-text-muted:    #4E6E88;
+  --k-border:        rgba(62, 168, 216, 0.15);
+  --k-border-solid:  #AEDAF4;
+  --k-active-bg:     rgba(62, 168, 216, 0.08);
+  --k-thead-bg:      #163858;
+  --k-thead-text:    #E8F5FF;
+  --k-shadow:        0 4px 24px rgba(62, 168, 216, 0.10);
+  --k-shadow-hover:  0 8px 32px rgba(62, 168, 216, 0.20);
 }
 
 /* ─── BODY & BACKGROUND ──────────────────────────────────────── */
@@ -33,19 +33,21 @@
 [data-theme="light"] body {
   background-color: var(--k-bg-base) !important;
   background-image:
-    radial-gradient(ellipse 65% 48% at 55% 32%,
-      rgba(143, 207, 232, 0.14) 0%, transparent 68%),
+    radial-gradient(ellipse 70% 55% at 60% 28%,
+      rgba(100, 190, 230, 0.13) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 35% at 10% 80%,
+      rgba(168, 112, 18, 0.06) 0%, transparent 60%),
     repeating-linear-gradient(
       0deg,
-      transparent, transparent 35px,
-      rgba(106, 191, 230, 0.055) 35px, rgba(106, 191, 230, 0.055) 36px
+      transparent, transparent 38px,
+      rgba(62, 168, 216, 0.04) 38px, rgba(62, 168, 216, 0.04) 39px
     ),
     repeating-linear-gradient(
       90deg,
-      transparent, transparent 35px,
-      rgba(106, 191, 230, 0.055) 35px, rgba(106, 191, 230, 0.055) 36px
+      transparent, transparent 38px,
+      rgba(62, 168, 216, 0.04) 38px, rgba(62, 168, 216, 0.04) 39px
     ),
-    linear-gradient(160deg, #F2FAFF 0%, #EAF5FF 55%, #F4F0FF 100%) !important;
+    linear-gradient(155deg, #EBF6FF 0%, #E0F2FF 50%, #EEF0FF 100%) !important;
   background-attachment: fixed !important;
   color: var(--k-text) !important;
 }
@@ -140,8 +142,8 @@
 
 /* ─── NAVBAR ─────────────────────────────────────────────────── */
 [data-theme="light"] .moon-navbar {
-  background: linear-gradient(90deg, #3AA0C8 0%, #6ABFE6 100%) !important;
-  border-bottom: 1px solid rgba(106, 191, 230, 0.20) !important;
+  background: linear-gradient(100deg, #1E86B8 0%, #2E98C8 40%, #3EA8D8 100%) !important;
+  border-bottom: 1px solid rgba(62, 168, 216, 0.22) !important;
   z-index: 1030;
 }
 
@@ -155,9 +157,9 @@
   height: 1px;
   background: linear-gradient(90deg,
     transparent              0%,
-    rgba(220, 184, 74, 0.55) 25%,
-    rgba(255, 255, 255, 0.70) 50%,
-    rgba(220, 184, 74, 0.55) 75%,
+    rgba(200, 160, 60, 0.65) 22%,
+    rgba(255, 255, 255, 0.80) 50%,
+    rgba(200, 160, 60, 0.65) 78%,
     transparent              100%);
   pointer-events: none;
 }
@@ -167,34 +169,42 @@
   background: linear-gradient(
     90deg,
     #ffffff   0%,
-    #D4A828  28%,
-    #ffffff  52%,
-    #D4A828  78%,
+    #E0B830  25%,
+    #ffffff  50%,
+    #E0B830  75%,
     #ffffff  100%
   ) !important;
   background-size: 200% auto !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   background-clip: text !important;
-  animation: kanata-gradient-shift 4s linear infinite;
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.65))
-          drop-shadow(0 0 22px rgba(220, 184, 74, 0.55)) !important;
+  animation: kanata-gradient-shift 5s linear infinite;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.60))
+          drop-shadow(0 0 20px rgba(210, 170, 60, 0.50)) !important;
+}
+
+[data-theme="light"] .nav-module-sep {
+  background: rgba(255, 255, 255, 0.38);
+}
+
+[data-theme="light"] .nav-page-title {
+  color: rgba(255, 255, 255, 0.88) !important;
 }
 
 [data-theme="light"] .moon-navbar .nav-user-name {
-  color: rgba(255, 255, 255, 0.92) !important;
+  color: rgba(255, 255, 255, 0.90) !important;
 }
 [data-theme="light"] .moon-navbar .nav-user-name .bi {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   vertical-align: middle;
 }
 
 [data-theme="light"] .moon-navbar .btn-outline-light {
-  border-color: rgba(255, 255, 255, 0.50) !important;
+  border-color: rgba(255, 255, 255, 0.44) !important;
   color: #FFFFFF !important;
 }
 [data-theme="light"] .moon-navbar .btn-outline-light:hover {
-  background-color: rgba(255, 255, 255, 0.16) !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
   border-color: #FFFFFF !important;
   color: #FFFFFF !important;
 }
@@ -219,75 +229,95 @@
 /* ─── SIDEBAR — Pearl Glass ──────────────────────────────────── */
 [data-theme="light"] .sidebar {
   background: var(--k-glass-sidebar) !important;
-  border-right: 1px solid rgba(106, 191, 230, 0.18) !important;
-  box-shadow: 0 0 16px rgba(106, 191, 230, 0.06) !important;
+  border-right: 1px solid rgba(62, 168, 216, 0.14) !important;
+  box-shadow: 2px 0 18px rgba(62, 168, 216, 0.07) !important;
   z-index: 10;
 }
 [data-theme="light"] .sidebar-nav-wrapper {
-  scrollbar-color: rgba(106, 191, 230, 0.30) transparent;
+  scrollbar-color: rgba(62, 168, 216, 0.25) transparent;
 }
 [data-theme="light"] .sidebar-nav-wrapper::-webkit-scrollbar-thumb {
-  background: rgba(106, 191, 230, 0.30);
+  background: rgba(62, 168, 216, 0.25);
   border-radius: 2px;
 }
 [data-theme="light"] .sidebar-nav-wrapper::-webkit-scrollbar-thumb:hover {
-  background: rgba(106, 191, 230, 0.60);
+  background: rgba(62, 168, 216, 0.50);
 }
 
 @supports (backdrop-filter: blur(1px)) {
   [data-theme="light"] .sidebar {
-    background: rgba(245, 252, 255, 0.62) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
+    background: rgba(235, 248, 255, 0.68) !important;
+    backdrop-filter: blur(18px) !important;
+    -webkit-backdrop-filter: blur(18px) !important;
   }
 }
 
+[data-theme="light"] .sidebar-header {
+  border-bottom: 1px solid rgba(62, 168, 216, 0.10);
+}
+
+[data-theme="light"] .sidebar-header-label {
+  color: var(--k-primary);
+}
+
+[data-theme="light"] .sidebar-footer {
+  border-top-color: rgba(62, 168, 216, 0.10);
+}
+
+[data-theme="light"] .sidebar-footer-user {
+  color: var(--k-text-muted);
+}
+
+[data-theme="light"] .sidebar-footer .bi {
+  color: var(--k-primary);
+}
+
 [data-theme="light"] .sidebar .nav-section {
-  color: #1648B8 !important;
+  color: #1258A8 !important;
 }
 
 /* Antique gold star trước section label */
 [data-theme="light"] .sidebar .nav-section::before {
   color: var(--k-accent);
-  opacity: 0.75;
+  opacity: 0.70;
 }
 
 [data-theme="light"] .sidebar .nav-link {
-  color: #3A5870 !important;
+  color: #305068 !important;
 }
 
 /* Icon — cùng màu chữ nav-link */
 [data-theme="light"] .sidebar .nav-link i,
 [data-theme="light"] .sidebar .nav-link .bi {
-  color: #3A5870 !important;
+  color: #4878A0 !important;
 }
 
 [data-theme="light"] .sidebar .nav-link:hover {
-  color: #1648B8 !important;
-  background: rgba(22, 72, 184, 0.08) !important;
-  border-left-color: #1648B8 !important;
+  color: #1258A8 !important;
+  background: rgba(30, 100, 180, 0.07) !important;
+  border-left-color: rgba(62, 168, 216, 0.55) !important;
 }
 
 [data-theme="light"] .sidebar .nav-link:hover i,
 [data-theme="light"] .sidebar .nav-link:hover .bi {
-  color: #1648B8 !important;
+  color: #1E86B8 !important;
 }
 
-/* Active: gradient nền rõ hơn + border vàng */
+/* Active: pill background rõ ràng + border vàng */
 [data-theme="light"] .sidebar .nav-link.active {
   color: var(--k-navy) !important;
   background: linear-gradient(90deg,
-    rgba(106, 191, 230, 0.22) 0%,
-    rgba(106, 191, 230, 0.06) 100%) !important;
+    rgba(62, 168, 216, 0.18) 0%,
+    rgba(62, 168, 216, 0.05) 100%) !important;
   border-left-color: var(--k-accent) !important;
 }
 
-/* Icon active — antique gold với glow (hairpin star motif) */
+/* Icon active — antique gold với glow */
 [data-theme="light"] .sidebar .nav-link.active i,
 [data-theme="light"] .sidebar .nav-link.active .bi {
   color: var(--k-accent) !important;
   opacity: 1 !important;
-  filter: drop-shadow(0 0 4px rgba(192, 144, 24, 0.50));
+  filter: drop-shadow(0 0 4px rgba(168, 112, 18, 0.48));
 }
 
 [data-theme="light"] .sidebar .nav-link,
@@ -915,7 +945,7 @@
   box-shadow: 0 12px 48px rgba(106,191,230,0.18), 0 4px 16px rgba(106,191,230,0.10) !important;
 }
 [data-theme="light"] .moon-navbar {
-  box-shadow: 0 4px 20px rgba(58,160,200,0.42), 0 1px 6px rgba(58,160,200,0.26) !important;
+  box-shadow: 0 4px 22px rgba(30,134,184,0.48), 0 1px 6px rgba(30,134,184,0.28) !important;
 }
 
 /* ─── REPORT PROGRESS BAR ────────────────────────────────────── */
@@ -923,12 +953,12 @@
 
 /* ─── MOBILE OFFCANVAS SIDEBAR ───────────────────────────────── */
 [data-theme="light"] .moon-offcanvas-sidebar {
-  background: rgba(245, 252, 255, 0.98) !important;
-  border-right: 1px solid rgba(106, 191, 230, 0.18) !important;
+  background: rgba(235, 248, 255, 0.99) !important;
+  border-right: 1px solid rgba(62, 168, 216, 0.14) !important;
 }
 [data-theme="light"] .moon-offcanvas-sidebar .offcanvas-header {
-  background: linear-gradient(90deg, #3AA0C8 0%, #6ABFE6 100%) !important;
-  border-bottom: 1px solid rgba(106, 191, 230, 0.18) !important;
+  background: linear-gradient(100deg, #1E86B8 0%, #3EA8D8 100%) !important;
+  border-bottom: 1px solid rgba(62, 168, 216, 0.18) !important;
 }
 [data-theme="light"] .moon-offcanvas-sidebar .offcanvas-title {
   -webkit-text-fill-color: #FFFFFF !important;

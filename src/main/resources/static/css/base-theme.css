@@ -5,8 +5,8 @@
    ============================================================ */
 
 /* ─── SCROLLBAR SIZING ───────────────────────────────────────── */
-::-webkit-scrollbar              { width: 6px; height: 6px; }
-::-webkit-scrollbar-thumb        { border-radius: 3px; }
+::-webkit-scrollbar              { width: 4px; height: 4px; }
+::-webkit-scrollbar-thumb        { border-radius: 4px; }
 
 /* ─── TYPOGRAPHY ─────────────────────────────────────────────── */
 body {
@@ -20,7 +20,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ─── NAVBAR ─────────────────────────────────────────────────── */
 :root {
-  --navbar-h: 62px;
+  --navbar-h: 56px;
 }
 
 .moon-navbar {
@@ -28,8 +28,8 @@ h1, h2, h3, h4, h5, h6 {
   top: 0;
   z-index: 1030;
   min-height: var(--navbar-h);
-  padding-top: 0.6rem;
-  padding-bottom: 0.6rem;
+  padding-top: 0.45rem;
+  padding-bottom: 0.45rem;
 }
 
 .moon-navbar::after {
@@ -43,17 +43,36 @@ h1, h2, h3, h4, h5, h6 {
 .navbar-brand {
   font-family: 'Cinzel', 'Be Vietnam Pro', sans-serif !important;
   font-weight: 700 !important;
-  font-size: 1.6rem !important;
+  font-size: 1.45rem !important;
   letter-spacing: 1.5px;
 }
 
+/* Module title shown next to brand on desktop */
+.nav-module-sep {
+  display: inline-block;
+  width: 1px;
+  height: 18px;
+  margin: 0 0.6rem;
+  opacity: 0.35;
+  vertical-align: middle;
+}
+
+.nav-page-title {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  opacity: 0.72;
+  vertical-align: middle;
+  letter-spacing: 0.2px;
+}
+
 .moon-navbar .nav-user-name {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 .moon-navbar .nav-user-name .bi {
-  font-size: 1.3rem;
+  font-size: 1.15rem;
   vertical-align: middle;
 }
 
@@ -64,15 +83,19 @@ h1, h2, h3, h4, h5, h6 {
   height: calc(100vh - var(--navbar-h));
   overflow: hidden;
   align-self: flex-start; /* quan trọng: ngăn flexbox kéo dài sidebar theo row height */
-  flex: 0 0 250px;
-  width: 250px;
-  max-width: 250px;
+  flex: 0 0 224px;
+  width: 224px;
+  max-width: 224px;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Scrollable inner wrapper */
 .sidebar-nav-wrapper {
-  height: 100%;
-  overflow-y: scroll;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
   position: relative;
   z-index: 1;
   scrollbar-width: thin;
@@ -84,6 +107,32 @@ h1, h2, h3, h4, h5, h6 {
 
 .sidebar-nav-wrapper::-webkit-scrollbar-track {
   background: transparent;
+}
+
+/* Sidebar footer — user info strip */
+.sidebar-footer {
+  flex: 0 0 auto;
+  padding: 0.55rem 0.85rem 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-top: 1px solid transparent;
+}
+
+.sidebar-footer-user {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.sidebar-footer .bi {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  opacity: 0.72;
 }
 
 /* ─── COLLAPSIBLE SECTION TOGGLE ─────────────────────────────── */
@@ -125,35 +174,36 @@ h1, h2, h3, h4, h5, h6 {
 
 .sidebar .nav-link {
   border-left: 3px solid transparent;
-  border-radius: 0 8px 8px 0;
-  transition: color 0.2s ease, background-color 0.2s ease, border-left-color 0.2s ease;
+  border-radius: 0 10px 10px 0;
+  transition: color 0.18s ease, background-color 0.18s ease, border-left-color 0.18s ease;
   font-family: 'Be Vietnam Pro', sans-serif;
   font-weight: 500;
-  font-size: 0.9rem;
-  padding: 0.38rem 0.75rem 0.38rem 12px;
-  margin-right: 4px;
+  font-size: 0.87rem;
+  padding: 0.33rem 0.65rem 0.33rem 10px;
+  margin-right: 6px;
 }
 
 .sidebar .nav-link.active {
   font-weight: 700;
-  border-left-width: 4px;
-  padding-left: 11px;
+  border-left-width: 3px;
+  padding-left: 10px;
 }
 
 /* Icons — unified size & transition, both themes */
 .sidebar .nav-link i,
 .sidebar .nav-link .bi {
-  font-size: 1.05rem;
-  transition: color 0.2s ease, filter 0.2s ease;
+  font-size: 1rem;
+  transition: color 0.18s ease, filter 0.18s ease;
+  flex-shrink: 0;
 }
 
 .sidebar .nav-section {
   font-family: 'Be Vietnam Pro', sans-serif;
-  font-size: 0.77rem;
-  letter-spacing: 1.5px;
+  font-size: 0.68rem;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
-  padding: 0.3rem 1rem 0.2rem;
-  margin-top: 0.5rem;
+  padding: 0.25rem 0.9rem 0.15rem;
+  margin-top: 0.4rem;
   font-weight: 700;
 }
 
@@ -196,36 +246,68 @@ h1, h2, h3, h4, h5, h6 {
 .badge {
   font-family:   'Be Vietnam Pro', sans-serif !important;
   font-weight:   600 !important;
-  font-size:     0.75em !important;
-  padding:       3px 9px !important;
-  border-radius: 6px !important;
+  font-size:     0.72em !important;
+  padding:       3px 10px !important;
+  border-radius: 20px !important;
 }
 
 /* ─── BUTTONS ────────────────────────────────────────────────── */
 .btn {
-  border-radius: 10px !important;
+  border-radius: 8px !important;
   font-family:   'Be Vietnam Pro', sans-serif !important;
   font-weight:   600 !important;
-  border-width:  2px !important;
+  border-width:  1.5px !important;
 }
 
-.btn-sm { border-radius: 8px !important; }
+.btn-sm { border-radius: 6px !important; }
 
 /* ─── FORMS ──────────────────────────────────────────────────── */
 .form-control,
 .form-select {
-  border-radius: 10px !important;
+  border-radius: 8px !important;
   font-family:   'Be Vietnam Pro', sans-serif !important;
 }
 
 .input-group-text {
-  border-radius: 10px !important;
+  border-radius: 8px !important;
 }
 
 .form-label {
   font-weight: 600;
-  font-size:   0.9rem;
+  font-size:   0.87rem;
   font-family: 'Be Vietnam Pro', sans-serif !important;
+}
+
+/* ─── PAGE HEADER PATTERN ────────────────────────────────────── */
+.moon-page-header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  flex-wrap:       wrap;
+  gap:             0.5rem;
+  margin-bottom:   1.1rem;
+}
+
+.moon-page-header-title {
+  font-size:      1.15rem;
+  font-weight:    700;
+  line-height:    1.25;
+  margin:         0;
+  display:        flex;
+  align-items:    center;
+  gap:            0.5rem;
+}
+
+.moon-page-header-title .bi {
+  font-size: 1.1rem;
+  opacity:   0.70;
+}
+
+.moon-page-header-actions {
+  display:     flex;
+  align-items: center;
+  gap:         0.4rem;
+  flex-wrap:   wrap;
 }
 
 /* ─── ALERTS ─────────────────────────────────────────────────── */
@@ -235,16 +317,17 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ─── MODALS ─────────────────────────────────────────────────── */
 .modal-content {
-  border-radius: 16px !important;
+  border-radius: 14px !important;
 }
 
 .modal-header {
-  border-radius: 16px 16px 0 0 !important;
+  border-radius: 14px 14px 0 0 !important;
 }
 
 .modal-title {
   font-family: 'Be Vietnam Pro', sans-serif;
   font-weight: 700;
+  font-size:   0.95rem;
 }
 
 /* ─── PAGINATION ─────────────────────────────────────────────── */
@@ -373,42 +456,42 @@ table h3::before, table h4::before, table h5::before { content: none; }
 
 /* ─── OFFCANVAS SIDEBAR (mobile nav) ─────────────────────────── */
 .moon-offcanvas-sidebar {
-  width: 270px !important;
+  width: 260px !important;
 }
 .moon-offcanvas-sidebar .offcanvas-title {
   font-family:    'Cinzel', 'Be Vietnam Pro', sans-serif;
   font-weight:    700;
-  font-size:      1.25rem;
+  font-size:      1.15rem;
   letter-spacing: 1.5px;
 }
 .sidebar-offcanvas-nav .nav-link {
   border-left:   3px solid transparent;
-  border-radius: 0 8px 8px 0;
-  transition:    color 0.2s ease, background-color 0.2s ease, border-left-color 0.2s ease;
+  border-radius: 0 10px 10px 0;
+  transition:    color 0.18s ease, background-color 0.18s ease, border-left-color 0.18s ease;
   font-family:   'Be Vietnam Pro', sans-serif;
   font-weight:   500;
-  font-size:     0.95rem;
-  padding:       0.38rem 0.75rem 0.38rem 12px;
-  margin-right:  4px;
+  font-size:     0.9rem;
+  padding:       0.35rem 0.7rem 0.35rem 10px;
+  margin-right:  6px;
 }
 .sidebar-offcanvas-nav .nav-link.active {
   font-weight: 700;
-  border-left-width: 4px;
-  padding-left: 11px;
+  border-left-width: 3px;
+  padding-left: 10px;
 }
 
 .sidebar-offcanvas-nav .nav-link i,
 .sidebar-offcanvas-nav .nav-link .bi {
-  font-size: 1.05rem;
-  transition: color 0.2s ease, filter 0.2s ease;
+  font-size: 1rem;
+  transition: color 0.18s ease, filter 0.18s ease;
 }
 .sidebar-offcanvas-nav .nav-section {
   font-family:    'Be Vietnam Pro', sans-serif;
-  font-size:      0.82rem;
-  letter-spacing: 1.5px;
+  font-size:      0.68rem;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
-  padding:        0.3rem 1rem 0.2rem;
-  margin-top:     0.5rem;
+  padding:        0.25rem 0.9rem 0.15rem;
+  margin-top:     0.4rem;
   font-weight:    700;
 }
 .sidebar-offcanvas-nav .nav-section::before {
