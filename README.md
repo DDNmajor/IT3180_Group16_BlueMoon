@@ -54,21 +54,33 @@ Xây dựng phần mềm quản lý thu phí cho Ban quản trị chung cư Blue
 
 ## Hướng dẫn cài đặt
 
-### Yêu cầu
+Có 2 cách chạy ứng dụng:
+
+| | Cách 1 — Chạy local | Cách 2 — Deploy Railway |
+|--|---------------------|------------------------|
+| Yêu cầu máy | JDK 17, MySQL 8, IDE | Không cần (chạy trên cloud) |
+| Email | ⚠ Thiếu — cần cấu hình Brevo | ⚠ Cần — cấu hình Brevo |
+| Phù hợp | Dev, debug, chạy thử nhanh | Demo, trình bày, truy cập từ xa |
+
+---
+
+### Cách 1 — Chạy local
+
+#### Yêu cầu
 
 - [JDK 17+](https://adoptium.net/)
 - [MySQL 8+](https://dev.mysql.com/downloads/mysql/)
 - [IntelliJ IDEA](https://www.jetbrains.com/idea/) (hoặc IDE tuỳ chọn)
 - [Git](https://git-scm.com/)
 
-### Bước 1 — Clone repository
+#### Bước 1 — Clone repository
 
 ```bash
 git clone https://github.com/<org>/BlueMoon.git
 cd BlueMoon
 ```
 
-### Bước 2 — Khởi tạo database
+#### Bước 2 — Khởi tạo database
 
 Mở MySQL Workbench hoặc terminal và chạy:
 
@@ -90,7 +102,7 @@ Nếu cần bộ dữ liệu demo đầy đủ (50 hộ, lịch sử thanh toán
 source database/example_data.sql;
 ```
 
-### Bước 3 — Tạo file cấu hình
+#### Bước 3 — Tạo file cấu hình
 
 ```
 src/main/resources/application.properties.example
@@ -98,16 +110,18 @@ src/main/resources/application.properties.example
 src/main/resources/application.properties
 ```
 
-Chỉnh các giá trị sau:
+Chỉnh các giá trị bắt buộc:
 
 ```properties
 spring.datasource.password=<mysql_password_của_bạn>
 app.admin.password=<đặt_mật_khẩu_admin_tuỳ_ý>
 ```
 
+Để bật tính năng gửi email (tùy chọn), cần thêm cấu hình Brevo — xem [mục Cấu hình Brevo](#cấu-hình-brevo) bên dưới.
+
 > `application.properties` đã có trong `.gitignore` — **không commit file này**.
 
-### Bước 4 — Chạy ứng dụng
+#### Bước 4 — Chạy ứng dụng
 
 ```bash
 mvnw.cmd spring-boot:run      # Windows
@@ -116,12 +130,78 @@ mvnw.cmd spring-boot:run      # Windows
 
 Hoặc mở IntelliJ → chạy `BlueMoonApplication.java`.
 
-### Bước 5 — Truy cập
+#### Bước 5 — Truy cập
 
 Mở trình duyệt: **http://localhost:8080**
 
 Đăng nhập bằng tài khoản `admin` với mật khẩu đã cấu hình.  
 App tự tạo tài khoản admin (BCrypt) khi khởi động lần đầu nếu chưa có.
+
+---
+
+### Cách 2 — Deploy trên Railway
+
+Railway là nền tảng PaaS cho phép deploy ứng dụng Spring Boot và MySQL trực tiếp từ GitHub mà không cần cài đặt gì trên máy.
+
+#### Bước 1 — Chuẩn bị tài khoản
+
+- Đăng ký tại [railway.app](https://railway.app) (miễn phí, đăng nhập bằng GitHub)
+
+#### Bước 2 — Tạo project và database
+
+1. Tạo **New Project** → chọn **Deploy from GitHub repo** → chọn repo này
+2. Thêm **New Service** → chọn **Database** → **MySQL** — Railway tự tạo MySQL instance và inject biến môi trường `MYSQL_URL`, `MYSQL_USER`, `MYSQL_PASSWORD`
+
+#### Bước 3 — Khởi tạo schema
+
+Kết nối vào MySQL vừa tạo trên Railway (qua Railway CLI hoặc tab **Connect** trong dashboard) và chạy:
+
+```sql
+source database/bluemoon_schema.sql;
+-- Tùy chọn: source database/example_data.sql;
+```
+
+#### Bước 4 — Cấu hình biến môi trường
+
+Trong tab **Variables** của service Spring Boot, thêm các biến sau:
+
+| Biến | Giá trị |
+|------|---------|
+| `SPRING_DATASOURCE_URL` | `jdbc:mysql://<host>:<port>/railway` (lấy từ Railway MySQL) |
+| `SPRING_DATASOURCE_USERNAME` | username Railway MySQL |
+| `SPRING_DATASOURCE_PASSWORD` | password Railway MySQL |
+| `APP_ADMIN_PASSWORD` | mật khẩu admin tuỳ chọn |
+| `BLUEMOON_BREVO_API_KEY` | API key Brevo (bắt buộc để gửi email) |
+| `BLUEMOON_MAIL_FROM` | địa chỉ email đã verify trên Brevo |
+
+> Railway tự đọc các biến này qua `application.properties` vì Spring Boot hỗ trợ mapping `SPRING_DATASOURCE_URL` → `spring.datasource.url` tự động.
+
+#### Bước 5 — Deploy và truy cập
+
+Railway tự build và deploy sau khi push code. Sau khi deploy xong, truy cập URL Railway cung cấp (dạng `https://<tên>.up.railway.app`).
+
+---
+
+### Cấu hình Brevo
+
+Cả 2 cách đều cần Brevo để gửi email thông báo. Nếu không cấu hình, các tính năng gửi email sẽ bị lỗi hoặc bỏ qua — các chức năng khác hoạt động bình thường.
+
+1. Đăng ký tại [brevo.com](https://brevo.com) (miễn phí 300 email/ngày)
+2. Vào **SMTP & API** → tạo **API Key** mới
+3. Vào **Senders & Domains** → thêm và verify địa chỉ email gửi
+4. Điền vào cấu hình:
+
+```properties
+# Local (application.properties)
+bluemoon.brevo.api-key=xkeysib-...
+bluemoon.mail.from=your-verified@email.com
+```
+
+```
+# Railway (Variables tab)
+BLUEMOON_BREVO_API_KEY=xkeysib-...
+BLUEMOON_MAIL_FROM=your-verified@email.com
+```
 
 ---
 
