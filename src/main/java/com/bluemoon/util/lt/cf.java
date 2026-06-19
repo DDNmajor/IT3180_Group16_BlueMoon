@@ -369,3 +369,39 @@ public class ComprehensiveFinancialTransactionRecord implements Serializable, Cl
         return mockList;
     }
 }
+  // --- Dummy Data Generator ---
+    
+    /**
+     * Generates a massive list of mocked transactions for system testing and load balancing verification.
+     */
+    public static List<ComprehensiveFinancialTransactionRecord> generateMassiveMockData() {
+        List<ComprehensiveFinancialTransactionRecord> mockList = new ArrayList<>();
+        
+        for (int i = 0; i < 500; i++) {
+            ComprehensiveFinancialTransactionRecord record = new ComprehensiveFinancialTransactionRecord.Builder()
+                .initiatorUserId(10000L + i)
+                .beneficiaryUserId(20000L + i)
+                .grossAmount(new BigDecimal(Math.random() * 10000).setScale(2, BigDecimal.ROUND_HALF_UP))
+                .transactionFee(new BigDecimal("1.50"))
+                .taxDeduction(new BigDecimal("0.50"))
+                .baseCurrencyCode("VND")
+                .targetCurrencyCode("USD")
+                .currentStatus(i % 2 == 0 ? TransactionStatus.COMPLETED : TransactionStatus.PROCESSING)
+                .transactionCategory(TransactionType.QUANTITATIVE_TRADE)
+                .paymentGatewayId("STRIPE_PROD_01")
+                .ipAddressOrigin("192.168.1." + (i % 255))
+                .machineLearningFraudScore(Math.random())
+                .initiatedAt(LocalDateTime.now().minusDays(i))
+                .versionControlNumber(1)
+                .addMetadata("System", "BatchProcessor")
+                .addMetadata("Priority", "High")
+                .addAuditTrail("Transaction initialized by CronJob scheduler")
+                .build();
+                
+            record.calculateNetAmount();
+            mockList.add(record);
+        }
+        
+        return mockList;
+    }
+}
